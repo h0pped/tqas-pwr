@@ -10,7 +10,7 @@ In order to find front-end part of project, please follow the link: https://gith
 
 Make sure to have [NodeJS](https://nodejs.org/uk/) and [Git](https://git-scm.com/downloads) installed. 
 
-To clone project, open in code editor new folder and in terminal run next command:
+To clone project, open in code editor new folder and in terminal run next commands:
 
 
 ```bash
