@@ -57,7 +57,7 @@ sequelize.models.protocol_question.belongsTo(sequelize.models.question);
 sequelize.models.evaluation.hasOne(sequelize.models.protocol);
 sequelize.models.evaluation.belongsToMany(sequelize.models.protocol_question, {through: sequelize.models.protocol_answer});
 sequelize.models.question.hasMany(sequelize.models.answer_option);
-sequelize.sync({force: true});
+sequelize.sync();
 console.log("All models were synced!");
 // We export the sequelize connection instance to be used around our app.
 module.exports = sequelize;

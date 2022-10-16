@@ -26,7 +26,7 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         status_date: {
-            type: DataTypes.STRING
+            type: DataTypes.DATE
         },
         user_type: {
             type: DataTypes.STRING,
