@@ -47,8 +47,8 @@ for (const modelDefiner of modelDefiners) {
 
 sequelize.models.user.hasOne(sequelize.models.recovery_code);
 sequelize.models.user.hasOne(sequelize.models.activation_code);
-sequelize.models.wzhz.hasOne(sequelize.models.user);
-sequelize.models.user.hasOne(sequelize.models.evaluatee);
+sequelize.models.user.hasOne(sequelize.models.wzhz);
+sequelize.models.user.hasOne(sequelize.models.evaluatee, {foreignKey: {unique: true}});
 sequelize.models.user.belongsToMany(sequelize.models.evaluation, {through : sequelize.models.evaluation_team});
 sequelize.models.evaluatee.hasMany(sequelize.models.evaluated_class);
 sequelize.models.evaluated_class.hasMany(sequelize.models.evaluation);
