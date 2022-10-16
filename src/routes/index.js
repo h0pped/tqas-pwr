@@ -7,5 +7,4 @@ const router = express.Router()
 
 router.use('/auth', authRouter)
 router.use('/upload_users', uploadUsersRouter)
-
 module.exports = router
