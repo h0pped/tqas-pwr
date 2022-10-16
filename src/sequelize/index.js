@@ -23,11 +23,12 @@ sequelize
   });
 
   const modelDefiners = [
-    require('./models/answer_option.model'),
+  require('./models/activation_code.model'),
+  require('./models/answer_option.model'),
 	require('./models/evaluated_class.model'),
 	require('./models/evaluatee.model'),
 	require('./models/evaluation_team.model'),
-    require('./models/evaluation.model'),
+  require('./models/evaluation.model'),
 	require('./models/protocol_answer.model'),
 	require('./models/protocol_question.model'),
 	require('./models/protocol.model'),
@@ -45,6 +46,7 @@ for (const modelDefiner of modelDefiners) {
 }
 
 sequelize.models.user.hasOne(sequelize.models.recovery_code);
+sequelize.models.user.hasOne(sequelize.models.activation_code);
 sequelize.models.wzhz.hasOne(sequelize.models.user);
 sequelize.models.user.hasOne(sequelize.models.evaluatee);
 sequelize.models.user.belongsToMany(sequelize.models.evaluation, {through : sequelize.models.evaluation_team});
