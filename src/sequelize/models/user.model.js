@@ -28,7 +28,7 @@ module.exports = (sequelize) => {
             defaultValue: 'inactive'
         },
         status_date: {
-            type: DataTypes.STRING
+            type: DataTypes.DATE
         },
         user_type: {
             type: DataTypes.STRING,
