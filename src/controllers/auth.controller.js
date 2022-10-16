@@ -4,7 +4,11 @@ const users = require('../tempData/users')
 const { secret, expiresIn } = require('../config/auth.config')
 const StatusCodes = require('../config/statusCodes.config')
 const {
-    responseMessages: { EMAIL_OR_PASSWORD_NOT_MATCH, USER_LOGGED_IN },
+    responseMessages: {
+        EMAIL_OR_PASSWORD_NOT_MATCH,
+        USER_LOGGED_IN,
+        ALREADY_LOGGED_IN,
+    },
 } = require('../config/index.config')
 
 module.exports.checkAuth = (req, res) => {
@@ -14,7 +18,7 @@ module.exports.checkAuth = (req, res) => {
 module.exports.signIn = (req, res) => {
     try {
         if (req.user) {
-            throw new Error('User already logged in')
+            throw new Error(ALREADY_LOGGED_IN)
         } else {
             const { email, password } = req.body
             if (!email || !password || users[email]?.password !== password) {

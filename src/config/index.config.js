@@ -5,8 +5,8 @@ const config = {
         port: process.env.PORT || 8080,
     },
     auth: {
-        jwtSecretKey: process.env.JWT_SECRET_KEY,
-        jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+        jwtSecretKey: process.env.JWT_SECRET_KEY || 'secret',
+        jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2d',
     },
     responseMessages: {
         ALREADY_LOGGED_IN: 'User already logged in',
