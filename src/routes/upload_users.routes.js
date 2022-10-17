@@ -3,6 +3,7 @@ const router = express.Router()
 const fileUpload = require('express-fileupload')
 const sequelize = require('../sequelize')
 router.use(fileUpload())
+const excelToJson = require('convert-excel-to-json');
 
 let User = sequelize.models.user
 let Evalueatee = sequelize.models.evaluatee
@@ -19,41 +20,12 @@ router.post('/append_users', async (req, res) => {
                 message: 'No file uploaded',
             })
         } else {
-            var file = req.files.files
-            var users = file.data.toString('utf8')
-            console.log(users)
-
-            let arr = users.split('\n')
-            console.log(arr)
-            console.log(arr.length)
-            for (var i = 0; i < arr.length; i++) {
-                let props = arr[i].split(',')
-                console.log(props[1])
-                const user_identifier = await User.upsert(
-                    {
-                        first_name: props[1],
-                        last_name: props[2],
-                        academic_title: props[0],
-                        email: props[3],
-                        password: null,
-                        account_status: 'inactive',
-                        status_date: Date.now(),
-                        user_type: props[4],
-                    },
-                    {
-                      fields: ["first_name", "last_name", "academic_title", "user_type"],
-                      conflictFields: ["email"]
-                    }
-                );
-                await Evalueatee.upsert(
-                    {userId: user_identifier[0].get("id"),
-                    last_evaluated_date : props[5]
-                    }, 
-                    {
-                        fields: ["last_evaluated_date"],
-                        conflictFields: ["userId"]
-                    }
-                );
+            var file = req.files.files;
+            if (file.mimetype == 'text/csv') {
+                parse_csv(file);
+            }
+            else if (file.mimetype == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                parse_excel(file.data);
             }
 
             res.send({
@@ -70,5 +42,71 @@ router.post('/append_users', async (req, res) => {
         res.status(500).send(err)
     }
 });
+
+async function parse_csv(file){
+    var users = file.data.toString('utf8');
+    console.log(users);
+    const arr = users.split('\n');
+    for (var i = 0; i < arr.length; i++) {
+        let props = arr[i].split(',')
+        console.log(props[1])
+        const user_identifier = await User.upsert(
+            {
+                first_name: props[1],
+                last_name: props[2],
+                academic_title: props[0],
+                email: props[3],
+                password: null,
+                account_status: 'inactive',
+                status_date: Date.now(),
+                user_type: props[4],
+            },
+            {
+              fields: ["first_name", "last_name", "academic_title", "user_type"],
+              conflictFields: ["email"]
+            }
+        );
+        await Evalueatee.upsert(
+            {userId: user_identifier[0].get("id"),
+            last_evaluated_date : props[5]
+            }, 
+            {
+                fields: ["last_evaluated_date"],
+                conflictFields: ["userId"]
+            }
+        );
+    }
+}
+
+async function parse_excel(buffer) {
+    const arr = Object.values(excelToJson({source: buffer}))[0];
+    for (var i = 0; i < arr.length; i++) {
+        const user_identifier = await User.upsert(
+            {
+                first_name: arr[i].B,
+                last_name: arr[i].C,
+                academic_title: arr[i].A,
+                email: arr[i].D,
+                password: null,
+                account_status: 'inactive',
+                status_date: Date.now(),
+                user_type: arr[i].E,
+            },
+            {
+              fields: ["first_name", "last_name", "academic_title", "user_type"],
+              conflictFields: ["email"]
+            }
+        );
+        await Evalueatee.upsert(
+            {userId: user_identifier[0].get("id"),
+            last_evaluated_date : arr[i].F
+            }, 
+            {
+                fields: ["last_evaluated_date"],
+                conflictFields: ["userId"]
+            }
+        );
+    }
+}
 
 module.exports = router
