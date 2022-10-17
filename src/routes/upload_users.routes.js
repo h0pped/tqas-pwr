@@ -4,6 +4,7 @@ const fileUpload = require('express-fileupload')
 const sequelize = require('../sequelize')
 router.use(fileUpload())
 const excelToJson = require('convert-excel-to-json');
+const isEmail = require('../utils/validateEmail')
 
 let User = sequelize.models.user
 let Evalueatee = sequelize.models.evaluatee
@@ -48,8 +49,10 @@ async function parse_csv(file){
     console.log(users);
     const arr = users.split('\n');
     for (var i = 0; i < arr.length; i++) {
-        let props = arr[i].split(',')
-        console.log(props[1])
+        let props = arr[i].split(',');
+        if (i == 0 && !isEmail(props[3])){
+            continue;
+        }
         const user_identifier = await User.upsert(
             {
                 first_name: props[1],
@@ -81,6 +84,9 @@ async function parse_csv(file){
 async function parse_excel(buffer) {
     const arr = Object.values(excelToJson({source: buffer}))[0];
     for (var i = 0; i < arr.length; i++) {
+        if (i == 0 && !isEmail(arr[i].D)){
+            continue;
+        }
         const user_identifier = await User.upsert(
             {
                 first_name: arr[i].B,
