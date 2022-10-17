@@ -1,8 +1,13 @@
 const express = require('express')
 const router = express.Router()
 
-router.get('/', (req, res) => {
-    res.send({ msg: 'Hello from auth' })
-})
+const {
+    authMiddleware,
+    checkAuthMiddleware,
+} = require('../middlewares/auth.middleware')
+const { checkAuth, signIn } = require('../controllers/auth.controller')
+
+router.get('/', authMiddleware, checkAuth)
+router.post('/signIn', checkAuthMiddleware, signIn)
 
 module.exports = router
