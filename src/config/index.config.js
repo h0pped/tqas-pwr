@@ -12,6 +12,9 @@ const config = {
         ALREADY_LOGGED_IN: 'User already logged in',
         EMAIL_OR_PASSWORD_NOT_MATCH: "Email or password doesn't match",
         USER_LOGGED_IN: 'User logged in',
+        ACTIVATION_CODE_SEND: 'Activation code send',
+        WRONG_EMAIL_SYNTAX: 'Email should end with pwr.edu.pl',
+        WRONG_ACTIVATION_CODE: 'Wrong activation code',
     },
 }
 
