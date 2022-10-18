@@ -1,6 +1,6 @@
 # Getting started
 
-## Where to find front-end part of the project 
+## Where to find front-end part of the project
 
 In order to find front-end part of project, please follow the link: https://github.com/h0pped/tqas-pwr-frontend
 
@@ -8,10 +8,9 @@ In order to find front-end part of project, please follow the link: https://gith
 
 ### First Step
 
-Make sure to have [NodeJS](https://nodejs.org/uk/) and [Git](https://git-scm.com/downloads) installed. 
+Make sure to have [NodeJS](https://nodejs.org/uk/) and [Git](https://git-scm.com/downloads) installed.
 
 To clone project, open in code editor new folder and in terminal run next commands:
-
 
 ```bash
 $ git clone https://github.com/h0pped/tqas-pwr.git
@@ -37,5 +36,5 @@ $ npm run dev
 
 In order to work with the project you need to instal the following VScode extensions:
 
-- ESLint (code analyze and syntax check) 
-- Prettier (Prettify and format the code depending on ESLint rules)
+-   ESLint (code analyze and syntax check)
+-   Prettier (Prettify and format the code depending on ESLint rules)
