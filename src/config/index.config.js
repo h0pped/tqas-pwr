@@ -7,6 +7,7 @@ const config = {
     auth: {
         jwtSecretKey: process.env.JWT_SECRET_KEY || 'secret',
         jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2d',
+        databaseUrl: process.env.DATABASE_URL || 'database_url'
     },
     responseMessages: {
         ALREADY_LOGGED_IN: 'User already logged in',
