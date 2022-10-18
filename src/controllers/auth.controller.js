@@ -8,6 +8,9 @@ const {
         EMAIL_OR_PASSWORD_NOT_MATCH,
         USER_LOGGED_IN,
         ALREADY_LOGGED_IN,
+        ACTIVATION_CODE_SEND,
+        WRONG_EMAIL_SYNTAX,
+        WRONG_ACTIVATION_CODE,
     },
 } = require('../config/index.config')
 
@@ -44,4 +47,26 @@ module.exports.signIn = (req, res) => {
             .status(StatusCodes[err.message] || 403)
             .send({ msg: err.message })
     }
+}
+
+module.exports.sendCode = (req, res) => {
+    const { email } = req.body
+    if (!email.endsWith('pwr.edu.pl')) {
+        return res
+            .status(StatusCodes[WRONG_EMAIL_SYNTAX])
+            .send({ msg: WRONG_EMAIL_SYNTAX })
+    }
+    return res
+        .status(StatusCodes[ACTIVATION_CODE_SEND])
+        .send({ msg: ACTIVATION_CODE_SEND, email })
+}
+
+module.exports.verifyCode = (req, res) => {
+    const { /* email ,*/ code } = req.body
+    if (code !== '1234') {
+        return res
+            .status(StatusCodes[WRONG_ACTIVATION_CODE])
+            .send({ msg: WRONG_ACTIVATION_CODE })
+    }
+    return res.send({ msg: 'Code verified' })
 }
