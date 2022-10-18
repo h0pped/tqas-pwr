@@ -12,7 +12,8 @@ module.exports = (sequelize) => {
         },
         academic_title: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue: 'not specified'
         },
         email: {
             type: DataTypes.STRING,
@@ -23,7 +24,8 @@ module.exports = (sequelize) => {
         },
         account_status: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue: 'inactive'
         },
         status_date: {
             type: DataTypes.STRING
