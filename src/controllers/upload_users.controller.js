@@ -1,4 +1,3 @@
-const express = require('express')
 const sequelize = require('../sequelize')
 const excelToJson = require('convert-excel-to-json')
 const isEmail = require('../utils/validateEmail')
@@ -6,7 +5,7 @@ const isEmail = require('../utils/validateEmail')
 
 
 const User = sequelize.models.user
-const Evalueatee = sequelize.models.evaluatee
+const Evaluatee = sequelize.models.evaluatee
 
 module.exports.appendUsers = async (req, res) => {
     try {
@@ -71,7 +70,7 @@ async function parse_csv(file) {
                 conflictFields: ['email'],
             }
         )
-        await Evalueatee.upsert(
+        await Evaluatee.upsert(
             {
                 userId: user_identifier[0].get('id'),
                 last_evaluated_date: props[5],
@@ -112,7 +111,7 @@ async function parse_excel(buffer) {
                 conflictFields: ['email'],
             }
         )
-        await Evalueatee.upsert(
+        await Evaluatee.upsert(
             {
                 userId: user_identifier[0].get('id'),
                 last_evaluated_date: arr[i].F,
