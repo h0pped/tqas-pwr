@@ -8,6 +8,9 @@ const {
     ACTIVATION_CODE_SEND,
     WRONG_EMAIL_SYNTAX,
     WRONG_ACTIVATION_CODE,
+    PASSWORD_REQUIRED,
+    USER_NOT_FOUND,
+    USER_ACTIVATED,
 } = responseMessages
 
 module.exports = {
@@ -17,4 +20,7 @@ module.exports = {
     [ACTIVATION_CODE_SEND]: StatusCodes.OK,
     [WRONG_EMAIL_SYNTAX]: StatusCodes.BAD_REQUEST,
     [WRONG_ACTIVATION_CODE]: StatusCodes.BAD_REQUEST,
+    [PASSWORD_REQUIRED]: StatusCodes.BAD_REQUEST,
+    [USER_NOT_FOUND]: StatusCodes.NOT_FOUND,
+    [USER_ACTIVATED]: StatusCodes.CREATED,
 }

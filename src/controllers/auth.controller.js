@@ -11,6 +11,9 @@ const {
         ACTIVATION_CODE_SEND,
         WRONG_EMAIL_SYNTAX,
         WRONG_ACTIVATION_CODE,
+        PASSWORD_REQUIRED,
+        USER_NOT_FOUND,
+        USER_ACTIVATED,
     },
 } = require('../config/index.config')
 
@@ -69,4 +72,28 @@ module.exports.verifyCode = (req, res) => {
             .send({ msg: WRONG_ACTIVATION_CODE })
     }
     return res.send({ msg: 'Code verified' })
+}
+module.exports.activateAccount = (req, res) => {
+    const { email, password, code } = req.body
+    if (!email.endsWith('pwr.edu.pl')) {
+        return res
+            .status(StatusCodes[WRONG_EMAIL_SYNTAX])
+            .send({ msg: WRONG_EMAIL_SYNTAX })
+    }
+    if (code !== '1234') {
+        return res
+            .status(StatusCodes[WRONG_ACTIVATION_CODE])
+            .send({ msg: WRONG_ACTIVATION_CODE })
+    }
+    if (!password) {
+        return res
+            .status(StatusCodes[PASSWORD_REQUIRED])
+            .send({ msg: PASSWORD_REQUIRED })
+    }
+    if (!users[email]) {
+        return res
+            .status(StatusCodes[USER_NOT_FOUND])
+            .send({ msg: USER_NOT_FOUND })
+    }
+    res.status(StatusCodes[USER_ACTIVATED]).send({ msg: USER_ACTIVATED })
 }

@@ -9,6 +9,7 @@ const {
     checkAuth,
     signIn,
     sendCode,
+    activateAccount,
     verifyCode,
 } = require('../controllers/auth.controller')
 
@@ -16,5 +17,6 @@ router.get('/', authMiddleware, checkAuth)
 router.post('/signIn', checkAuthMiddleware, signIn)
 router.post('/sendCode', checkAuthMiddleware, sendCode)
 router.post('/verifyCode', checkAuthMiddleware, verifyCode)
+router.post('/activateAccount', checkAuthMiddleware, activateAccount)
 
 module.exports = router
