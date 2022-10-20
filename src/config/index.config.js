@@ -16,6 +16,9 @@ const config = {
         ACTIVATION_CODE_SEND: 'Activation code send',
         WRONG_EMAIL_SYNTAX: 'Email should end with pwr.edu.pl',
         WRONG_ACTIVATION_CODE: 'Wrong activation code',
+        USER_CRUD_SUCCESSFUL: 'User CRUD successful',
+        USER_DOES_NOT_EXIST: 'User with given id does not exist',
+        USER_ALREADY_EXISTS: 'User already exists'
     },
 }
 
