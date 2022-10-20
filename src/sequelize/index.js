@@ -42,8 +42,8 @@ for (const modelDefiner of modelDefiners) {
 
 sequelize.models.user.hasOne(sequelize.models.recovery_code);
 sequelize.models.user.hasOne(sequelize.models.activation_code);
-sequelize.models.wzhz.hasOne(sequelize.models.user);
-sequelize.models.user.hasOne(sequelize.models.evaluatee);
+sequelize.models.user.hasOne(sequelize.models.wzhz);
+sequelize.models.user.hasOne(sequelize.models.evaluatee, {foreignKey: {unique: true}});
 sequelize.models.user.belongsToMany(sequelize.models.evaluation, {through : sequelize.models.evaluation_team});
 sequelize.models.evaluatee.hasMany(sequelize.models.evaluated_class);
 sequelize.models.evaluated_class.hasMany(sequelize.models.evaluation);
@@ -52,7 +52,7 @@ sequelize.models.protocol_question.belongsTo(sequelize.models.question);
 sequelize.models.evaluation.hasOne(sequelize.models.protocol);
 sequelize.models.evaluation.belongsToMany(sequelize.models.protocol_question, {through: sequelize.models.protocol_answer});
 sequelize.models.question.hasMany(sequelize.models.answer_option);
-sequelize.sync({force: true});
+sequelize.sync();
 console.log("All models were synced!");
 // We export the sequelize connection instance to be used around our app.
 module.exports = sequelize;
