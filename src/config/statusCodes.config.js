@@ -11,6 +11,7 @@ const {
     PASSWORD_REQUIRED,
     USER_NOT_FOUND,
     USER_ACTIVATED,
+    CODE_HASHING_ERROR,
 } = responseMessages
 
 module.exports = {
@@ -23,4 +24,5 @@ module.exports = {
     [PASSWORD_REQUIRED]: StatusCodes.BAD_REQUEST,
     [USER_NOT_FOUND]: StatusCodes.NOT_FOUND,
     [USER_ACTIVATED]: StatusCodes.CREATED,
+    [CODE_HASHING_ERROR]: StatusCodes.INTERNAL_SERVER_ERROR,
 }

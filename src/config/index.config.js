@@ -3,6 +3,8 @@ require('dotenv').config()
 const config = {
     server: {
         port: process.env.PORT || 8080,
+        activationCodeSalt: process.env.ACTIVATION_CODE_SALT || 'saltsalt',
+        activationCodeHashRounds: process.env.ACTIVATION_CODE_SALT_ROUND || 10,
     },
     auth: {
         jwtSecretKey: process.env.JWT_SECRET_KEY || 'secret',
@@ -19,6 +21,7 @@ const config = {
         PASSWORD_REQUIRED: 'Password is required',
         USER_NOT_FOUND: 'User with provided credentials was not found',
         USER_ACTIVATED: 'User was successfully activated',
+        CODE_HASHING_ERROR: 'Error while creating activation code',
     },
 }
 
