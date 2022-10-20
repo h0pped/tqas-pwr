@@ -4,8 +4,8 @@ const fileUpload = require('express-fileupload')
 const router = express.Router()
 router.use(fileUpload())
 
-const {appendUsers} = require('../controllers/upload_users.controller.js')
+const {appendUsers} = require('../controllers/uploadUsers.controller.js')
 
-router.post('/append_users', appendUsers)
+router.post('/appendUsers', appendUsers)
 
 module.exports = router
