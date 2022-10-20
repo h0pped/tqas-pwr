@@ -15,6 +15,7 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "bcrypt": "^5.1.0",
         "convert-excel-to-json": "^1.7.0",
         "cors": "^2.8.5",
         "date-and-time": "^2.4.1",

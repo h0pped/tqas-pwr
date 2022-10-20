@@ -22,6 +22,9 @@ const config = {
         USER_NOT_FOUND: 'User with provided credentials was not found',
         USER_ACTIVATED: 'User was successfully activated',
         CODE_HASHING_ERROR: 'Error while creating activation code',
+        MISSING_PARAMETERS: 'Some parameters are missing',
+        PASSWORD_HASHING_ERROR: 'Error during account activation',
+        USER_ALREADY_ACTIVATED: 'User is already activated',
     },
 }
 
