@@ -1,10 +1,7 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const users = require('../tempData/users')
-const {
-    activationCodeSalt,
-    activationCodeHashRounds,
-} = require('../config/index.config')
+const { activationCodeHashRounds } = require('../config/index.config')
 const { secret, expiresIn } = require('../config/auth.config')
 const StatusCodes = require('../config/statusCodes.config')
 const {
