@@ -1,11 +1,11 @@
 const express = require('express')
 
 const authRouter = require('./auth.routes')
-const userData = require('./user_data.router')
+const userData = require('./userData.router')
 
 const router = express.Router()
 
 router.use('/auth', authRouter)
-router.use('/user_data', userData)
+router.use('/userData', userData)
 
 module.exports = router
