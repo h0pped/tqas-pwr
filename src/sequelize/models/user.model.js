@@ -17,7 +17,8 @@ module.exports = (sequelize) => {
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         password: {
             type: DataTypes.STRING
@@ -28,7 +29,7 @@ module.exports = (sequelize) => {
             defaultValue: 'inactive'
         },
         status_date: {
-            type: DataTypes.STRING
+            type: DataTypes.DATE
         },
         user_type: {
             type: DataTypes.STRING,
