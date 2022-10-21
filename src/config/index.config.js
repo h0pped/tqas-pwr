@@ -29,7 +29,8 @@ const config = {
         ALREADY_A_MEMBER: 'User is already a member of WZHZ group',
         USER_DOES_NOT_EXIST: 'User with provided ID does not exist',
         MEMBER_REMOVED: 'Member was removed from WZHZ group',
-        MEMEBER_DOES_NOT_EXIST: 'Such member of WZHZ does not exist'
+        MEMEBER_DOES_NOT_EXIST: 'Such member of WZHZ does not exist',
+        ID_NOT_PROVIDED: 'Id of user is required in order to add it to WZHZ group'
     },
 }
 
