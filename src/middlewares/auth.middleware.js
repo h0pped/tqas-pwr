@@ -18,8 +18,6 @@ module.exports.authMiddleware = (req, res, next) => {
                 next()
             }
         })
-
-        next()
     } else {
         return res.sendStatus(StatusCodes.UNAUTHORIZED)
     }
