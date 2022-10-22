@@ -5,7 +5,7 @@ const { StatusCodes } = require('http-status-codes')
 const { secret } = require('../config/auth.config')
 
 module.exports.authMiddleware = (req, res, next) => {
-    const bearerHeader = req.headers['Authorization']
+    const bearerHeader = req.headers['authorization']
 
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ')
