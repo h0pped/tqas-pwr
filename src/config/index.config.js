@@ -26,8 +26,7 @@ const config = {
         PASSWORD_HASHING_ERROR: 'Error during account activation',
         USER_ALREADY_ACTIVATED: 'User is already activated',
         USER_CRUD_SUCCESSFUL: 'User CRUD successful',
-        USER_DOES_NOT_EXIST: 'User with given id does not exist',
-        USER_ALREADY_EXISTS: 'User already exists'
+        USER_ALREADY_EXISTS: 'User already exists',
         MEMBER_ADDED: 'Member was added',
         ALREADY_A_MEMBER: 'User is already a member of WZHZ group',
         USER_DOES_NOT_EXIST: 'User with provided ID does not exist',
