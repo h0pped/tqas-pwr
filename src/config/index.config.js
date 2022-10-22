@@ -18,7 +18,6 @@ const config = {
         ACTIVATION_CODE_SEND: 'Activation code send',
         WRONG_EMAIL_SYNTAX: 'Email should end with pwr.edu.pl',
         WRONG_ACTIVATION_CODE: 'Wrong activation code',
-<<<<<<< HEAD
         PASSWORD_REQUIRED: 'Password is required',
         USER_NOT_FOUND: 'User with provided credentials was not found',
         USER_ACTIVATED: 'User was successfully activated',
@@ -26,8 +25,6 @@ const config = {
         MISSING_PARAMETERS: 'Some parameters are missing',
         PASSWORD_HASHING_ERROR: 'Error during account activation',
         USER_ALREADY_ACTIVATED: 'User is already activated',
-=======
->>>>>>> c06b256f95a5012429c968fe69894bced52a8f7f
         USER_CRUD_SUCCESSFUL: 'User CRUD successful',
         USER_DOES_NOT_EXIST: 'User with given id does not exist',
         USER_ALREADY_EXISTS: 'User already exists'
