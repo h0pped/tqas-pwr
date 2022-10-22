@@ -13,7 +13,7 @@ module.exports.authMiddleware = (req, res, next) => {
 
         jwt.verify(bearerToken, secret, (err) => {
             if (err) {
-                res.sendStatus(StatusCodes.UNAUTHORIZED)
+                return res.sendStatus(StatusCodes.UNAUTHORIZED)
             } else {
                 next()
             }
@@ -21,7 +21,7 @@ module.exports.authMiddleware = (req, res, next) => {
 
         next()
     } else {
-        res.sendStatus(StatusCodes.UNAUTHORIZED)
+        return res.sendStatus(StatusCodes.UNAUTHORIZED)
     }
 }
 
