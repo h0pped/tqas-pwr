@@ -11,6 +11,13 @@ const config = {
         jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2d',
         databaseUrl: process.env.DATABASE_URL || 'database_url',
     },
+    mailer: {
+        service: 'Gmail',
+        auth: {
+            user: process.env.MAILER_EMAIL || 'tqastest@pwr.edu.pl',
+            pass: process.env.MAILER_PASSWORD || '123123123',
+        },
+    },
     responseMessages: {
         ALREADY_LOGGED_IN: 'User already logged in',
         EMAIL_OR_PASSWORD_NOT_MATCH: "Email or password doesn't match",
@@ -25,6 +32,7 @@ const config = {
         MISSING_PARAMETERS: 'Some parameters are missing',
         PASSWORD_HASHING_ERROR: 'Error during account activation',
         USER_ALREADY_ACTIVATED: 'User is already activated',
+        EMAIL_SENDING_ERROR: 'Error while sending email',
     },
 }
 

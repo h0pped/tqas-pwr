@@ -15,6 +15,7 @@ const {
     MISSING_PARAMETERS,
     PASSWORD_HASHING_ERROR,
     USER_ALREADY_ACTIVATED,
+    EMAIL_SENDING_ERROR,
 } = responseMessages
 
 module.exports = {
@@ -31,4 +32,5 @@ module.exports = {
     [PASSWORD_HASHING_ERROR]: StatusCodes.INTERNAL_SERVER_ERROR,
     [MISSING_PARAMETERS]: StatusCodes.BAD_REQUEST,
     [USER_ALREADY_ACTIVATED]: StatusCodes.CONFLICT,
+    [EMAIL_SENDING_ERROR]: StatusCodes.INTERNAL_SERVER_ERROR,
 }

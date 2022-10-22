@@ -1,23 +1,23 @@
 const nodemailer = require('nodemailer')
-
+const { mailer } = require('../config/mailer.config')
 let transporter = nodemailer.createTransport({
-    service: 'Gmail',
-    auth: {
-        user: '245693@student.pwr.edu.pl',
-        pass: 'Yus2311nikmet',
-    },
+    service: mailer.service,
+    auth: mailer.auth,
 })
 
-const message = {
-    // from: '245693@student.pwr.edu.pl',
-    to: 'notawril@gmail.com',
-    subject: 'Subject',
-    text: 'Hello SMTP Email',
-}
-transporter.sendMail(message, function (err, info) {
-    if (err) {
-        console.log(err)
-    } else {
-        console.log(info)
+module.exports.sendMail = (email, title, content) => {
+    const message = {
+        to: email,
+        subject: title,
+        html: content,
     }
-})
+    return new Promise((resolve, reject) => {
+        transporter.sendMail(message, function (err, info) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(info)
+            }
+        })
+    })
+}
