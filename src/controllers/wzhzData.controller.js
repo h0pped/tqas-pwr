@@ -36,60 +36,60 @@ module.exports.getMembers = async (req, res) => {
 module.exports.addMember = async (req, res) => {
     const { userId } = req.body
 
-    if (userId) {
-        if (await userExists(userId)) {
-            if (!await isUserAlreadyAMember(userId)) {
-                try {
-                    const user = await Wzhz.create({ userId: userId })
-                    console.log(userId)
-                    return res
-                        .status(StatusCodes[MEMBER_ADDED])
-                        .send({
-                            msg: MEMBER_ADDED,
-                            user: user
-                        })
-                } catch (err) {
-                    return res
-                        .status(StatusCodes[err.message] || 500)
-                        .send({ msg: err.message });
-                }
-            } else {
-                return res
-                    .status(StatusCodes[ALREADY_A_MEMBER])
-                    .send({ msg: ALREADY_A_MEMBER })
-            }
-        } else {
-            return res
-                .status(StatusCodes[USER_DOES_NOT_EXIST])
-                .send({ msg: USER_DOES_NOT_EXIST })
-        }
-    } else {
+    if (!userId) {
         return res
             .status(StatusCodes[ID_NOT_PROVIDED])
             .send({ msg: ID_NOT_PROVIDED });
     }
+
+    if (!(await isUserExisting(userId))) {
+        return res
+            .status(StatusCodes[USER_DOES_NOT_EXIST])
+            .send({ msg: USER_DOES_NOT_EXIST })
+    }
+
+    if (await isUserAlreadyAMember(userId)) {
+        return res
+            .status(StatusCodes[ALREADY_A_MEMBER])
+            .send({ msg: ALREADY_A_MEMBER })
+    }
+
+    try {
+        const user = await Wzhz.create({ userId: userId })
+        console.log(userId)
+        return res
+            .status(StatusCodes[MEMBER_ADDED])
+            .send({
+                msg: MEMBER_ADDED,
+                user: user
+            })
+    } catch (err) {
+        return res
+            .status(StatusCodes[err.message] || 500)
+            .send({ msg: err.message });
+    }
 }
+
 
 module.exports.removeMember = async (req, res) => {
     const { id } = req.body
 
-    if (await memberExists(id)) {
-        try {
-            await Wzhz.destroy({ where: { id: id } })
-            return res
-                .status(StatusCodes[MEMBER_REMOVED])
-                .send({ msg: MEMBER_REMOVED })
-        } catch (err) {
-            return res
-                .status(StatusCodes[err.message] || 500)
-                .send({ msg: err.message });
-        }
-    } else {
+    if (!(await isMemberExisting(id))) {
         return res
             .status(StatusCodes[MEMEBER_DOES_NOT_EXIST])
             .send({ msg: MEMEBER_DOES_NOT_EXIST })
     }
 
+    try {
+        await Wzhz.destroy({ where: { id: id } })
+        return res
+            .status(StatusCodes[MEMBER_REMOVED])
+            .send({ msg: MEMBER_REMOVED })
+    } catch (err) {
+        return res
+            .status(StatusCodes[err.message] || 500)
+            .send({ msg: err.message });
+    }
 }
 
 async function isUserAlreadyAMember(id) {
@@ -97,12 +97,12 @@ async function isUserAlreadyAMember(id) {
     return records.length > 0
 }
 
-async function userExists(id) {
+async function isUserExisting(id) {
     const records = await User.findAll({ where: { id: id } })
     return records.length > 0
 }
 
-async function memberExists(id) {
+async function isMemberExisting(id) {
     const records = await Wzhz.findAll({ where: { id: id } })
     return records.length > 0
 }

@@ -1,11 +1,9 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const {
     authMiddleware,
 } = require('../middlewares/auth.middleware')
 
 const router = express.Router()
-router.use(bodyParser.urlencoded())
 
 const { getMembers, addMember, removeMember } = require('../controllers/wzhzData.controller')
 
