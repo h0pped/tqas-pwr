@@ -16,7 +16,7 @@ const Wzhz = sequelize.models.wzhz
 const User = sequelize.models.user
 
 module.exports.getMembers = async (req, res) => {
-    const memebers = await User.findAll({
+    const members = await User.findAll({
         attributes: [
             'id',
             'academic_title',
@@ -30,7 +30,7 @@ module.exports.getMembers = async (req, res) => {
         }
     })
 
-    return res.send(memebers);
+    return res.send(members);
 }
 
 module.exports.addMember = async (req, res) => {
