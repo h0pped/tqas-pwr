@@ -8,7 +8,6 @@ const {
     ACTIVATION_CODE_SEND,
     WRONG_EMAIL_SYNTAX,
     WRONG_ACTIVATION_CODE,
-<<<<<<< HEAD
     PASSWORD_REQUIRED,
     USER_NOT_FOUND,
     USER_ACTIVATED,
@@ -16,11 +15,9 @@ const {
     MISSING_PARAMETERS,
     PASSWORD_HASHING_ERROR,
     USER_ALREADY_ACTIVATED,
-=======
     USER_CRUD_SUCCESSFUL,
     USER_ALREADY_EXISTS,
     USER_DOES_NOT_EXIST
->>>>>>> c06b256 (Cleaning code (adding statuses from config, removing logs....))
 } = responseMessages
 
 module.exports = {
@@ -30,7 +27,6 @@ module.exports = {
     [ACTIVATION_CODE_SEND]: StatusCodes.OK,
     [WRONG_EMAIL_SYNTAX]: StatusCodes.BAD_REQUEST,
     [WRONG_ACTIVATION_CODE]: StatusCodes.BAD_REQUEST,
-<<<<<<< HEAD
     [PASSWORD_REQUIRED]: StatusCodes.BAD_REQUEST,
     [USER_NOT_FOUND]: StatusCodes.NOT_FOUND,
     [USER_ACTIVATED]: StatusCodes.CREATED,
@@ -38,9 +34,7 @@ module.exports = {
     [PASSWORD_HASHING_ERROR]: StatusCodes.INTERNAL_SERVER_ERROR,
     [MISSING_PARAMETERS]: StatusCodes.BAD_REQUEST,
     [USER_ALREADY_ACTIVATED]: StatusCodes.CONFLICT,
-=======
     [USER_CRUD_SUCCESSFUL]: StatusCodes.OK,
     [USER_ALREADY_EXISTS]: StatusCodes.INTERNAL_SERVER_ERROR,
     [USER_DOES_NOT_EXIST]: StatusCodes.INTERNAL_SERVER_ERROR
->>>>>>> c06b256 (Cleaning code (adding statuses from config, removing logs....))
 }
