@@ -5,7 +5,7 @@ const { StatusCodes } = require('http-status-codes')
 const { secret } = require('../config/auth.config')
 
 module.exports.authMiddleware = (req, res, next) => {
-    const bearerHeader = req.headers['Authorization']
+    const bearerHeader = req.headers['authorization']
 
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ')
@@ -13,15 +13,13 @@ module.exports.authMiddleware = (req, res, next) => {
 
         jwt.verify(bearerToken, secret, (err) => {
             if (err) {
-                res.sendStatus(StatusCodes.UNAUTHORIZED)
+                return res.sendStatus(StatusCodes.UNAUTHORIZED)
             } else {
                 next()
             }
         })
-
-        next()
     } else {
-        res.sendStatus(StatusCodes.UNAUTHORIZED)
+        return res.sendStatus(StatusCodes.UNAUTHORIZED)
     }
 }
 

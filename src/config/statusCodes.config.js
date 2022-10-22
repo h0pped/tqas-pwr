@@ -18,6 +18,12 @@ const {
     USER_CRUD_SUCCESSFUL,
     USER_ALREADY_EXISTS,
     USER_DOES_NOT_EXIST
+    MEMBER_ADDED,
+    ALREADY_A_MEMBER,
+    USER_DOES_NOT_EXIST,
+    MEMBER_REMOVED,
+    MEMEBER_DOES_NOT_EXIST,
+    ID_NOT_PROVIDED,
 } = responseMessages
 
 module.exports = {
@@ -37,4 +43,10 @@ module.exports = {
     [USER_CRUD_SUCCESSFUL]: StatusCodes.OK,
     [USER_ALREADY_EXISTS]: StatusCodes.INTERNAL_SERVER_ERROR,
     [USER_DOES_NOT_EXIST]: StatusCodes.INTERNAL_SERVER_ERROR
+    [MEMBER_ADDED]: StatusCodes.OK,
+    [ALREADY_A_MEMBER]: StatusCodes.CONFLICT,
+    [USER_DOES_NOT_EXIST]: StatusCodes.NOT_FOUND,
+    [MEMBER_REMOVED]: StatusCodes.OK,
+    [MEMEBER_DOES_NOT_EXIST]: StatusCodes.NOT_FOUND,
+    [ID_NOT_PROVIDED]: StatusCodes.BAD_REQUEST
 }
