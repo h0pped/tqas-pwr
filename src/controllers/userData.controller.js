@@ -46,7 +46,6 @@ module.exports.updateUser = async (req, res) => {
             },
         ],
     })
-    console.log(foundUser.dataValues)
     foundUser.set({
         first_name: req.body.first_name,
         last_name: req.body.last_name,
