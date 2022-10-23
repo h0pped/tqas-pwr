@@ -5,13 +5,13 @@ style="
   margin: 0;
   width: 100%;
   height: 100%;
-  font-family: sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 "
 >
 <div>
   <header
     style="
-      background-color: #d9372a;
+      background: linear-gradient( 0deg, rgb(118, 37, 30) 0%, rgba(217, 55, 42, 1) 100% );
       color: white;
       flex-direction: column;
       padding: 20px;
@@ -20,8 +20,7 @@ style="
     <h1 style="font-size: 28; margin-bottom: 30px; text-align: center">
       Teaching Quality Assurance System
     </h1>
-  
-    <h4 style="font-size: 16; margin-bottom: 30px; text-align: center; color:white;">
+    <h4 style="font-size: 22; margin-bottom: 30px; text-align: center; color:white">
       Faculty of Computer Science And Telecommunication
     </h4>
   </header>
@@ -41,21 +40,21 @@ style="
         Hello ${name},
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.2rem; color: black">
+      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
         We received a request to activate your account
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.2rem; color: black">
+      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
         Your code: ${code}
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.2rem; color: black">
+      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
         If you did not send a request to activate your account, please,
         disregard this email and do not share the activation code with
         anybody.
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.2rem; color: black">
+      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
         If you have any issues with account activation, please contact
         administrator using following email address:
         <a href="mailto:sekretariat.wit@pwr.edu.pl ">
@@ -66,4 +65,5 @@ style="
   </section>
 </div>
 </body>
+
 `
