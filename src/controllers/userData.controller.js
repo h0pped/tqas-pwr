@@ -4,7 +4,8 @@ const {
     responseMessages: {
         USER_CRUD_SUCCESSFUL,
         USER_ALREADY_EXISTS,
-        USER_DOES_NOT_EXIST
+        USER_DOES_NOT_EXIST,
+        INVALID_USER_DATA
     },
 } = require('../config/index.config')
 
@@ -82,10 +83,14 @@ module.exports.createUser = async (req, res) => {
             last_evaluated_date: req.body.last_evaluated_date,
         })
         user.setEvaluatee(evaluatee)
-        user.data.evaluatee = evaluatee.dataValues
-        return res.status(StatusCodes[USER_CRUD_SUCCESSFUL]).send({message: USER_CRUD_SUCCESSFUL, userId: user.data.id})
+        return res.status(StatusCodes[USER_CRUD_SUCCESSFUL]).send({message: USER_CRUD_SUCCESSFUL, userId: user.dataValues.id})
     } catch (err) {
-        return res.status(StatusCodes[USER_ALREADY_EXISTS]).send({message: USER_ALREADY_EXISTS})
+        if (err.name == 'SequelizeUniqueConstraintError') {
+            return res.status(StatusCodes[USER_ALREADY_EXISTS]).send({message: USER_ALREADY_EXISTS})
+        }
+        else {
+            return res.status(StatusCodes[INVALID_USER_DATA]).send({message: INVALID_USER_DATA})
+        }
     }
 }
 
