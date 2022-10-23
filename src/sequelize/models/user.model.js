@@ -34,5 +34,5 @@ module.exports = (sequelize) => {
         user_type: {
             type: DataTypes.STRING,
             allowNull: false
-        }});
+        }}, {paranoid: true});
 };
