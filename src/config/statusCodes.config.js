@@ -23,6 +23,7 @@ const {
     MEMBER_REMOVED,
     MEMEBER_DOES_NOT_EXIST,
     ID_NOT_PROVIDED,
+    INVALID_USER_DATA
 } = responseMessages
 
 module.exports = {
@@ -47,5 +48,6 @@ module.exports = {
     [USER_DOES_NOT_EXIST]: StatusCodes.NOT_FOUND,
     [MEMBER_REMOVED]: StatusCodes.OK,
     [MEMEBER_DOES_NOT_EXIST]: StatusCodes.NOT_FOUND,
-    [ID_NOT_PROVIDED]: StatusCodes.BAD_REQUEST
+    [ID_NOT_PROVIDED]: StatusCodes.BAD_REQUEST,
+    [INVALID_USER_DATA]: StatusCodes.BAD_REQUEST
 }
