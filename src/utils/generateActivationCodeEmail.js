@@ -21,7 +21,7 @@ style="
       Teaching Quality Assurance System
     </h1>
     <h4 style="font-size: 22; margin-bottom: 30px; text-align: center; color:white">
-      Faculty of Computer Science And Telecommunication
+      Faculty of Information and Communication Technology
     </h4>
   </header>
   <section>
