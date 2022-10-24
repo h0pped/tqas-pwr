@@ -88,9 +88,7 @@ module.exports.createUser = async (req, res) => {
         if (err.name == 'SequelizeUniqueConstraintError') {
             return res.status(StatusCodes[USER_ALREADY_EXISTS]).send({message: USER_ALREADY_EXISTS})
         }
-        else {
-            return res.status(StatusCodes[INVALID_USER_DATA]).send({message: INVALID_USER_DATA})
-        }
+        return res.status(StatusCodes[INVALID_USER_DATA]).send({message: INVALID_USER_DATA})
     }
 }
 
