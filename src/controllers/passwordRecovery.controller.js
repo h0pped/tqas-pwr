@@ -84,7 +84,7 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
                 await hashedCodeFromDb.save()
                 try {
                     sendMail(
-                        'notawril@gmail.com',
+                        user.email,
                         'TQAS - Recover your password',
                         generatePasswordRecoveryEmail(
                             `${user.first_name} ${user.last_name}`,
@@ -117,7 +117,7 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
                         code: hash,
                     })
                     sendMail(
-                        'notawril@gmail.com',
+                        user.email,
                         'TQAS - Recover your password',
                         generatePasswordRecoveryEmail(
                             `${user.first_name} ${user.last_name}`,
