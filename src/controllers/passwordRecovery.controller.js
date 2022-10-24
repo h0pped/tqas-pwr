@@ -14,11 +14,14 @@ const {
     },
 } = require('../config/index.config')
 const StatusCodes = require('../config/statusCodes.config')
+
 const { activationCodeHashRounds } = require('../config/index.config')
+const { sendMail } = require('../mailer')
 
 const generateNumber = require('../utils/generateNumber')
 const compareTimestamps = require('../utils/compareTimestamps')
 const generateHash = require('../utils/generateHash')
+const generatePasswordRecoveryEmail = require('../utils/generatePasswordRecoveryEmail')
 
 const sequelize = require('../sequelize')
 const UserModel = sequelize.models.user
@@ -64,7 +67,7 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
         return res.send({ msg: 'recovery code was already sent' })
     }
 
-    const code = generateNumber(1000, 9999).toString()
+    const code = generateNumber(1000, 9000).toString()
     if (
         hashedCodeFromDb &&
         !compareTimestamps(
@@ -79,12 +82,23 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
             async (hash) => {
                 hashedCodeFromDb.code = hash
                 await hashedCodeFromDb.save()
-                console.log('-----------------------------------')
-                console.log(code)
-                console.log('-----------------------------------')
-                return res
-                    .status(StatusCodes[RECOVERY_CODE_SEND])
-                    .send({ msg: RECOVERY_CODE_SEND, email, hash })
+                try {
+                    sendMail(
+                        'notawril@gmail.com',
+                        'TQAS - Recover your password',
+                        generatePasswordRecoveryEmail(
+                            `${user.first_name} ${user.last_name}`,
+                            code
+                        )
+                    )
+                    return res
+                        .status(StatusCodes[RECOVERY_CODE_SEND])
+                        .send({ msg: RECOVERY_CODE_SEND, email, hash })
+                } catch (err) {
+                    return res
+                        .status(StatusCodes[CODE_HASHING_ERROR])
+                        .send({ msg: CODE_HASHING_ERROR })
+                }
             },
             () => {
                 return res
@@ -97,13 +111,24 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
             code,
             activationCodeHashRounds,
             async (hash) => {
-                await RecoveryCode.create({
-                    userId: user.id,
-                    code: hash,
-                })
-                console.log('-----------------------------------')
-                console.log(code)
-                console.log('-----------------------------------')
+                try {
+                    await RecoveryCode.create({
+                        userId: user.id,
+                        code: hash,
+                    })
+                    sendMail(
+                        'notawril@gmail.com',
+                        'TQAS - Recover your password',
+                        generatePasswordRecoveryEmail(
+                            `${user.first_name} ${user.last_name}`,
+                            code
+                        )
+                    )
+                } catch (err) {
+                    return res
+                        .status(StatusCodes[CODE_HASHING_ERROR])
+                        .send({ msg: CODE_HASHING_ERROR })
+                }
                 return res
                     .status(StatusCodes[RECOVERY_CODE_SEND])
                     .send({ msg: RECOVERY_CODE_SEND, email, hash })
