@@ -2,8 +2,6 @@ const sequelize = require('../sequelize')
 const excelToJson = require('convert-excel-to-json')
 const isEmail = require('../utils/validateEmail')
 
-
-
 const User = sequelize.models.user
 const Evaluatee = sequelize.models.evaluatee
 
@@ -37,7 +35,7 @@ module.exports.appendUsers = async (req, res) => {
             })
         }
     } catch (err) {
-        return res.status(500).send({err})
+        return res.status(500).send({ err })
     }
 }
 async function parse_csv(file) {
@@ -54,7 +52,7 @@ async function parse_csv(file) {
                 first_name: props[1],
                 last_name: props[2],
                 academic_title: props[0],
-                email: props[3],
+                email: props[3].toLowerCase(),
                 password: null,
                 account_status: 'inactive',
                 status_date: Date.now(),
@@ -90,41 +88,39 @@ async function parse_excel(buffer) {
             continue
         }
         try {
-        const user_identifier = await User.upsert(
-            {
-                first_name: arr[i].B,
-                last_name: arr[i].C,
-                academic_title: arr[i].A,
-                email: arr[i].D,
-                password: null,
-                account_status: 'inactive',
-                status_date: Date.now(),
-                user_type: arr[i].E,
-            },
-            {
-                fields: [
-                    'first_name',
-                    'last_name',
-                    'academic_title',
-                    'user_type',
-                ],
-                conflictFields: ['email'],
-            }
-        )
-        await Evaluatee.upsert(
-            {
-                userId: user_identifier[0].get('id'),
-                last_evaluated_date: arr[i].F,
-            },
-            {
-                fields: ['last_evaluated_date'],
-                conflictFields: ['userId'],
-            }
-        )
-    }
-    catch(err){
-        console.log(err)
-    }
+            const user_identifier = await User.upsert(
+                {
+                    first_name: arr[i].B,
+                    last_name: arr[i].C,
+                    academic_title: arr[i].A,
+                    email: arr[i].D.toLowerCase(),
+                    password: null,
+                    account_status: 'inactive',
+                    status_date: Date.now(),
+                    user_type: arr[i].E,
+                },
+                {
+                    fields: [
+                        'first_name',
+                        'last_name',
+                        'academic_title',
+                        'user_type',
+                    ],
+                    conflictFields: ['email'],
+                }
+            )
+            await Evaluatee.upsert(
+                {
+                    userId: user_identifier[0].get('id'),
+                    last_evaluated_date: arr[i].F,
+                },
+                {
+                    fields: ['last_evaluated_date'],
+                    conflictFields: ['userId'],
+                }
+            )
+        } catch (err) {
+            console.log(err)
+        }
     }
 }
-
