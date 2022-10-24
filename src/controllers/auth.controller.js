@@ -20,14 +20,19 @@ const {
         MISSING_PARAMETERS,
         PASSWORD_HASHING_ERROR,
         USER_ALREADY_ACTIVATED,
+        EMAIL_SENDING_ERROR,
     },
 } = require('../config/index.config')
+
+const { sendMail } = require('../mailer')
 
 const compareTimestamps = require('../utils/compareTimestamps')
 const generateHash = require('../utils/generateHash')
 const generateNumber = require('../utils/generateNumber')
+const generateActivationCodeEmail = require('../utils/generateActivationCodeEmail')
 
 const sequelize = require('../sequelize')
+
 const UserModel = sequelize.models.user
 const ActivationCode = sequelize.models.activation_code
 
@@ -40,7 +45,8 @@ module.exports.signIn = async (req, res) => {
         if (req.user) {
             throw new Error(ALREADY_LOGGED_IN)
         } else {
-            const { email, password } = req.body
+            const { email: bodyEmail, password } = req.body
+            const email = bodyEmail.toLowerCase()
             if (!email || !password) {
                 throw new Error(MISSING_PARAMETERS)
             }
@@ -73,7 +79,8 @@ module.exports.signIn = async (req, res) => {
 }
 
 module.exports.sendCode = async (req, res) => {
-    const { email } = req.body
+    const { email: bodyEmail } = req.body
+    const email = bodyEmail.toLowerCase()
     if (!email.endsWith('pwr.edu.pl')) {
         return res
             .status(StatusCodes[WRONG_EMAIL_SYNTAX])
@@ -126,9 +133,20 @@ module.exports.sendCode = async (req, res) => {
             async (hash) => {
                 hashedCodeFromDb.code = hash
                 await hashedCodeFromDb.save()
-                console.log('-----------------------------------')
-                console.log(code)
-                console.log('-----------------------------------')
+                try {
+                    await sendMail(
+                        user.email,
+                        'TQAS - Activation code',
+                        generateActivationCodeEmail(
+                            `${user.first_name} ${user.last_name}`,
+                            code
+                        )
+                    )
+                } catch (err) {
+                    return res
+                        .status(StatusCodes[EMAIL_SENDING_ERROR])
+                        .send({ msg: EMAIL_SENDING_ERROR })
+                }
                 return res
                     .status(StatusCodes[ACTIVATION_CODE_SEND])
                     .send({ msg: ACTIVATION_CODE_SEND, email, hash })
@@ -148,9 +166,21 @@ module.exports.sendCode = async (req, res) => {
                     userId: user.id,
                     code: hash,
                 })
-                console.log('-----------------------------------')
-                console.log(code)
-                console.log('-----------------------------------')
+                try {
+                    await sendMail(
+                        'notawril@gmail.com',
+                        'TQAS - Activation code',
+                        generateActivationCodeEmail(
+                            `${user.first_name} ${user.last_name}`,
+                            code
+                        )
+                    )
+                } catch (err) {
+                    return res
+                        .status(StatusCodes[EMAIL_SENDING_ERROR])
+                        .send({ msg: EMAIL_SENDING_ERROR })
+                }
+
                 return res
                     .status(StatusCodes[ACTIVATION_CODE_SEND])
                     .send({ msg: ACTIVATION_CODE_SEND, email, hash })
@@ -165,7 +195,8 @@ module.exports.sendCode = async (req, res) => {
 }
 
 module.exports.verifyCode = async (req, res) => {
-    const { email, code } = req.body
+    const { email: bodyEmail, code } = req.body
+    const email = bodyEmail.toLowerCase()
     const user = await UserModel.findOne({
         where: {
             email,
@@ -190,7 +221,8 @@ module.exports.verifyCode = async (req, res) => {
 }
 
 module.exports.activateAccount = async (req, res) => {
-    const { email, password, code } = req.body
+    const { email: bodyEmail, password, code } = req.body
+    const email = bodyEmail.toLowerCase()
     if (!email.endsWith('pwr.edu.pl')) {
         return res
             .status(StatusCodes[WRONG_EMAIL_SYNTAX])
