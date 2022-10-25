@@ -45,6 +45,8 @@ const config = {
         RECOVERY_CODE_SEND: 'Recovery code was send',
         WRONG_RECOVERY_CODE: 'Wrong recovery code',
         PASSWORD_CHANGED: 'Password was changed',
+        RECOVERY_CODE_BLOCKED:
+            'Recovery code is blocked. Try again in 15 minutes',
     },
 }
 

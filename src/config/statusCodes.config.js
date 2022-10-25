@@ -28,6 +28,7 @@ const {
     RECOVERY_CODE_SEND,
     WRONG_RECOVERY_CODE,
     PASSWORD_CHANGED,
+    RECOVERY_CODE_BLOCKED,
 } = responseMessages
 
 module.exports = {
@@ -58,4 +59,5 @@ module.exports = {
     [RECOVERY_CODE_SEND]: StatusCodes.OK,
     [WRONG_RECOVERY_CODE]: StatusCodes.BAD_REQUEST,
     [PASSWORD_CHANGED]: StatusCodes.OK,
+    [RECOVERY_CODE_BLOCKED]: StatusCodes.METHOD_NOT_ALLOWED,
 }

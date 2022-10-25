@@ -11,6 +11,7 @@ const {
         PASSWORD_HASHING_ERROR,
         PASSWORD_CHANGED,
         PASSWORD_REQUIRED,
+        RECOVERY_CODE_BLOCKED,
     },
 } = require('../config/index.config')
 const StatusCodes = require('../config/statusCodes.config')
@@ -56,8 +57,15 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
             userId: user.id,
         },
     })
+    if (hashedCodeFromDb.number_of_attempts > 3) {
+        return res.status(StatusCodes[RECOVERY_CODE_BLOCKED]).send({
+            message: RECOVERY_CODE_BLOCKED,
+        })
+    }
     if (
         hashedCodeFromDb &&
+        !hashedCodeFromDb.is_used &&
+        hashedCodeFromDb.number_of_attempts <= 3 &&
         compareTimestamps(
             Date.now(),
             hashedCodeFromDb.updatedAt,
@@ -70,6 +78,8 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
     const code = generateNumber(1000, 9000).toString()
     if (
         hashedCodeFromDb &&
+        !hashedCodeFromDb.is_used &&
+        hashedCodeFromDb.number_of_attempts <= 3 &&
         !compareTimestamps(
             Date.now(),
             hashedCodeFromDb.updatedAt,
@@ -165,6 +175,8 @@ module.exports.verifyRecoveryCode = async (req, res) => {
         },
     })
     if (!(await bcrypt.compare(code, hash.code))) {
+        hash.number_of_attempts += 1
+        await hash.save()
         return res
             .status(StatusCodes[WRONG_RECOVERY_CODE])
             .send({ msg: WRONG_RECOVERY_CODE })
