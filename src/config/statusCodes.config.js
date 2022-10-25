@@ -24,7 +24,10 @@ const {
     MEMBER_REMOVED,
     MEMEBER_DOES_NOT_EXIST,
     ID_NOT_PROVIDED,
-    INVALID_USER_DATA
+    INVALID_USER_DATA,
+    RECOVERY_CODE_SEND,
+    WRONG_RECOVERY_CODE,
+    PASSWORD_CHANGED,
 } = responseMessages
 
 module.exports = {
@@ -51,5 +54,8 @@ module.exports = {
     [MEMBER_REMOVED]: StatusCodes.OK,
     [MEMEBER_DOES_NOT_EXIST]: StatusCodes.NOT_FOUND,
     [ID_NOT_PROVIDED]: StatusCodes.BAD_REQUEST,
-    [INVALID_USER_DATA]: StatusCodes.BAD_REQUEST
+    [INVALID_USER_DATA]: StatusCodes.BAD_REQUEST,
+    [RECOVERY_CODE_SEND]: StatusCodes.OK,
+    [WRONG_RECOVERY_CODE]: StatusCodes.BAD_REQUEST,
+    [PASSWORD_CHANGED]: StatusCodes.OK,
 }

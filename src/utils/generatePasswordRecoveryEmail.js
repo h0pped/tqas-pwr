@@ -1,4 +1,5 @@
-module.exports = (name, code) => `<body
+module.exports = (name, code) =>
+    `<body
 style="
   box-sizing: border-box;
   padding: 0;
@@ -21,7 +22,7 @@ style="
       Teaching Quality Assurance System
     </h1>
     <h4 style="font-size: 22; margin-bottom: 30px; text-align: center; color:white">
-      Faculty of Information and Communication Technology
+    Faculty of Information and Communication Technology
     </h4>
   </header>
   <section>
@@ -41,7 +42,7 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1.1rem; color: black">
-        We received a request to activate your account
+        We received a password recovery request for your account
       </p>
 
       <p style="line-height: 2rem; font-size: 1.1rem; color: black">
@@ -49,13 +50,13 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1.1rem; color: black">
-        If you did not send a request to activate your account, please,
-        disregard this email and do not share the activation code with
+        If you did not send a request password recovery, please,
+        disregard this email and do not share the code with
         anybody.
       </p>
 
       <p style="line-height: 2rem; font-size: 1.1rem; color: black">
-        If you have any issues with account activation, please contact
+        If you have any issues with password recovery process, please contact
         administrator using following email address:
         <a href="mailto:sekretariat.wit@pwr.edu.pl ">
           sekretariat.wit@pwr.edu.pl</a
@@ -65,5 +66,4 @@ style="
   </section>
 </div>
 </body>
-
 `
