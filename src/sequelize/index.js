@@ -2,6 +2,7 @@ const { Sequelize } = require('sequelize')
 const { database } = require('../config/database.config')
 
 const sequelize = new Sequelize(database, {
+    dialect: 'postgres',
     dialectOptions: {
         ssl: {
             require: true,
