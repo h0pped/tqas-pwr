@@ -54,11 +54,11 @@ module.exports.updateUser = async (req, res) => {
         user_type: req.body.user_type,
         email: req.body.email,
     })
-    const date_evaluated = req.body.last_evaluated_date.replace(".", "/").replace("-", "/").split("/")
+    const date_evaluated = req.body.last_evaluated_date.replaceAll(".", "/").replaceAll("-", "/").split("/")
+    await foundUser.save()
     foundUser.evaluatee.set({
         last_evaluated_date: new Date(date_evaluated[2], -1 + Number(date_evaluated[1]), date_evaluated[0]).toISOString(),
     })
-    await foundUser.save()
     await foundUser.evaluatee.save()
     return res.status(StatusCodes[USER_CRUD_SUCCESSFUL]).send({message: USER_CRUD_SUCCESSFUL, user: foundUser.dataValues})
 }
