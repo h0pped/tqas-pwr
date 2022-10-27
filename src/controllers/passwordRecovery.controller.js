@@ -17,7 +17,7 @@ const {
 } = require('../config/index.config')
 const StatusCodes = require('../config/statusCodes.config')
 
-const { server } = require('../config/index.config')
+const { server, recovery } = require('../config/index.config')
 
 const { sendMail } = require('../mailer')
 
@@ -99,9 +99,9 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
         compareTimestamps(
             Date.now(),
             hashedCodeFromDb.updatedAt,
-            15 * 60 * 1000
+            recovery.recoveryTime * 60 * 1000
         ) &&
-        hashedCodeFromDb.attempts_number <= 3 &&
+        hashedCodeFromDb.attempts_number <= recovery.attemptsNumber &&
         hashedCodeFromDb.is_used === false
     ) {
         return res.status(StatusCodes[RECOVERY_CODE_SEND]).send({
@@ -114,9 +114,9 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
         compareTimestamps(
             Date.now(),
             hashedCodeFromDb.updatedAt,
-            15 * 60 * 1000
+            recovery.recoveryTime * 60 * 1000
         ) &&
-        (hashedCodeFromDb.attempts_number > 3 ||
+        (hashedCodeFromDb.attempts_number > recovery.attemptsNumber ||
             hashedCodeFromDb.is_used === true)
     ) {
         return res.status(StatusCodes[RECOVERY_CODE_BLOCKED]).send({
@@ -127,7 +127,7 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
         !compareTimestamps(
             Date.now(),
             hashedCodeFromDb.updatedAt,
-            15 * 60 * 1000
+            recovery.recoveryTime * 60 * 1000
         )
     ) {
         generateHash(
@@ -194,13 +194,17 @@ module.exports.verifyRecoveryCode = async (req, res) => {
     if (
         hash &&
         !hash.is_used &&
-        compareTimestamps(Date.now(), hash.updatedAt, 15 * 60 * 1000)
+        compareTimestamps(
+            Date.now(),
+            hash.updatedAt,
+            recovery.recoveryTime * 60 * 1000
+        )
     ) {
         if (!(await bcrypt.compare(code, hash.code))) {
             hash.attempts_number += 1
             await hash.save()
 
-            if (hash.attempts_number > 3) {
+            if (hash.attempts_number > recovery.attemptsNumber) {
                 return res
                     .status(StatusCodes[RECOVERY_CODE_BLOCKED])
                     .send({ msg: RECOVERY_CODE_BLOCKED })

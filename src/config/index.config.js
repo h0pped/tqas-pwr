@@ -4,12 +4,18 @@ const config = {
     server: {
         port: process.env.PORT || 8080,
         activationCodeSalt: process.env.ACTIVATION_CODE_SALT || 'saltsalt',
-        activationCodeHashRounds: process.env.ACTIVATION_CODE_SALT_ROUND || 10,
+        activationCodeHashRounds:
+            Number(process.env.ACTIVATION_CODE_SALT_ROUND) || 10,
     },
     auth: {
         jwtSecretKey: process.env.JWT_SECRET_KEY || 'secret',
         jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2d',
         databaseUrl: process.env.DATABASE_URL || 'database_url',
+    },
+    recovery: {
+        recoveryTime: Number(process.env.PASSWORD_RECOVERY_TIME_MINUTES) || 15,
+        attemptsNumber:
+            Number(process.env.PASSWORD_RECOVERY_ATTEMPTS_NUMBER) || 3,
     },
     mailer: {
         service: 'Gmail',
