@@ -45,6 +45,7 @@ const config = {
         RECOVERY_CODE_SEND: 'Recovery code was send',
         WRONG_RECOVERY_CODE: 'Wrong recovery code',
         PASSWORD_CHANGED: 'Password was changed',
+        EMAIL_ALREADY_EXISTS: 'User with such email already exists'
     },
 }
 

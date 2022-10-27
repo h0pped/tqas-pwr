@@ -6,6 +6,7 @@ const {
         USER_ALREADY_EXISTS,
         USER_DOES_NOT_EXIST,
         INVALID_USER_DATA,
+        EMAIL_ALREADY_EXISTS,
     },
 } = require('../config/index.config')
 
@@ -55,23 +56,31 @@ module.exports.updateUser = async (req, res) => {
             user_type: req.body.user_type,
             email: req.body.email,
         })
-        const date_evaluated = req.body.last_evaluated_date
-            .replaceAll('.', '/')
-            .replaceAll('-', '/')
-            .split('/')
         await foundUser.save()
-        foundUser.evaluatee.set({
-            last_evaluated_date: new Date(
-                date_evaluated[2],
-                -1 + Number(date_evaluated[1]),
-                date_evaluated[0]
-            ).toISOString(),
-        })
-        await foundUser.evaluatee.save()
+        if (req.body.last_evaluated_date) {
+            const dateEvaluated = req.body.last_evaluated_date
+                .replaceAll('.', '/')
+                .replaceAll('-', '/')
+                .split('/')
+            foundUser.evaluatee.set({
+                last_evaluated_date: new Date(
+                    dateEvaluated[2],
+                    Number(dateEvaluated[1]) - 1,
+                    dateEvaluated[0]
+                ).toISOString(),
+            })
+            await foundUser.evaluatee.save()
+        }
         return res
             .status(StatusCodes[USER_CRUD_SUCCESSFUL])
             .send({ message: USER_CRUD_SUCCESSFUL, user: foundUser.dataValues })
     } catch (err) {
+        if (err.name == 'SequelizeUniqueConstraintError') {
+            return res.status(
+                StatusCodes[EMAIL_ALREADY_EXISTS]).send({
+                    message: EMAIL_ALREADY_EXISTS,
+                })
+        }
         return res
             .status(StatusCodes[USER_DOES_NOT_EXIST])
             .send({ message: USER_DOES_NOT_EXIST })
@@ -121,6 +130,7 @@ module.exports.deleteUser = async (req, res) => {
         if (usr.wzhz) {
             usr.wzhz.destroy()
         }
+        
         const user = await User.destroy({
             where: {
                 id: req.body.id,

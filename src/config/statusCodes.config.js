@@ -28,6 +28,7 @@ const {
     RECOVERY_CODE_SEND,
     WRONG_RECOVERY_CODE,
     PASSWORD_CHANGED,
+    EMAIL_ALREADY_EXISTS,
 } = responseMessages
 
 module.exports = {
@@ -58,4 +59,5 @@ module.exports = {
     [RECOVERY_CODE_SEND]: StatusCodes.OK,
     [WRONG_RECOVERY_CODE]: StatusCodes.BAD_REQUEST,
     [PASSWORD_CHANGED]: StatusCodes.OK,
+    [EMAIL_ALREADY_EXISTS]: StatusCodes.CONFLICT
 }
