@@ -12,6 +12,7 @@ const {
 
 const User = sequelize.models.user
 const Evaluatee = sequelize.models.evaluatee
+const Wzhz = sequelize.models.wzhz
 
 module.exports.getUsers = async (req, res) => {
     const users = await User.findAll({
@@ -119,6 +120,17 @@ module.exports.createUser = async (req, res) => {
 
 module.exports.deleteUser = async (req, res) => {
     try {
+        const usr = await User.findOne({
+            where: {
+                id: req.body.id,
+            },
+            include: [{ model: Wzhz }],
+        })
+        // Softdelete on product table
+        if (usr.wzhz) {
+            usr.wzhz.destroy()
+        }
+        
         const user = await User.destroy({
             where: {
                 id: req.body.id,
