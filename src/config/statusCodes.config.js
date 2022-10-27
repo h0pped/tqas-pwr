@@ -30,6 +30,7 @@ const {
     PASSWORD_CHANGED,
     RECOVERY_CODE_BLOCKED,
     RECOVERY_CODE_NOT_FOUND,
+    EMAIL_ALREADY_EXISTS,
 } = responseMessages
 
 module.exports = {
@@ -62,4 +63,5 @@ module.exports = {
     [PASSWORD_CHANGED]: StatusCodes.OK,
     [RECOVERY_CODE_BLOCKED]: StatusCodes.METHOD_NOT_ALLOWED,
     [RECOVERY_CODE_NOT_FOUND]: StatusCodes.NOT_FOUND,
+    [EMAIL_ALREADY_EXISTS]: StatusCodes.CONFLICT
 }

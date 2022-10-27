@@ -54,6 +54,7 @@ const config = {
         PASSWORD_CHANGED: 'Password was changed',
         RECOVERY_CODE_BLOCKED: 'Recovery code is blocked',
         RECOVERY_CODE_NOT_FOUND: "Recovery code doesn't exist",
+        EMAIL_ALREADY_EXISTS: 'User with such email already exists'
     },
 }
 
