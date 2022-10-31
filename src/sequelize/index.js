@@ -51,7 +51,7 @@ sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
     through: sequelize.models.evaluation_team,
 })
 sequelize.models.evaluatee.hasMany(sequelize.models.evaluated_class, {
-    foreignKey: { name: 'subject_code' },
+    foreignKey: { name: 'evaluatee_id' },
 })
 sequelize.models.evaluated_class.hasMany(sequelize.models.evaluation, {
     foreignKey: { name: 'subject_code' },
