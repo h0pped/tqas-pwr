@@ -34,6 +34,7 @@ const modelDefiners = [
     require('./models/recovery_code.model'),
     require('./models/user.model'),
     require('./models/wzhz.model'),
+    require('./models/assessment.model')
 ]
 
 for (const modelDefiner of modelDefiners) {
@@ -49,14 +50,19 @@ sequelize.models.user.hasOne(sequelize.models.evaluatee, {
 sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
     through: sequelize.models.evaluation_team,
 })
-sequelize.models.evaluatee.hasMany(sequelize.models.evaluated_class)
-sequelize.models.evaluated_class.hasMany(sequelize.models.evaluation)
+sequelize.models.evaluatee.hasMany(sequelize.models.evaluated_class, {
+    foreignKey: { name: 'subject_code' },
+})
+sequelize.models.evaluated_class.hasMany(sequelize.models.evaluation, {
+    foreignKey: { name: 'subject_code' },
+})
 sequelize.models.protocol_question.belongsTo(sequelize.models.protocol)
 sequelize.models.protocol_question.belongsTo(sequelize.models.question)
 sequelize.models.evaluation.hasOne(sequelize.models.protocol)
 sequelize.models.evaluation.belongsToMany(sequelize.models.protocol_question, {
     through: sequelize.models.protocol_answer,
 })
+sequelize.models.evaluation.belongsTo(sequelize.models.assessment)
 sequelize.models.question.hasMany(sequelize.models.answer_option)
 sequelize.sync()
 console.log('All models were synced!')
