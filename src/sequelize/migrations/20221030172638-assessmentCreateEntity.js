@@ -26,7 +26,7 @@ module.exports = {
           .then(() =>
               queryInterface.addConstraint('evaluations', {
                   type: 'FOREIGN KEY',
-                  name: 'FK_assessment_of_evaluation', // useful if using queryInterface.removeConstraint
+                  name: 'FK_assessment_of_evaluation',
                   references: {
                       table: 'assessments',
                       field: 'id',
