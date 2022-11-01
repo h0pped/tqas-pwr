@@ -11,11 +11,14 @@ const {
         PASSWORD_HASHING_ERROR,
         PASSWORD_CHANGED,
         PASSWORD_REQUIRED,
+        RECOVERY_CODE_BLOCKED,
+        RECOVERY_CODE_NOT_FOUND,
     },
 } = require('../config/index.config')
 const StatusCodes = require('../config/statusCodes.config')
 
-const { activationCodeHashRounds } = require('../config/index.config')
+const { server, recovery } = require('../config/index.config')
+
 const { sendMail } = require('../mailer')
 
 const generateNumber = require('../utils/generateNumber')
@@ -56,60 +59,11 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
             userId: user.id,
         },
     })
-    if (
-        hashedCodeFromDb &&
-        compareTimestamps(
-            Date.now(),
-            hashedCodeFromDb.updatedAt,
-            15 * 60 * 1000
-        )
-    ) {
-        return res.send({ msg: 'recovery code was already sent' })
-    }
-
     const code = generateNumber(1000, 9000).toString()
-    if (
-        hashedCodeFromDb &&
-        !compareTimestamps(
-            Date.now(),
-            hashedCodeFromDb.updatedAt,
-            15 * 60 * 1000
-        )
-    ) {
+    if (!hashedCodeFromDb) {
         generateHash(
             code,
-            activationCodeHashRounds,
-            async (hash) => {
-                hashedCodeFromDb.code = hash
-                await hashedCodeFromDb.save()
-                try {
-                    sendMail(
-                        user.email,
-                        'TQAS - Recover your password',
-                        generatePasswordRecoveryEmail(
-                            `${user.first_name} ${user.last_name}`,
-                            code
-                        )
-                    )
-                    return res
-                        .status(StatusCodes[RECOVERY_CODE_SEND])
-                        .send({ msg: RECOVERY_CODE_SEND, email, hash })
-                } catch (err) {
-                    return res
-                        .status(StatusCodes[CODE_HASHING_ERROR])
-                        .send({ msg: CODE_HASHING_ERROR })
-                }
-            },
-            () => {
-                return res
-                    .status(StatusCodes[CODE_HASHING_ERROR])
-                    .send({ msg: CODE_HASHING_ERROR })
-            }
-        )
-    } else {
-        generateHash(
-            code,
-            activationCodeHashRounds,
+            Number(server.activationCodeHashRounds),
             async (hash) => {
                 try {
                     await RecoveryCode.create({
@@ -133,12 +87,85 @@ module.exports.sendRecoveryPasswordCode = async (req, res) => {
                     .status(StatusCodes[RECOVERY_CODE_SEND])
                     .send({ msg: RECOVERY_CODE_SEND, email, hash })
             },
+            (err) => {
+                console.log(err)
+                return res
+                    .status(StatusCodes[CODE_HASHING_ERROR])
+                    .send({ msg: CODE_HASHING_ERROR })
+            }
+        )
+    } else if (
+        hashedCodeFromDb &&
+        compareTimestamps(
+            Date.now(),
+            hashedCodeFromDb.updatedAt,
+            recovery.recoveryTime * 60 * 1000
+        ) &&
+        hashedCodeFromDb.attempts_number <= recovery.attemptsNumber &&
+        hashedCodeFromDb.is_used === false
+    ) {
+        return res.status(StatusCodes[RECOVERY_CODE_SEND]).send({
+            msg: RECOVERY_CODE_SEND,
+            email,
+            hash: hashedCodeFromDb.code,
+        })
+    } else if (
+        hashedCodeFromDb &&
+        compareTimestamps(
+            Date.now(),
+            hashedCodeFromDb.updatedAt,
+            recovery.recoveryTime * 60 * 1000
+        ) &&
+        (hashedCodeFromDb.attempts_number > recovery.attemptsNumber ||
+            hashedCodeFromDb.is_used === true)
+    ) {
+        return res.status(StatusCodes[RECOVERY_CODE_BLOCKED]).send({
+            msg: RECOVERY_CODE_BLOCKED,
+        })
+    } else if (
+        hashedCodeFromDb &&
+        !compareTimestamps(
+            Date.now(),
+            hashedCodeFromDb.updatedAt,
+            recovery.recoveryTime * 60 * 1000
+        )
+    ) {
+        generateHash(
+            code,
+            Number(server.activationCodeHashRounds),
+            async (hash) => {
+                try {
+                    hashedCodeFromDb.attempts_number = 1
+                    hashedCodeFromDb.is_used = false
+                    hashedCodeFromDb.code = hash
+                    await hashedCodeFromDb.save()
+                    sendMail(
+                        user.email,
+                        'TQAS - Recover your password',
+                        generatePasswordRecoveryEmail(
+                            `${user.first_name} ${user.last_name}`,
+                            code
+                        )
+                    )
+                } catch (err) {
+                    return res
+                        .status(StatusCodes[CODE_HASHING_ERROR])
+                        .send({ msg: CODE_HASHING_ERROR })
+                }
+                return res
+                    .status(StatusCodes[RECOVERY_CODE_SEND])
+                    .send({ msg: RECOVERY_CODE_SEND, email, hash })
+            },
             () => {
                 return res
                     .status(StatusCodes[CODE_HASHING_ERROR])
                     .send({ msg: CODE_HASHING_ERROR })
             }
         )
+    } else {
+        return res.status(StatusCodes[RECOVERY_CODE_BLOCKED]).send({
+            msg: RECOVERY_CODE_BLOCKED,
+        })
     }
 }
 
@@ -164,12 +191,35 @@ module.exports.verifyRecoveryCode = async (req, res) => {
             userId: user.id,
         },
     })
-    if (!(await bcrypt.compare(code, hash.code))) {
-        return res
-            .status(StatusCodes[WRONG_RECOVERY_CODE])
-            .send({ msg: WRONG_RECOVERY_CODE })
+    if (
+        hash &&
+        !hash.is_used &&
+        compareTimestamps(
+            Date.now(),
+            hash.updatedAt,
+            recovery.recoveryTime * 60 * 1000
+        )
+    ) {
+        if (!(await bcrypt.compare(code, hash.code))) {
+            hash.attempts_number += 1
+            await hash.save()
+
+            if (hash.attempts_number > recovery.attemptsNumber) {
+                return res
+                    .status(StatusCodes[RECOVERY_CODE_BLOCKED])
+                    .send({ msg: RECOVERY_CODE_BLOCKED })
+            }
+            return res
+                .status(StatusCodes[WRONG_RECOVERY_CODE])
+                .send({ msg: WRONG_RECOVERY_CODE })
+        }
+        hash.is_used = true
+        await hash.save()
+        return res.send({ msg: 'Code verified' })
     }
-    return res.send({ msg: 'Code verified' })
+    return res.status(StatusCodes[RECOVERY_CODE_NOT_FOUND]).send({
+        msg: RECOVERY_CODE_NOT_FOUND,
+    })
 }
 
 module.exports.setNewPassword = async (req, res) => {
@@ -211,7 +261,7 @@ module.exports.setNewPassword = async (req, res) => {
     }
     generateHash(
         password,
-        activationCodeHashRounds,
+        Number(server.activationCodeHashRounds),
         async (passwordHash) => {
             user.password = passwordHash
             await user.save()

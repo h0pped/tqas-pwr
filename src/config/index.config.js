@@ -4,12 +4,18 @@ const config = {
     server: {
         port: process.env.PORT || 8080,
         activationCodeSalt: process.env.ACTIVATION_CODE_SALT || 'saltsalt',
-        activationCodeHashRounds: process.env.ACTIVATION_CODE_SALT_ROUND || 10,
+        activationCodeHashRounds:
+            Number(process.env.ACTIVATION_CODE_SALT_ROUND) || 10,
     },
     auth: {
         jwtSecretKey: process.env.JWT_SECRET_KEY || 'secret',
         jwtExpiresIn: process.env.JWT_EXPIRES_IN || '2d',
         databaseUrl: process.env.DATABASE_URL || 'database_url',
+    },
+    recovery: {
+        recoveryTime: Number(process.env.PASSWORD_RECOVERY_TIME_MINUTES) || 15,
+        attemptsNumber:
+            Number(process.env.PASSWORD_RECOVERY_ATTEMPTS_NUMBER) || 3,
     },
     mailer: {
         service: 'Gmail',
@@ -40,11 +46,14 @@ const config = {
         USER_DOES_NOT_EXIST: 'User with provided ID does not exist',
         MEMBER_REMOVED: 'Member was removed from WZHZ group',
         MEMEBER_DOES_NOT_EXIST: 'Such member of WZHZ does not exist',
-        ID_NOT_PROVIDED: 'Id of user is required in order to add it to WZHZ group',
+        ID_NOT_PROVIDED:
+            'Id of user is required in order to add it to WZHZ group',
         INVALID_USER_DATA: 'Invalid user data provided',
         RECOVERY_CODE_SEND: 'Recovery code was send',
         WRONG_RECOVERY_CODE: 'Wrong recovery code',
         PASSWORD_CHANGED: 'Password was changed',
+        RECOVERY_CODE_BLOCKED: 'Recovery code is blocked',
+        RECOVERY_CODE_NOT_FOUND: "Recovery code doesn't exist",
         EMAIL_ALREADY_EXISTS: 'User with such email already exists'
     },
 }
