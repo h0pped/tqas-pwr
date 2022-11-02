@@ -60,4 +60,5 @@ module.exports = {
     [WRONG_RECOVERY_CODE]: StatusCodes.BAD_REQUEST,
     [PASSWORD_CHANGED]: StatusCodes.OK,
     [EMAIL_ALREADY_EXISTS]: StatusCodes.CONFLICT
+
 }

@@ -2,16 +2,13 @@ const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
     sequelize.define('assessment', {
-        start_date: {
-            type: DataTypes.DATE,
-            allowNull: false
-        },
-        end_date : {
-            type: DataTypes.DATE,
-            allowNull: false
-        },
         status: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue: "ongoing"
+        },
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false,
         }});
 };
