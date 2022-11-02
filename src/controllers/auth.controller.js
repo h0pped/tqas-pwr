@@ -58,13 +58,15 @@ module.exports.signIn = async (req, res) => {
             const token = jwt.sign(
                 {
                     email,
+                    first_name: user.first_name,
+                    last_name: user.last_name,
+                    role: user.user_type,
                 },
                 secret,
                 {
                     expiresIn,
                 }
             )
-
             return res.status(StatusCodes[USER_LOGGED_IN]).send({
                 msg: USER_LOGGED_IN,
                 email,
