@@ -12,6 +12,8 @@ const {
         INVALID_ASSESSMENT_PROVIDED,
         LIST_OF_EVALUATED_CLASSES_CREATED,
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
+        CREATE_ASSESSMENT_BAD_REQUEST,
+        ASSESSMENT_CREATED_SUCCESSFULLY,
     },
 } = require('../config/index.config')
 
@@ -67,5 +69,20 @@ module.exports.createListOfClasses = async (req, res) => {
             .send({
                 message: LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
             })
+    }
+}
+
+module.exports.createAssessment = async (req, res) => {
+    try {
+        await Assessment.create({
+            name: req.body.name,
+        })
+        return res.status(StatusCodes[ASSESSMENT_CREATED_SUCCESSFULLY]).send({
+            message: ASSESSMENT_CREATED_SUCCESSFULLY,
+        })
+    } catch (err) {
+        return res.status(StatusCodes[CREATE_ASSESSMENT_BAD_REQUEST]).send({
+            message: CREATE_ASSESSMENT_BAD_REQUEST,
+        })
     }
 }

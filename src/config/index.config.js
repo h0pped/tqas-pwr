@@ -57,7 +57,9 @@ const config = {
         INVALID_EVALUATEE_PROVIDED: 'Evaluatee with a given Id does not exist',
         INVALID_ASSESSMENT_PROVIDED: 'Assessment with the given ID does not exist',
         LIST_OF_EVALUATED_CLASSES_CREATED: 'List of classes created successfully',
-        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Bad reqeust for creating list of evaluated classes'
+        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Bad reqeust for creating list of evaluated classes',
+        CREATE_ASSESSMENT_BAD_REQUEST: 'Bad request for creating assessment',
+        ASSESSMENT_CREATED_SUCCESSFULLY: 'Assessment created successfully'
     },
 }
 
