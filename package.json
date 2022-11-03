@@ -24,11 +24,11 @@
         "express-fileupload": "^1.4.0",
         "g": "^2.0.1",
         "http-status-codes": "^2.2.0",
+        "ics": "^2.41.0",
         "jsonwebtoken": "^8.5.1",
         "nodemailer": "^6.8.0",
         "nodemon": "^2.0.20",
         "pg": "^8.8.0",
-        "rrule": "^2.7.1",
         "sequelize": "^6.25.2",
         "xlsx-to-json": "^0.3.0"
     },
