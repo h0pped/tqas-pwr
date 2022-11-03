@@ -7,21 +7,22 @@ module.exports = {
                   autoIncrement: true,
                   primaryKey: true,
               },
-              start_date: {
-                  type: Sequelize.DATE,
-                  allowNull: false,
-              },
-              end_date: {
-                  type: Sequelize.DATE,
-                  allowNull: false,
-              },
               status: {
                   type: Sequelize.STRING,
                   allowNull: false,
+                  defaultValue: "ongoing"
               },
               name: {
                   type: Sequelize.STRING,
               },
+              createdAt: {
+                type: Sequelize.DATE,
+                allowNull: false
+              },
+              updatedAt: {
+                type: Sequelize.DATE,
+                allowNull: false
+              }
           })
           .then(() =>
               queryInterface.addConstraint('evaluations', {

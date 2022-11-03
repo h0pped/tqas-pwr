@@ -64,4 +64,5 @@ module.exports = {
     [RECOVERY_CODE_BLOCKED]: StatusCodes.METHOD_NOT_ALLOWED,
     [RECOVERY_CODE_NOT_FOUND]: StatusCodes.NOT_FOUND,
     [EMAIL_ALREADY_EXISTS]: StatusCodes.CONFLICT
+
 }
