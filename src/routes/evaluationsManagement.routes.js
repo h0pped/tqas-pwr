@@ -5,8 +5,8 @@ const {
 
 const router = express.Router()
 
-const {createListOfClasses} = require('../controllers/evaluationsManagement.controller.js')
+const {createListOfClasses, setAssessmentSupervisor} = require('../controllers/evaluationsManagement.controller.js')
 
 router.post('/createListOfClasses', authMiddleware, createListOfClasses)
-//router.post('/createAssessment', authMiddleware, createAssessment)
+router.post('/setAssessmentSupervisor', authMiddleware, setAssessmentSupervisor)
 module.exports = router
