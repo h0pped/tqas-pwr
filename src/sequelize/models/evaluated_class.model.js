@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize')
 
 module.exports = (sequelize) => {
     sequelize.define('evaluated_class', {
-        subject_code: {
+        course_code: {
             type: DataTypes.STRING,
             primaryKey: true,
         },

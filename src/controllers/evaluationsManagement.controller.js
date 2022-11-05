@@ -12,20 +12,20 @@ const {
         INVALID_ASSESSMENT_PROVIDED,
         LIST_OF_EVALUATED_CLASSES_CREATED,
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
+        NOT_UNIQUE_COURSE
     },
 } = require('../config/index.config')
 
 module.exports.createListOfClasses = async (req, res) => {
     try {
         for (const [userId, subjectsData] of Object.entries(req.body)) {
-            console.log(userId)
             for (const properties of subjectsData) {
                 const foundEvaluatee = await Evaluatee.findOne({
                     where: {
                         userId: userId,
                     },
                 })
-                if (foundEvaluatee == null) {
+                if (!foundEvaluatee) {
                     return res
                         .status(StatusCodes[INVALID_EVALUATEE_PROVIDED])
                         .send({
@@ -38,7 +38,7 @@ module.exports.createListOfClasses = async (req, res) => {
                     },
                 })
 
-                if (foundAssessment == null) {
+                if (!foundAssessment) {
                     return res
                         .status(StatusCodes[INVALID_ASSESSMENT_PROVIDED])
                         .send({
@@ -46,13 +46,13 @@ module.exports.createListOfClasses = async (req, res) => {
                         })
                 }
                 const evaluatedClass = await EvaluatedClass.upsert({
-                    subject_code: properties.subject_code,
+                    course_code: properties.course_code,
                     course_name: properties.course_name,
                 })
                 await foundEvaluatee.addEvaluated_classes(evaluatedClass[0])
                 const evaluation = await Evaluation.create({
                     details: properties.details,
-                    subject_code: evaluatedClass[0].dataValues.subject_code,
+                    course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
                 })
                 await evaluation.setAssessment(foundAssessment)
@@ -62,6 +62,13 @@ module.exports.createListOfClasses = async (req, res) => {
             message: LIST_OF_EVALUATED_CLASSES_CREATED,
         })
     } catch (err) {
+        if (err.name == 'SequelizeUniqueConstraintError') {
+            return res
+                .status(StatusCodes[NOT_UNIQUE_COURSE])
+                .send({
+                    message: NOT_UNIQUE_COURSE,
+                })
+        }
         return res
             .status(StatusCodes[LIST_OF_EVALUATED_CLASSES_BAD_REQUEST])
             .send({

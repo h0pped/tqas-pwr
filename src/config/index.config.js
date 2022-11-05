@@ -46,7 +46,7 @@ const config = {
         USER_DOES_NOT_EXIST: 'User with provided ID does not exist',
         MEMBER_REMOVED: 'Member was removed from WZHZ group',
         MEMEBER_DOES_NOT_EXIST: 'Such member of WZHZ does not exist',
-        ID_NOT_PROVIDED:'Id of user is required in order to add it to WZHZ group',
+        USER_ID_NOT_PROVIDED:'Id of user is required in order to add it to WZHZ group',
         INVALID_USER_DATA: 'Invalid user data provided',
         RECOVERY_CODE_SEND: 'Recovery code was send',
         WRONG_RECOVERY_CODE: 'Wrong recovery code',
@@ -57,7 +57,9 @@ const config = {
         INVALID_EVALUATEE_PROVIDED: 'Evaluatee with a given Id does not exist',
         INVALID_ASSESSMENT_PROVIDED: 'Assessment with the given ID does not exist',
         LIST_OF_EVALUATED_CLASSES_CREATED: 'List of classes created successfully',
-        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Bad reqeust for creating list of evaluated classes'
+        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Bad reqeust for creating list of evaluated classes',
+        CALLENDAR_ERROR: 'Error while creating callendar file of evaluations',
+        NOT_UNIQUE_COURSE: 'There is a course (or multiple courses) being added multiple times for the same assessment'
     },
 }
 
