@@ -7,13 +7,9 @@ module.exports = (sequelize) => {
             allowNull: false,
             defaultValue: "ongoing"
         },
-        occurrences: {
+        details: {
             type: DataTypes.STRING,
             allowNull: false
-        },
-        place: {
-            type: DataTypes.STRING,
-            allowNull: true,
         },
     })
 }
