@@ -15,19 +15,20 @@ const {
         INVALID_ASSESSMENT_PROVIDED,
         LIST_OF_EVALUATED_CLASSES_CREATED,
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
+        CALLENDAR_ERROR,
     },
 } = require('../config/index.config')
 
 module.exports.createListOfClasses = async (req, res) => {
     try {
-        let cal = []
+        let calendar_rules = []
         for (const [userId, properties] of Object.entries(req.body)) {
             const foundEvaluatee = await Evaluatee.findOne({
                 where: {
                     userId: userId,
                 },
             })
-            if (foundEvaluatee == null) {
+            if (!foundEvaluatee) {
                 return res
                     .status(StatusCodes[INVALID_EVALUATEE_PROVIDED])
                     .send({
@@ -47,7 +48,7 @@ module.exports.createListOfClasses = async (req, res) => {
             )
 
             rule = rule.toString().replace('RRULE:', '')
-            cal.push({
+            calendar_rules.push({
                 title: properties.course_name,
                 busyStatus: 'FREE',
                 start: [
@@ -61,7 +62,7 @@ module.exports.createListOfClasses = async (req, res) => {
                 recurrenceRule: rule,
             })
 
-            if (foundAssessment == null) {
+            if (!foundAssessment) {
                 return res
                     .status(StatusCodes[INVALID_ASSESSMENT_PROVIDED])
                     .send({
@@ -69,22 +70,23 @@ module.exports.createListOfClasses = async (req, res) => {
                     })
             }
             const evaluatedClass = await EvaluatedClass.upsert({
-                subject_code: properties.subject_code,
+                course_code: properties.course_code,
                 course_name: properties.course_name,
             })
             foundEvaluatee.setEvaluated_classes(evaluatedClass[0])
             const evaluation = await Evaluation.create({
                 occurrences: properties.occurrences,
                 place: properties.place,
-                subject_code: evaluatedClass[0].dataValues.subject_code,
+                course_code: evaluatedClass[0].dataValues.course_code,
                 assessmentId: foundAssessment.dataValues.id,
             })
             evaluation.setAssessment(foundAssessment)
         }
-        let message = {}
-        ics.createEvents(cal, (error, value) => {
+        const message = {}
+        ics.createEvents(calendar_rules, (error, value) => {
             if (error) {
-              console.log(error)
+              return res.status(StatusCodes[CALLENDAR_ERROR]).send({
+                message: CALLENDAR_ERROR,})
             }
             message.attachments = [{raw: value}]
             writeFileSync(`${__dirname}/event.ics`, value)
@@ -108,38 +110,38 @@ module.exports.createListOfClasses = async (req, res) => {
     }
 }
 
-function createCalendarRuleString(time, week_day, occurrences, assessmentDate) {
-    let interval = 1
-    let numeric_day
+function createCalendarRuleString(time, weekDay, recurrenceRule, assessmentDate) {
+    let intervalWeeks = 1
+    let numericDay
     let day
-    switch (week_day) {
+    switch (weekDay) {
         case 'mon':
             day = RRule.MO
-            numeric_day = 0
+            numericDay = 0
             break
         case 'tue':
             day = RRule.TU
-            numeric_day = 1
+            numericDay = 1
             break
         case 'wed':
             day = RRule.WE
-            numeric_day = 2
+            numericDay = 2
             break
         case 'thu':
             day = RRule.TH
-            numeric_day = 3
+            numericDay = 3
             break
         case 'fri':
             day = RRule.FR
-            numeric_day = 4
+            numericDay = 4
             break
         case 'sat':
             day = RRule.SA
-            numeric_day = 5
+            numericDay = 5
             break
         case 'sun':
             day = RRule.SU
-            numeric_day = 6
+            numericDay = 6
             break
         default:
             return null
@@ -160,35 +162,34 @@ function createCalendarRuleString(time, week_day, occurrences, assessmentDate) {
         startDate = new Date('10/01/' + year)
         endDate = new Date('03/01/' + (year + 1))
     }
-    console.log(startDate)
 
-    const days = Math.floor(
+    const daysUntilSemesterStarts = Math.floor(
         (startDate - new Date('01/01/' + startDate.getFullYear())) /
             (24 * 60 * 60 * 1000)
     )
-    const oddSemesterStart = Math.ceil(days / 7) % 2 == 1 // check if semester begins with odd or even week
+    const isOddSemesterStart = Math.ceil(daysUntilSemesterStarts / 7) % 2 == 1 // check if semester begins with odd or even week
 
-    if (oddSemesterStart) {
+    if (isOddSemesterStart) {
         if (
-            ((occurrences == 'odd') & (numeric_day < startDate.getDay())) |
-            ((occurrences == 'even') & (numeric_day >= startDate.getDay()))
+            ((recurrenceRule == 'odd') & (numericDay < startDate.getDay())) |
+            ((recurrenceRule == 'even') & (numericDay >= startDate.getDay()))
         ) {
-            interval = 2
+            intervalWeeks = 2
             startDate.setDate(startDate.getDate() + 7)
         }
     } else {
         if (
-            ((occurrences == 'even') & (numeric_day < startDate.getDay())) |
-            ((occurrences == 'odd') & (numeric_day >= startDate.getDay()))
+            ((recurrenceRule == 'even') & (numericDay < startDate.getDay())) |
+            ((recurrenceRule == 'odd') & (numericDay >= startDate.getDay()))
         ) {
-            interval = 2
+            intervalWeeks = 2
             startDate.setDate(startDate.getDate() + 7)
         }
     }
     return {
         rule: new RRule({
             freq: RRule.WEEKLY,
-            interval: interval,
+            interval: intervalWeeks,
             byweekday: [day],
             until: endDate,
         }),

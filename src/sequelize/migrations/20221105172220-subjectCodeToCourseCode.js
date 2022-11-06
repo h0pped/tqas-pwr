@@ -10,22 +10,24 @@ module.exports = {
                 'evaluations',
                 'evaluations_subject_code_fkey'
             ),
-            queryInterface.changeColumn('evaluations', 'subject_code', {
-                type: DataTypes.STRING,
-                allowNull: false,
-            }),
-            queryInterface.changeColumn('evaluated_classes', 'subject_code', {
-                type: DataTypes.STRING,
-                allowNull: false,
-            }),
+            queryInterface.renameColumn(
+                'evaluated_classes',
+                'subject_code',
+                'course_code'
+            ),
+            queryInterface.renameColumn(
+                'evaluations',
+                'subject_code',
+                'course_code'
+            ),
             queryInterface.addConstraint('evaluations', {
-                fields: ['subject_code'],
+                fields: ['course_code'],
                 type: 'foreign key',
-                name: 'evaluations_evaluatedClassId_fkey',
+                name: 'evaluations_course_code_fkey',
                 references: {
                     //Required field
                     table: 'evaluated_classes',
-                    field: 'subject_code',
+                    field: 'course_code',
                 },
             }),
         ])
@@ -35,16 +37,22 @@ module.exports = {
         return Promise.all([
             queryInterface.removeConstraint(
                 'evaluations',
-                'evaluations_subject_code_fkey'
+                'evaluations_course_code_fkey'
             ),
-            queryInterface.changeColumn('evaluations', 'subject_code', {
-                type: 'INTEGER USING CAST(subject_code as INTEGER)',
-            }),
-            queryInterface.sequelize.query(`ALTER TABLE "evaluated_classes" ALTER COLUMN "subject_code" SET DATA TYPE INTEGER USING CAST(subject_code as INTEGER); `),
+            queryInterface.renameColumn(
+                'evaluations',
+                'course_code',
+                'subject_code'
+            ),
+            queryInterface.renameColumn(
+                'evaluated_classes',
+                'course_code',
+                'subject_code'
+            ),
             queryInterface.addConstraint('evaluations', {
                 fields: ['subject_code'],
                 type: 'foreign key',
-                name: 'evaluations_evaluatedClassId_fkey',
+                name: 'evaluations_subject_code_fkey',
                 references: {
                     //Required field
                     table: 'evaluated_classes',
