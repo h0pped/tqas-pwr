@@ -59,7 +59,7 @@ const config = {
         LIST_OF_EVALUATED_CLASSES_CREATED: 'List of classes created successfully',
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Bad reqeust for creating list of evaluated classes',
         CALLENDAR_ERROR: 'Error while creating callendar file of evaluations',
-        NOT_UNIQUE_COURSE: 'There is a course (or multiple courses) being added multiple times for the same assessment'
+        NOT_UNIQUE_COURSE: 'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment'
     },
 }
 

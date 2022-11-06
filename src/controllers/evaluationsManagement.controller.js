@@ -1,6 +1,5 @@
 const sequelize = require('../sequelize')
 
-const EvaluatedClass = sequelize.models.evaluated_class
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
 const Assessment = sequelize.models.assessment
@@ -51,7 +50,7 @@ module.exports.createListOfClasses = async (req, res) => {
                             message: INVALID_ASSESSMENT_PROVIDED,
                         })
                 }
-                const evaluation = await Evaluation.create({
+                await Evaluation.create({
                     details: properties.details,
                     course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
