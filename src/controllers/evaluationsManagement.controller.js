@@ -4,6 +4,7 @@ const EvaluatedClass = sequelize.models.evaluated_class
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
 const Assessment = sequelize.models.assessment
+const Course = sequelize.models.course
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -37,7 +38,12 @@ module.exports.createListOfClasses = async (req, res) => {
                         id: properties.assessment_id,
                     },
                 })
-
+                const evaluatedClass = await Course.upsert(
+                    {
+                        course_code: properties.course_code,
+                        course_name: properties.course_name,
+                    }
+                )
                 if (!foundAssessment) {
                     return res
                         .status(StatusCodes[INVALID_ASSESSMENT_PROVIDED])
@@ -45,17 +51,12 @@ module.exports.createListOfClasses = async (req, res) => {
                             message: INVALID_ASSESSMENT_PROVIDED,
                         })
                 }
-                const evaluatedClass = await EvaluatedClass.upsert({
-                    course_code: properties.course_code,
-                    course_name: properties.course_name,
-                })
-                await foundEvaluatee.addEvaluated_classes(evaluatedClass[0])
                 const evaluation = await Evaluation.create({
                     details: properties.details,
                     course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
+                    evaluateeId: userId
                 })
-                await evaluation.setAssessment(foundAssessment)
             }
         }
         return res.status(StatusCodes[LIST_OF_EVALUATED_CLASSES_CREATED]).send({
