@@ -5,7 +5,7 @@ module.exports = (sequelize) => {
         status: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: "ongoing"
+            defaultValue: "Draft"
         },
         name: {
             type: DataTypes.STRING,

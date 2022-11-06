@@ -46,15 +46,18 @@ const config = {
         USER_DOES_NOT_EXIST: 'User with provided ID does not exist',
         MEMBER_REMOVED: 'Member was removed from WZHZ group',
         MEMEBER_DOES_NOT_EXIST: 'Such member of WZHZ does not exist',
-        ID_NOT_PROVIDED:
-            'Id of user is required in order to add it to WZHZ group',
+        ID_NOT_PROVIDED:'Id of user is required in order to add it to WZHZ group',
         INVALID_USER_DATA: 'Invalid user data provided',
         RECOVERY_CODE_SEND: 'Recovery code was send',
         WRONG_RECOVERY_CODE: 'Wrong recovery code',
         PASSWORD_CHANGED: 'Password was changed',
         RECOVERY_CODE_BLOCKED: 'Recovery code is blocked',
         RECOVERY_CODE_NOT_FOUND: "Recovery code doesn't exist",
-        EMAIL_ALREADY_EXISTS: 'User with such email already exists'
+        EMAIL_ALREADY_EXISTS: 'User with such email already exists',
+        INVALID_EVALUATEE_PROVIDED: 'Evaluatee with a given Id does not exist',
+        INVALID_ASSESSMENT_PROVIDED: 'Assessment with the given ID does not exist',
+        LIST_OF_EVALUATED_CLASSES_CREATED: 'List of classes created successfully',
+        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Bad reqeust for creating list of evaluated classes'
     },
 }
 
