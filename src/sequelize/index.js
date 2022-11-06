@@ -54,9 +54,9 @@ sequelize.models.evaluatee.hasMany(sequelize.models.evaluated_class, {
     foreignKey: { name: 'evaluateeId' },
 })
 sequelize.models.evaluated_class.hasMany(sequelize.models.evaluation, {
-    foreignKey: { name: 'subject_code', type: DataTypes.STRING },
+    foreignKey: { name: 'course_code', type: DataTypes.STRING },
 })
-sequelize.models.evaluation.belongsTo(sequelize.models.evaluated_class, { foreignKey: { name: "subject_code" } })
+sequelize.models.evaluation.belongsTo(sequelize.models.evaluated_class, { foreignKey: { name: "course_code" } })
 sequelize.models.protocol_question.belongsTo(sequelize.models.protocol)
 sequelize.models.protocol_question.belongsTo(sequelize.models.question)
 sequelize.models.evaluation.hasOne(sequelize.models.protocol)
