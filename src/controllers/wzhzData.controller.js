@@ -8,7 +8,7 @@ const {
         USER_DOES_NOT_EXIST,
         MEMBER_REMOVED,
         MEMEBER_DOES_NOT_EXIST,
-        USER_ID_NOT_PROVIDED
+        USER_ID_NOT_PROVIDED,
     },
 } = require('../config/index.config')
 
