@@ -18,7 +18,7 @@ const {
         ALREADY_AN_EVALUATEE,
         SUPERVISOR_SET_SUCCESSFULLY,
         SUPERVISOR_SET_BAD_REQUEST,
-        NOT_UNIQUE_COURSE
+        NOT_UNIQUE_COURSE,
     },
 } = require('../config/index.config')
 
@@ -43,12 +43,10 @@ module.exports.createListOfClasses = async (req, res) => {
                         id: properties.assessment_id,
                     },
                 })
-                const evaluatedClass = await Course.upsert(
-                    {
-                        course_code: properties.course_code,
-                        course_name: properties.course_name,
-                    }
-                )
+                const evaluatedClass = await Course.upsert({
+                    course_code: properties.course_code,
+                    course_name: properties.course_name,
+                })
                 if (!foundAssessment) {
                     return res
                         .status(StatusCodes[INVALID_ASSESSMENT_PROVIDED])
@@ -60,7 +58,7 @@ module.exports.createListOfClasses = async (req, res) => {
                     details: properties.details,
                     course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
-                    evaluateeId: userId
+                    evaluateeId: userId,
                 })
             }
         }
@@ -69,11 +67,9 @@ module.exports.createListOfClasses = async (req, res) => {
         })
     } catch (err) {
         if (err.name == 'SequelizeUniqueConstraintError') {
-            return res
-                .status(StatusCodes[NOT_UNIQUE_COURSE])
-                .send({
-                    message: NOT_UNIQUE_COURSE,
-                })
+            return res.status(StatusCodes[NOT_UNIQUE_COURSE]).send({
+                message: NOT_UNIQUE_COURSE,
+            })
         }
         return res
             .status(StatusCodes[LIST_OF_EVALUATED_CLASSES_BAD_REQUEST])
@@ -105,38 +101,29 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
                 message: USER_DOES_NOT_EXIST,
             })
         }
-        const evaluatees = await Assessment.findOne({
-            where : {id: req.body.assessment_id},
+        const assessment_with_evaluatees = await Assessment.findOne({
+            where: { id: req.body.assessment_id },
             include: [
                 {
                     model: Evaluation,
                     required: true,
                     include: [
                         {
-                            model: EvaluatedClass,
+                            model: Evaluatee,
+                            attributes: ['userId'],
                             required: true,
-                            include: [
-                                {
-                                    model: Evaluatee,
-                                    attributes: ['userId'],
-                                    required: true,
-                                },
-                            ],
+                            where: {
+                                userId : req.body.user_id
+                            }
                         },
                     ],
                 },
             ],
-        }
-        )
-        for (const evaluation of evaluatees.dataValues.evaluations) {
-            if (
-                evaluation.dataValues.evaluated_class.dataValues.evaluatee
-                    .dataValues.userId == req.body.user_id
-            ) {
-                return res.status(StatusCodes[ALREADY_AN_EVALUATEE]).send({
-                    message: ALREADY_AN_EVALUATEE,
-                })
-            }
+        })
+        if(assessment_with_evaluatees){
+            return res.status(StatusCodes[ALREADY_AN_EVALUATEE]).send({
+                message: ALREADY_AN_EVALUATEE,
+            })
         }
         foundAssessment.setUser(foundUser)
         return res.status(StatusCodes[SUPERVISOR_SET_SUCCESSFULLY]).send({
