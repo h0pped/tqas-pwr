@@ -19,6 +19,8 @@ const {
         SUPERVISOR_SET_SUCCESSFULLY,
         SUPERVISOR_SET_BAD_REQUEST,
         NOT_UNIQUE_COURSE,
+        CREATE_ASSESSMENT_BAD_REQUEST,
+        ASSESSMENT_CREATED_SUCCESSFULLY,
     },
 } = require('../config/index.config')
 
@@ -59,7 +61,7 @@ module.exports.createListOfClasses = async (req, res) => {
                     course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
                     evaluateeId: userId,
-                    enrolled_students: properties.enrolled_students
+                    enrolled_students: properties.enrolled_students,
                 })
             }
         }
@@ -68,11 +70,9 @@ module.exports.createListOfClasses = async (req, res) => {
         })
     } catch (err) {
         if (err.name === 'SequelizeUniqueConstraintError') {
-            return res
-                .status(StatusCodes[NOT_UNIQUE_COURSE])
-                .send({
-                    message: NOT_UNIQUE_COURSE,
-                })
+            return res.status(StatusCodes[NOT_UNIQUE_COURSE]).send({
+                message: NOT_UNIQUE_COURSE,
+            })
         }
         return res
             .status(StatusCodes[LIST_OF_EVALUATED_CLASSES_BAD_REQUEST])
@@ -116,14 +116,14 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
                             attributes: ['userId'],
                             required: true,
                             where: {
-                                userId : req.body.user_id
-                            }
+                                userId: req.body.user_id,
+                            },
                         },
                     ],
                 },
             ],
         })
-        if(assessmentWithEvaluatees){
+        if (assessmentWithEvaluatees) {
             return res.status(StatusCodes[ALREADY_AN_EVALUATEE]).send({
                 message: ALREADY_AN_EVALUATEE,
             })
@@ -135,6 +135,21 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
     } catch (err) {
         return res.status(StatusCodes[SUPERVISOR_SET_BAD_REQUEST]).send({
             message: SUPERVISOR_SET_BAD_REQUEST,
+        })
+    }
+}
+
+module.exports.createAssessment = async (req, res) => {
+    try {
+        await Assessment.create({
+            name: req.body.name,
+        })
+        return res.status(StatusCodes[ASSESSMENT_CREATED_SUCCESSFULLY]).send({
+            message: ASSESSMENT_CREATED_SUCCESSFULLY,
+        })
+    } catch (err) {
+        return res.status(StatusCodes[CREATE_ASSESSMENT_BAD_REQUEST]).send({
+            message: CREATE_ASSESSMENT_BAD_REQUEST,
         })
     }
 }
