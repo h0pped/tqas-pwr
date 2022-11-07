@@ -5,9 +5,9 @@ const {
 
 const router = express.Router()
 
-const { getAssesments, getEvaluatees } = require('../controllers/assesments.controller')
+const { getAssesments, getEvaluateesByAssesment } = require('../controllers/assesments.controller')
 
 router.get('/getAssesments', authMiddleware, getAssesments)
-router.post('/getEvaluatees', authMiddleware, getEvaluatees)
+router.post('/getEvaluateesByAssesment', authMiddleware, getEvaluateesByAssesment)
 
 module.exports = router
