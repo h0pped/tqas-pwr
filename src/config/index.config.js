@@ -61,7 +61,7 @@ const config = {
         ALREADY_AN_EVALUATEE: 'User that is trying to be set as supervisor is already an evaluatee in this assessment',
         SUPERVISOR_SET_SUCCESSFULLY: 'Supervisor set successfully',
         SUPERVISOR_SET_BAD_REQUEST: 'Invalid data provided in the request for setting supervisor to an assessment',
-        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Invalid data provided in the rquest for creating list of classes',
+        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Invalid data provided in the request for creating list of classes',
         CALLENDAR_ERROR: 'Error while creating callendar file of evaluations',
         NOT_UNIQUE_COURSE: 'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment',
     },
