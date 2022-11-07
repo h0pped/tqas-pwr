@@ -94,12 +94,12 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
                 id: req.body.user_id,
             },
         })
-        if (foundAssessment == null) {
+        if (!foundAssessment) {
             return res.status(StatusCodes[ASSESSMENT_DOES_NOT_EXIST]).send({
                 message: ASSESSMENT_DOES_NOT_EXIST,
             })
         }
-        if (foundUser == null) {
+        if (!foundUser) {
             return res.status(StatusCodes[USER_DOES_NOT_EXIST]).send({
                 message: USER_DOES_NOT_EXIST,
             })
