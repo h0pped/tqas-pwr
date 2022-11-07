@@ -1,19 +1,17 @@
-const { DataTypes, STRING } = require('sequelize')
+const { DataTypes } = require('sequelize')
 
 module.exports = (sequelize) => {
     sequelize.define('evaluation', {
+        details: {
+            type: DataTypes.STRING,
+        },
         status: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: "ongoing"
+            defaultValue: 'Draft',
         },
-        occurrences: {
+        enrolled_students: {
             type: DataTypes.STRING,
-            allowNull: false
-        },
-        place: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
+        }
     })
 }

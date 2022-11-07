@@ -1,13 +1,13 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
-    sequelize.define('assessment', {
-        status: {
+    sequelize.define('course', {
+        course_code: {
             type: DataTypes.STRING,
             allowNull: false,
-            defaultValue: "Draft"
+            primaryKey: true
         },
-        name: {
+        course_name: {
             type: DataTypes.STRING,
             allowNull: false,
         }});
