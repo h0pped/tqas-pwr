@@ -104,7 +104,7 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
                 message: USER_DOES_NOT_EXIST,
             })
         }
-        const assessment_with_evaluatees = await Assessment.findOne({
+        const assessmentWithEvaluatees = await Assessment.findOne({
             where: { id: req.body.assessment_id },
             include: [
                 {
@@ -123,7 +123,7 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
                 },
             ],
         })
-        if(assessment_with_evaluatees){
+        if(assessmentWithEvaluatees){
             return res.status(StatusCodes[ALREADY_AN_EVALUATEE]).send({
                 message: ALREADY_AN_EVALUATEE,
             })
