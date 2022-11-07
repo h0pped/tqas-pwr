@@ -8,7 +8,6 @@ module.exports = {
 
     down: (queryInterface, Sequelize) => {
         return queryInterface.addColumn('evaluations', 'schedule_accepted', {
-            allowNull: false,
             type: Sequelize.BOOLEAN,
         })
     },
