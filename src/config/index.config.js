@@ -57,7 +57,7 @@ const config = {
         INVALID_EVALUATEE_PROVIDED: 'Evaluatee with a given Id does not exist',
         INVALID_ASSESSMENT_PROVIDED: 'Assessment with the given ID does not exist',
         LIST_OF_EVALUATED_CLASSES_CREATED: 'List of classes created successfully',
-        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Invalid data provided in the rquest for creating list of classes',
+        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST: 'Invalid data provided in the request for creating list of classes',
         CALLENDAR_ERROR: 'Error while creating callendar file of evaluations',
         NOT_UNIQUE_COURSE: 'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment'
     },
