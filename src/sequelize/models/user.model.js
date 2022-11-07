@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            us_supervisor: {
+            is_supervisor: {
                 allowNull: false,
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
