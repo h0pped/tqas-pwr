@@ -59,6 +59,7 @@ module.exports.createListOfClasses = async (req, res) => {
                     course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
                     evaluateeId: userId,
+                    enrolled_students: properties.enrolled_students
                 })
             }
         }
@@ -66,10 +67,12 @@ module.exports.createListOfClasses = async (req, res) => {
             message: LIST_OF_EVALUATED_CLASSES_CREATED,
         })
     } catch (err) {
-        if (err.name == 'SequelizeUniqueConstraintError') {
-            return res.status(StatusCodes[NOT_UNIQUE_COURSE]).send({
-                message: NOT_UNIQUE_COURSE,
-            })
+        if (err.name === 'SequelizeUniqueConstraintError') {
+            return res
+                .status(StatusCodes[NOT_UNIQUE_COURSE])
+                .send({
+                    message: NOT_UNIQUE_COURSE,
+                })
         }
         return res
             .status(StatusCodes[LIST_OF_EVALUATED_CLASSES_BAD_REQUEST])

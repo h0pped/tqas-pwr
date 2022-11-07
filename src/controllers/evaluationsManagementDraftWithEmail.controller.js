@@ -21,7 +21,7 @@ const {
 
 module.exports.createListOfClasses = async (req, res) => {
     try {
-        let calendar_rules = []
+        let calendarRules = []
         for (const [userId, properties] of Object.entries(req.body)) {
             const foundEvaluatee = await Evaluatee.findOne({
                 where: {
@@ -48,7 +48,7 @@ module.exports.createListOfClasses = async (req, res) => {
             )
 
             rule = rule.toString().replace('RRULE:', '')
-            calendar_rules.push({
+            calendarRules.push({
                 title: properties.course_name,
                 busyStatus: 'FREE',
                 start: [
@@ -83,7 +83,7 @@ module.exports.createListOfClasses = async (req, res) => {
             evaluation.setAssessment(foundAssessment)
         }
         const message = {}
-        ics.createEvents(calendar_rules, (error, value) => {
+        ics.createEvents(calendarRules, (error, value) => {
             if (error) {
               return res.status(StatusCodes[CALLENDAR_ERROR]).send({
                 message: CALLENDAR_ERROR,})

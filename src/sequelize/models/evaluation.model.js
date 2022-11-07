@@ -10,5 +10,8 @@ module.exports = (sequelize) => {
             allowNull: false,
             defaultValue: 'Draft',
         },
+        enrolled_students: {
+            type: DataTypes.STRING,
+        }
     })
 }
