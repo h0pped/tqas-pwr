@@ -1,4 +1,4 @@
-module.exports = (name, code) => `<body
+module.exports = (name) => `<body
 style="
   box-sizing: border-box;
   padding: 0;
@@ -25,9 +25,10 @@ style="
     </h4>
   </header>
   <section>
-    <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
-      Account Activation
+    <h2 style="font-size: 28; margin-bottom: 30px; text-align: center;color:black">
+        New Outlined Schedule
     </h2>
+    <div style="margin-bottom: 30px; text-align: left">
       <p
         style="
           line-height: 2rem;
@@ -40,26 +41,21 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        We received a request to activate your account
+        We received in our system newly created <b>Outlined schedule</b> that is waiting for your approval.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Your code: ${code}
-      </p>
-
-      <p style="line-height: 2rem; font-size: 1rem; color: black">
-        If you did not send a request to activate your account, please,
-        disregard this email and do not share the activation code with
-        anybody.
+        Please, join <span><a href="https://google.com" style="font-weight:bold;">Teaching Quality Assurance System</a></span> and assign <b>Evaluation Team</b> to it.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
         If you have any issues with account activation, please contact
         administrator using following email address:
-        <a href="mailto:sekretariat.wit@pwr.edu.pl ">
+        <a href="mailto:sekretariat.wit@pwr.edu.pl" style="font-weight:bold;">
           sekretariat.wit@pwr.edu.pl</a
         >
       </p>
+    </div>
   </section>
 </div>
 </body>
