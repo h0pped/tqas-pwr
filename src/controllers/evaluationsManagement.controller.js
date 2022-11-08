@@ -176,7 +176,6 @@ module.exports.getAssesments = async (req, res) => {
 module.exports.getEvaluateesByAssesment = async (req, res) => {
     const { id } = req.body
 
-
     if (id === undefined) {
         return res.send({ msg: 'Id of assesment is required.' })
     }

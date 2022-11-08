@@ -11,7 +11,7 @@ const router = express.Router()
 router.use('/auth', authRouter)
 router.use('/wzhzData', wzhzData)
 router.use('/uploadUsers', uploadUsersRouter)
-router.use('/userData', userData),
+router.use('/userData', userData)
 router.use('/evaluationsManagement', createListOfClasses)
 
 module.exports = router

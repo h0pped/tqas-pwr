@@ -5,7 +5,7 @@ const {
 
 const router = express.Router()
 
-const { createListOfClasses, setAssessmentSupervisor, createAssessment, getAssesments, getEvaluateesByAssesment } = require('../controllers/evaluationsManagement.controller.js')
+const {createListOfClasses, setAssessmentSupervisor, createAssessment, getAssesments, getEvaluateesByAssesment } = require('../controllers/evaluationsManagement.controller.js')
 
 router.post('/createListOfClasses', authMiddleware, createListOfClasses)
 router.post('/setAssessmentSupervisor', authMiddleware, setAssessmentSupervisor)
