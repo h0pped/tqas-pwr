@@ -10,6 +10,6 @@ const {createListOfClasses, setAssessmentSupervisor, createAssessment, getAssesm
 router.post('/createListOfClasses', authMiddleware, createListOfClasses)
 router.post('/setAssessmentSupervisor', authMiddleware, setAssessmentSupervisor)
 router.post('/createAssessment', authMiddleware, createAssessment)
-router.get('/getAssesments', authMiddleware, getAssesments)
+router.get('/getAssessments', authMiddleware, getAssesments)
 router.post('/getEvaluateesByAssesment', authMiddleware, getEvaluateesByAssesment)
 module.exports = router

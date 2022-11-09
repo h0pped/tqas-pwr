@@ -23,6 +23,9 @@ const {
         NOT_UNIQUE_COURSE,
         CREATE_ASSESSMENT_BAD_REQUEST,
         ASSESSMENT_CREATED_SUCCESSFULLY,
+        GET_ASSESSMENTS_SUCCESSFULLY,
+        GET_EVALUATEES_SUCCESSFULLY,
+        GET_EVALUATEES_BAD_REQUEST,
     },
 } = require('../config/index.config')
 
@@ -157,30 +160,30 @@ module.exports.createAssessment = async (req, res) => {
 }
 
 module.exports.getAssesments = async (req, res) => {
-    var assesments = await Assesments.findAll()
+    const assessments = await Assesments.findAll()
 
-    const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations' , { type: QueryTypes.SELECT })
+    const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
 
-    assesments.forEach(function (assesment, i) {
-        const evaluation_in_assesment = evaluations.filter(evaluation => evaluation.assessmentId === assesment.id)
+    assessments.forEach(function (assessment, i) {
+        const evaluation_in_assessment = evaluations.filter(({ assessmentId }) => assessmentId === assessment.id)
 
-        if (evaluation_in_assesment === undefined) {
-            assesments[i].setDataValue('num_of_evaluatees', 0)
+        if (!evaluation_in_assessment) {
+            assessments[i].setDataValue('num_of_evaluatees', 0)
         } else {
-            assesments[i].setDataValue('num_of_evaluatees', evaluation_in_assesment.length)
+            assessments[i].setDataValue('num_of_evaluatees', evaluation_in_assessment.length)
         }
     })
-    return res.send(assesments);
+    return res.status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY]).send({ assessments });
 }
 
 module.exports.getEvaluateesByAssesment = async (req, res) => {
     const { id } = req.body
 
-    if (id === undefined) {
-        return res.send({ msg: 'Id of assesment is required.' })
+    if (!id) {
+        return res.status(StatusCodes[GET_EVALUATEES_BAD_REQUEST]).send({ msg: GET_EVALUATEES_BAD_REQUEST })
     }
 
-    const assesments = await User.findAll({
+    const evaluatees = await User.findAll({
         attributes: [
             'id',
             'academic_title',
@@ -202,11 +205,11 @@ module.exports.getEvaluateesByAssesment = async (req, res) => {
                 required: true,
                 where: { assessmentId: id },
                 include: {
-                    model: Course ,
+                    model: Course,
                     required: true
                 }
             }]
         }]
     })
-    return res.send(assesments);
+    return res.status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY]).send({ evaluatees });
 }
