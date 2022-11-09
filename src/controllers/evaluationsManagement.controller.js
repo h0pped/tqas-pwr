@@ -26,6 +26,7 @@ const {
         GET_ASSESSMENTS_SUCCESSFULLY,
         GET_EVALUATEES_SUCCESSFULLY,
         GET_EVALUATEES_BAD_REQUEST,
+        GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST
     },
 } = require('../config/index.config')
 
@@ -161,6 +162,29 @@ module.exports.createAssessment = async (req, res) => {
 
 module.exports.getAssessments = async (req, res) => {
     const assessments = await Assesments.findAll()
+
+    const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
+
+    assessments.forEach(function (assessment, i) {
+        const evaluationsInAssessment = evaluations.filter(({ assessmentId }) => assessmentId === assessment.id)
+
+        if (!evaluationsInAssessment) {
+            assessments[i].setDataValue('num_of_evaluatees', 0)
+        } else {
+            assessments[i].setDataValue('num_of_evaluatees', evaluationsInAssessment.length)
+        }
+    })
+    return res.status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY]).send({ assessments });
+}
+
+module.exports.getAssessmentsBySupervisor = async (req, res) => {
+    const supervisorId = req.query.id;
+
+    if (!supervisorId) {
+        return res.status(StatusCodes[GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST]).send({ msg: GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST })
+    }
+
+    const assessments = await Assesments.findAll({ where: { supervisor_id: supervisorId } })
 
     const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
 

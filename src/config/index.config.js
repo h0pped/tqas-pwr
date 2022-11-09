@@ -67,6 +67,7 @@ const config = {
         CALLENDAR_ERROR: 'Error while creating callendar file of evaluations',
         NOT_UNIQUE_COURSE: 'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment',
         GET_EVALUATEES_BAD_REQUEST: 'Id of assesment is required.',
+        GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST: 'Id of supervisor is required.'
     },
 }
 
