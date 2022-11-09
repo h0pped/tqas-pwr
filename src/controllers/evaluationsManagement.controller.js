@@ -165,12 +165,12 @@ module.exports.getAssessments = async (req, res) => {
     const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
 
     assessments.forEach(function (assessment, i) {
-        const evaluation_in_assessment = evaluations.filter(({ assessmentId }) => assessmentId === assessment.id)
+        const evaluationsInAssessment = evaluations.filter(({ assessmentId }) => assessmentId === assessment.id)
 
-        if (!evaluation_in_assessment) {
+        if (!evaluationsInAssessment) {
             assessments[i].setDataValue('num_of_evaluatees', 0)
         } else {
-            assessments[i].setDataValue('num_of_evaluatees', evaluation_in_assessment.length)
+            assessments[i].setDataValue('num_of_evaluatees', evaluationsInAssessment.length)
         }
     })
     return res.status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY]).send({ assessments });
