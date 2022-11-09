@@ -159,7 +159,7 @@ module.exports.createAssessment = async (req, res) => {
     }
 }
 
-module.exports.getAssesments = async (req, res) => {
+module.exports.getAssessments = async (req, res) => {
     const assessments = await Assesments.findAll()
 
     const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
@@ -176,8 +176,8 @@ module.exports.getAssesments = async (req, res) => {
     return res.status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY]).send({ assessments });
 }
 
-module.exports.getEvaluateesByAssesment = async (req, res) => {
-    const { id } = req.body
+module.exports.getEvaluateesByAssessment = async (req, res) => {
+    const id = req.query.id
 
     if (!id) {
         return res.status(StatusCodes[GET_EVALUATEES_BAD_REQUEST]).send({ msg: GET_EVALUATEES_BAD_REQUEST })
