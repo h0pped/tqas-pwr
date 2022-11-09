@@ -1,10 +1,12 @@
 const sequelize = require('../sequelize')
+const { QueryTypes } = require('sequelize')
 
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
 const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
+const Assesments = sequelize.models.assessment
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -21,6 +23,9 @@ const {
         NOT_UNIQUE_COURSE,
         CREATE_ASSESSMENT_BAD_REQUEST,
         ASSESSMENT_CREATED_SUCCESSFULLY,
+        GET_ASSESSMENTS_SUCCESSFULLY,
+        GET_EVALUATEES_SUCCESSFULLY,
+        GET_EVALUATEES_BAD_REQUEST,
     },
 } = require('../config/index.config')
 
@@ -152,4 +157,59 @@ module.exports.createAssessment = async (req, res) => {
             message: CREATE_ASSESSMENT_BAD_REQUEST,
         })
     }
+}
+
+module.exports.getAssessments = async (req, res) => {
+    const assessments = await Assesments.findAll()
+
+    const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
+
+    assessments.forEach(function (assessment, i) {
+        const evaluationsInAssessment = evaluations.filter(({ assessmentId }) => assessmentId === assessment.id)
+
+        if (!evaluationsInAssessment) {
+            assessments[i].setDataValue('num_of_evaluatees', 0)
+        } else {
+            assessments[i].setDataValue('num_of_evaluatees', evaluationsInAssessment.length)
+        }
+    })
+    return res.status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY]).send({ assessments });
+}
+
+module.exports.getEvaluateesByAssessment = async (req, res) => {
+    const id = req.query.id
+
+    if (!id) {
+        return res.status(StatusCodes[GET_EVALUATEES_BAD_REQUEST]).send({ msg: GET_EVALUATEES_BAD_REQUEST })
+    }
+
+    const evaluatees = await User.findAll({
+        attributes: [
+            'id',
+            'academic_title',
+            'first_name',
+            'last_name',
+            'email',
+            'account_status',
+            'user_type'
+        ],
+        include: [{
+            model: Evaluatee,
+            attributes: [
+                'id',
+                'last_evaluated_date',
+            ],
+            required: true,
+            include: [{
+                model: Evaluation,
+                required: true,
+                where: { assessmentId: id },
+                include: {
+                    model: Course,
+                    required: true
+                }
+            }]
+        }]
+    })
+    return res.status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY]).send({ evaluatees });
 }
