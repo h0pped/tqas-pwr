@@ -1,5 +1,4 @@
 const { Sequelize, DataTypes } = require('sequelize')
-const { any } = require('sequelize/lib/operators')
 const { database } = require('../config/database.config')
 
 const sequelize = new Sequelize(database, {
@@ -35,7 +34,7 @@ const modelDefiners = [
     require('./models/user.model'),
     require('./models/wzhz.model'),
     require('./models/assessment.model'),
-    require('./models/course.model')
+    require('./models/course.model'),
 ]
 
 for (const modelDefiner of modelDefiners) {
@@ -59,11 +58,17 @@ sequelize.models.evaluation.belongsToMany(sequelize.models.protocol_question, {
 })
 sequelize.models.evaluation.belongsTo(sequelize.models.evaluatee)
 sequelize.models.evaluatee.hasMany(sequelize.models.evaluation)
-sequelize.models.evaluation.belongsTo(sequelize.models.course, {foreignKey: { name: 'course_code', type: DataTypes.STRING}})
-sequelize.models.course.hasMany(sequelize.models.evaluation, {foreignKey: { name: 'course_code', type: DataTypes.STRING}})
+sequelize.models.evaluation.belongsTo(sequelize.models.course, {
+    foreignKey: { name: 'course_code', type: DataTypes.STRING },
+})
+sequelize.models.course.hasMany(sequelize.models.evaluation, {
+    foreignKey: { name: 'course_code', type: DataTypes.STRING },
+})
 sequelize.models.evaluation.belongsTo(sequelize.models.assessment)
 sequelize.models.assessment.hasMany(sequelize.models.evaluation)
-sequelize.models.assessment.belongsTo(sequelize.models.user, {foreignKey: 'supervisor_id'})
+sequelize.models.assessment.belongsTo(sequelize.models.user, {
+    foreignKey: 'supervisor_id',
+})
 sequelize.models.question.hasMany(sequelize.models.answer_option)
 sequelize.sync()
 

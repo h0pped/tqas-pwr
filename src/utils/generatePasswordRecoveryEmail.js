@@ -12,7 +12,7 @@ style="
 <div>
   <header
     style="
-      background: linear-gradient( 0deg, rgb(118, 37, 30) 0%, rgba(217, 55, 42, 1) 100% );
+      background: #D9372A;
       color: white;
       flex-direction: column;
       padding: 20px;
@@ -41,21 +41,21 @@ style="
         Hello ${name},
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
+      <p style="line-height: 2rem; font-size: 1rem; color: black">
         We received a password recovery request for your account
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
+      <p style="line-height: 2rem; font-size: 1rem; color: black">
         Your code: ${code}
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
+      <p style="line-height: 2rem; font-size: 1rem; color: black">
         If you did not send a request password recovery, please,
         disregard this email and do not share the code with
         anybody.
       </p>
 
-      <p style="line-height: 2rem; font-size: 1.1rem; color: black">
+      <p style="line-height: 2rem; font-size: 1rem; color: black">
         If you have any issues with password recovery process, please contact
         administrator using following email address:
         <a href="mailto:sekretariat.wit@pwr.edu.pl ">

@@ -29,6 +29,9 @@ const {
     },
 } = require('../config/index.config')
 
+const { sendMail } = require('../mailer')
+const generateNewOutlinedScheduleEmail = require('../utils/generateNewOutlinedScheduleEmail')
+
 module.exports.createListOfClasses = async (req, res) => {
     try {
         for (const [userId, subjectsData] of Object.entries(req.body)) {
@@ -89,6 +92,11 @@ module.exports.createListOfClasses = async (req, res) => {
 
 module.exports.setAssessmentSupervisor = async (req, res) => {
     try {
+        const { email, first_name, last_name } = await User.findOne({
+            where: {
+                id: req.body.user_id,
+            },
+        })
         const foundAssessment = await Assessment.findOne({
             where: {
                 id: req.body.assessment_id,
@@ -134,6 +142,11 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
             })
         }
         foundAssessment.setUser(foundUser)
+        sendMail(
+            email,
+            'TQAS - New assessment requires your attention',
+            generateNewOutlinedScheduleEmail(`${first_name} ${last_name}`)
+        )
         return res.status(StatusCodes[SUPERVISOR_SET_SUCCESSFULLY]).send({
             message: SUPERVISOR_SET_SUCCESSFULLY,
         })
