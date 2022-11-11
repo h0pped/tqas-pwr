@@ -7,6 +7,7 @@ const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
 const Assesments = sequelize.models.assessment
+const EvaluationTeam = sequelize.models.evaluation_team
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -26,7 +27,9 @@ const {
         GET_ASSESSMENTS_SUCCESSFULLY,
         GET_EVALUATEES_SUCCESSFULLY,
         GET_EVALUATEES_BAD_REQUEST,
-        GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST
+        GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST,
+        GET_ET_BAD_REQUEST,
+        GET_ET_SUCCESSFULLY
     },
 } = require('../config/index.config')
 
@@ -207,6 +210,21 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
         return res.status(StatusCodes[GET_EVALUATEES_BAD_REQUEST]).send({ msg: GET_EVALUATEES_BAD_REQUEST })
     }
 
+    const evaluationTeams = await sequelize.query(`select 
+    u.id as "member_user_id",
+    "academic_title",
+    "first_name",
+    "last_name",
+    "email" as "member_email",
+    "evaluateeId" as "evaluatee_id",
+    "evaluationId" as "evaluation_id"
+    from evaluations e 
+    inner join evaluation_teams et 
+    on e.id = et."evaluationId" 
+    inner join users u 
+    on et."userId" = u.id
+    where e."assessmentId" = ${id}`, { type: QueryTypes.SELECT })
+
     const evaluatees = await User.findAll({
         attributes: [
             'id',
@@ -230,10 +248,17 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
                 where: { assessmentId: id },
                 include: {
                     model: Course,
-                    required: true
+                    required: true,
                 }
             }]
         }]
     })
+
+    evaluatees.forEach((e) => {
+        const evaluationTeamForEvaluatee = evaluationTeams.filter((et) => et.evaluatee_id === e.evaluatee.id)
+        console.log(evaluationTeamForEvaluatee)
+        e.setDataValue("evaluation_team", evaluationTeamForEvaluatee)
+    })
+    
     return res.status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY]).send({ evaluatees });
 }
