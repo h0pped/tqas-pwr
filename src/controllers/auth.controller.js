@@ -135,7 +135,7 @@ module.exports.sendCode = async (req, res) => {
                 try {
                     await hashedCodeFromDb.save()
                     await sendMail(
-                        'notawril@gmail.com',
+                        'munthetania@gmail.com',
                         'TQAS - Activation code',
                         generateActivationCodeEmail(
                             `${user.first_name} ${user.last_name}`,
@@ -168,7 +168,7 @@ module.exports.sendCode = async (req, res) => {
                         code: hash,
                     })
                     sendMail(
-                        'notawril@gmail.com',
+                        'munthetania@gmail.com',
                         'TQAS - Activation code',
                         generateActivationCodeEmail(
                             `${user.first_name} ${user.last_name}`,

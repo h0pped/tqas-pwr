@@ -20,8 +20,8 @@ const config = {
     mailer: {
         service: 'Gmail',
         auth: {
-            user: process.env.MAILER_EMAIL || 'tqastest@pwr.edu.pl',
-            pass: process.env.MAILER_PASSWORD || '123123123',
+            user: '254726@student.pwr.edu.pl',
+            pass: process.env.PASSWORD || 'password',
         },
     },
     responseMessages: {
@@ -54,7 +54,7 @@ const config = {
         PASSWORD_CHANGED: 'Password was changed',
         RECOVERY_CODE_BLOCKED: 'Recovery code is blocked',
         RECOVERY_CODE_NOT_FOUND: "Recovery code doesn't exist",
-        EMAIL_ALREADY_EXISTS: 'User with such email already exists'
+        EMAIL_ALREADY_EXISTS: 'User with such email already exists',
     },
 }
 
