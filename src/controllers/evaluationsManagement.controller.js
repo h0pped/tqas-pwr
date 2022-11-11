@@ -7,7 +7,6 @@ const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
 const Assesments = sequelize.models.assessment
-const EvaluationTeam = sequelize.models.evaluation_team
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -28,8 +27,6 @@ const {
         GET_EVALUATEES_SUCCESSFULLY,
         GET_EVALUATEES_BAD_REQUEST,
         GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST,
-        GET_ET_BAD_REQUEST,
-        GET_ET_SUCCESSFULLY
     },
 } = require('../config/index.config')
 
@@ -256,9 +253,8 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
 
     evaluatees.forEach((e) => {
         const evaluationTeamForEvaluatee = evaluationTeams.filter((et) => et.evaluatee_id === e.evaluatee.id)
-        console.log(evaluationTeamForEvaluatee)
         e.setDataValue("evaluation_team", evaluationTeamForEvaluatee)
     })
-    
+
     return res.status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY]).send({ evaluatees });
 }
