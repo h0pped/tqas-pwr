@@ -6,7 +6,7 @@ const Evaluation = sequelize.models.evaluation
 const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
-const Assesments = sequelize.models.assessment
+const Assessments = sequelize.models.assessment
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -174,53 +174,80 @@ module.exports.createAssessment = async (req, res) => {
 }
 
 module.exports.getAssessments = async (req, res) => {
-    const assessments = await Assesments.findAll()
+    const assessments = await Assessments.findAll()
 
-    const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
+    const evaluations = await sequelize.query(
+        'select distinct "assessmentId" , "evaluateeId"  FROM evaluations',
+        { type: QueryTypes.SELECT }
+    )
 
     assessments.forEach(function (assessment, i) {
-        const evaluationsInAssessment = evaluations.filter(({ assessmentId }) => assessmentId === assessment.id)
+        const evaluationsInAssessment = evaluations.filter(
+            ({ assessmentId }) => assessmentId === assessment.id
+        )
 
         if (!evaluationsInAssessment) {
             assessments[i].setDataValue('num_of_evaluatees', 0)
         } else {
-            assessments[i].setDataValue('num_of_evaluatees', evaluationsInAssessment.length)
+            assessments[i].setDataValue(
+                'num_of_evaluatees',
+                evaluationsInAssessment.length
+            )
         }
     })
-    return res.status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY]).send({ assessments });
+    return res
+        .status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY])
+        .send({ assessments })
 }
 
 module.exports.getAssessmentsBySupervisor = async (req, res) => {
-    const supervisorId = req.query.id;
+    const supervisorId = req.query.id
 
     if (!supervisorId) {
-        return res.status(StatusCodes[GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST]).send({ msg: GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST })
+        return res
+            .status(StatusCodes[GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST])
+            .send({ msg: GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST })
     }
 
-    const assessments = await Assesments.findAll({ where: { supervisor_id: supervisorId } })
+    const assessments = await Assessments.findAll({
+        where: { supervisor_id: supervisorId },
+    })
 
-    const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations', { type: QueryTypes.SELECT })
+    const evaluations = await sequelize.query(
+        'select distinct "assessmentId" , "evaluateeId"  FROM evaluations',
+        { type: QueryTypes.SELECT }
+    )
 
     assessments.forEach(function (assessment, i) {
-        const evaluationsInAssessment = evaluations.filter(({ assessmentId }) => assessmentId === assessment.id)
+        const evaluationsInAssessment = evaluations.filter(
+            ({ assessmentId }) => assessmentId === assessment.id
+        )
 
         if (!evaluationsInAssessment) {
             assessments[i].setDataValue('num_of_evaluatees', 0)
         } else {
-            assessments[i].setDataValue('num_of_evaluatees', evaluationsInAssessment.length)
+            assessments[i].setDataValue(
+                'num_of_evaluatees',
+                evaluationsInAssessment.length
+            )
         }
     })
-    return res.status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY]).send({ assessments });
+    return res
+        .status(StatusCodes[GET_ASSESSMENTS_SUCCESSFULLY])
+        .send({ assessments })
 }
 
 module.exports.getEvaluateesByAssessment = async (req, res) => {
     const id = req.query.id
 
     if (!id) {
-        return res.status(StatusCodes[GET_EVALUATEES_BAD_REQUEST]).send({ msg: GET_EVALUATEES_BAD_REQUEST })
+        return res
+            .status(StatusCodes[GET_EVALUATEES_BAD_REQUEST])
+            .send({ msg: GET_EVALUATEES_BAD_REQUEST })
     }
 
-    const evaluationTeams = await sequelize.query(`select 
+    const evaluationTeams = await sequelize.query(
+        `select 
     u.id as "member_user_id",
     "academic_title",
     "first_name",
@@ -233,7 +260,9 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
     on e.id = et."evaluationId" 
     inner join users u 
     on et."userId" = u.id
-    where e."assessmentId" = ${id}`, { type: QueryTypes.SELECT })
+    where e."assessmentId" = ${id}`,
+        { type: QueryTypes.SELECT }
+    )
 
     const evaluatees = await User.findAll({
         attributes: [
@@ -243,31 +272,36 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
             'last_name',
             'email',
             'account_status',
-            'user_type'
+            'user_type',
         ],
-        include: [{
-            model: Evaluatee,
-            attributes: [
-                'id',
-                'last_evaluated_date',
-            ],
-            required: true,
-            include: [{
-                model: Evaluation,
+        include: [
+            {
+                model: Evaluatee,
+                attributes: ['id', 'last_evaluated_date'],
                 required: true,
-                where: { assessmentId: id },
-                include: {
-                    model: Course,
-                    required: true,
-                }
-            }]
-        }]
+                include: [
+                    {
+                        model: Evaluation,
+                        required: true,
+                        where: { assessmentId: id },
+                        include: {
+                            model: Course,
+                            required: true,
+                        },
+                    },
+                ],
+            },
+        ],
     })
 
     evaluatees.forEach((e) => {
-        const evaluationTeamForEvaluatee = evaluationTeams.filter((et) => et.evaluatee_id === e.evaluatee.id)
-        e.setDataValue("evaluation_team", evaluationTeamForEvaluatee)
+        const evaluationTeamForEvaluatee = evaluationTeams.filter(
+            (et) => et.evaluatee_id === e.evaluatee.id
+        )
+        e.setDataValue('evaluation_team', evaluationTeamForEvaluatee)
     })
 
-    return res.status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY]).send({ evaluatees });
+    return res
+        .status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY])
+        .send({ evaluatees })
 }
