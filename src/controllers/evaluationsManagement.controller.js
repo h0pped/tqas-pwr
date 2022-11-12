@@ -159,22 +159,32 @@ module.exports.createAssessment = async (req, res) => {
 module.exports.getAssesments = async (req, res) => {
     var assesments = await Assesments.findAll()
 
-    const evaluations = await sequelize.query('select distinct "assessmentId" , "evaluateeId"  FROM evaluations' , { type: QueryTypes.SELECT })
+    const evaluations = await sequelize.query(
+        'select distinct "assessmentId" , "evaluateeId"  FROM evaluations',
+        { type: QueryTypes.SELECT }
+    )
 
     assesments.forEach(function (assesment, i) {
-        const evaluation_in_assesment = evaluations.filter(evaluation => evaluation.assessmentId === assesment.id)
+        const evaluation_in_assesment = evaluations.filter(
+            (evaluation) => evaluation.assessmentId === assesment.id
+        )
 
         if (evaluation_in_assesment === undefined) {
             assesments[i].setDataValue('num_of_evaluatees', 0)
         } else {
-            assesments[i].setDataValue('num_of_evaluatees', evaluation_in_assesment.length)
+            assesments[i].setDataValue(
+                'num_of_evaluatees',
+                evaluation_in_assesment.length
+            )
         }
     })
-    return res.send(assesments);
+    return res.send(assesments)
 }
 
 module.exports.getEvaluateesByAssesment = async (req, res) => {
-    const { id } = req.body
+    const { id } = req.query
+
+    console.log(id)
 
     if (id === undefined) {
         return res.send({ msg: 'Id of assesment is required.' })
@@ -188,25 +198,26 @@ module.exports.getEvaluateesByAssesment = async (req, res) => {
             'last_name',
             'email',
             'account_status',
-            'user_type'
+            'user_type',
         ],
-        include: [{
-            model: Evaluatee,
-            attributes: [
-                'id',
-                'last_evaluated_date',
-            ],
-            required: true,
-            include: [{
-                model: Evaluation,
+        include: [
+            {
+                model: Evaluatee,
+                attributes: ['id', 'last_evaluated_date'],
                 required: true,
-                where: { assessmentId: id },
-                include: {
-                    model: Course ,
-                    required: true
-                }
-            }]
-        }]
+                include: [
+                    {
+                        model: Evaluation,
+                        required: true,
+                        where: { assessmentId: id },
+                        include: {
+                            model: Course,
+                            required: true,
+                        },
+                    },
+                ],
+            },
+        ],
     })
-    return res.send(assesments);
+    return res.send(assesments)
 }
