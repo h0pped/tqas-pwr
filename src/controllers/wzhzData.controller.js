@@ -8,7 +8,7 @@ const {
         USER_DOES_NOT_EXIST,
         MEMBER_REMOVED,
         MEMEBER_DOES_NOT_EXIST,
-        ID_NOT_PROVIDED
+        USER_ID_NOT_PROVIDED,
     },
 } = require('../config/index.config')
 
@@ -38,8 +38,8 @@ module.exports.addMember = async (req, res) => {
 
     if (!userId) {
         return res
-            .status(StatusCodes[ID_NOT_PROVIDED])
-            .send({ msg: ID_NOT_PROVIDED });
+            .status(StatusCodes[USER_ID_NOT_PROVIDED])
+            .send({ msg: USER_ID_NOT_PROVIDED });
     }
 
     if (!(await isUserExisting(userId))) {

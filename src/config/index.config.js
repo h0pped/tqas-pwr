@@ -46,7 +46,7 @@ const config = {
         USER_DOES_NOT_EXIST: 'User with provided ID does not exist',
         MEMBER_REMOVED: 'Member was removed from WZHZ group',
         MEMEBER_DOES_NOT_EXIST: 'Such member of WZHZ does not exist',
-        ID_NOT_PROVIDED:
+        USER_ID_NOT_PROVIDED:
             'Id of user is required in order to add it to WZHZ group',
         INVALID_USER_DATA: 'Invalid user data provided',
         RECOVERY_CODE_SEND: 'Recovery code was send',
@@ -55,6 +55,28 @@ const config = {
         RECOVERY_CODE_BLOCKED: 'Recovery code is blocked',
         RECOVERY_CODE_NOT_FOUND: "Recovery code doesn't exist",
         EMAIL_ALREADY_EXISTS: 'User with such email already exists',
+        INVALID_EVALUATEE_PROVIDED: 'Evaluatee with a given Id does not exist',
+        INVALID_ASSESSMENT_PROVIDED:
+            'Assessment with the given ID does not exist',
+        LIST_OF_EVALUATED_CLASSES_CREATED:
+            'List of classes created successfully',
+        ASSESSMENT_DOES_NOT_EXIST: 'Assessment with given id does not exist',
+        ALREADY_AN_EVALUATEE:
+            'User that is trying to be set as supervisor is already an evaluatee in this assessment',
+        SUPERVISOR_SET_SUCCESSFULLY: 'Supervisor set successfully',
+        SUPERVISOR_SET_BAD_REQUEST:
+            'Invalid data provided in the request for setting supervisor to an assessment',
+        LIST_OF_EVALUATED_CLASSES_BAD_REQUEST:
+            'Invalid data provided in the request for creating list of classes',
+        CREATE_ASSESSMENT_BAD_REQUEST:
+            'Invalid data provided in request for creating assessment',
+        ASSESSMENT_CREATED_SUCCESSFULLY: 'Assessment created successfully',
+        CALLENDAR_ERROR: 'Error while creating callendar file of evaluations',
+        NOT_UNIQUE_COURSE:
+            'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment',
+        GET_EVALUATEES_BAD_REQUEST: 'Id of assesment is required.',
+        GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST:
+            'Id of supervisor is required.',
     },
 }
 
