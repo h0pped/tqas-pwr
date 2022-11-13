@@ -20,8 +20,8 @@ const config = {
     mailer: {
         service: 'Gmail',
         auth: {
-            user: process.env.MAILER_EMAIL || 'tqastest@pwr.edu.pl',
-            pass: process.env.MAILER_PASSWORD || '123123123',
+            user:'257262@student.pwr.edu.pl',
+            pass: '@nton777XLN26112001!',
         },
     },
     responseMessages: {
@@ -68,6 +68,7 @@ const config = {
         NOT_UNIQUE_COURSE: 'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment',
         GET_EVALUATEES_BAD_REQUEST: 'Id of assesment is required.',
         GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST: 'Id of supervisor is required.',
+        GET_PROTOCOLS_BAD_REQUEST: 'Id of evaluation team member is required in order to see protocols assigned to them.'
     },
 }
 
