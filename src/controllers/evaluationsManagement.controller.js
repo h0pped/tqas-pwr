@@ -6,8 +6,8 @@ const Evaluation = sequelize.models.evaluation
 const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
-const Assesments = sequelize.models.assessment
 const Wzhz = sequelize.models.wzhz
+const Assessments = sequelize.models.assessment
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -181,7 +181,7 @@ module.exports.createAssessment = async (req, res) => {
 }
 
 module.exports.getAssessments = async (req, res) => {
-    const assessments = await Assesments.findAll()
+    const assessments = await Assessments.findAll()
 
     const evaluations = await sequelize.query(
         'select distinct "assessmentId" , "evaluateeId"  FROM evaluations',
@@ -216,7 +216,7 @@ module.exports.getAssessmentsBySupervisor = async (req, res) => {
             .send({ msg: GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST })
     }
 
-    const assessments = await Assesments.findAll({
+    const assessments = await Assessments.findAll({
         where: { supervisor_id: supervisorId },
     })
 
