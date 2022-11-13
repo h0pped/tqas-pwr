@@ -68,6 +68,11 @@ const config = {
         NOT_UNIQUE_COURSE: 'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment',
         GET_EVALUATEES_BAD_REQUEST: 'Id of assesment is required.',
         GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST: 'Id of supervisor is required.',
+        EVALUATION_DOES_NOT_EXIST: 'Evaluation with given id does not exist',
+        UNKNOWN_EVALUATION_REVIEW_STATUS: 'Unknown evaluation review status provided. Should be accepted or rejected',
+        EVALUATION_REVIEW_SUCCESSFUL: 'Evaluation reviewed successfully',
+        EVALUATION_REVIEW_BAD_REQUEST: 'Invalid data provided in the request for reviewing the evaluation',
+        USER_NOT_AUTHORIZED_FOR_OPERATION: 'User not authorized to perform this operation',
     },
 }
 

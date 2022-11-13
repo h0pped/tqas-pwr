@@ -27,6 +27,11 @@ const {
         GET_EVALUATEES_SUCCESSFULLY,
         GET_EVALUATEES_BAD_REQUEST,
         GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST,
+        EVALUATION_DOES_NOT_EXIST,
+        UNKNOWN_EVALUATION_REVIEW_STATUS,
+        EVALUATION_REVIEW_SUCCESSFUL,
+        EVALUATION_REVIEW_BAD_REQUEST,
+        USER_NOT_AUTHORIZED_FOR_OPERATION,
     },
 } = require('../config/index.config')
 
@@ -304,4 +309,61 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
     return res
         .status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY])
         .send({ evaluatees })
+}
+
+module.exports.evaluateeReviewEvaluation = async (req, res) => {
+    try {
+        if (!req.body.evaluation_id) {
+            return res
+                .status(StatusCodes[EVALUATION_REVIEW_BAD_REQUEST])
+                .send({ EVALUATION_REVIEW_BAD_REQUEST })
+        }
+        const evaluation = await Evaluation.findByPk(req.body.evaluation_id)
+        if (!evaluation) {
+            return res
+                .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
+                .send({ EVALUATION_DOES_NOT_EXIST })
+        }
+        const userData = JSON.parse(
+            atob(req.headers.authorization.slice(7).split('.')[1])
+        )
+        const authorizedUser = await Evaluation.findByPk(req.body.evaluation_id, {
+            include: [
+                {
+                    model: Evaluatee,
+                    required: true,
+                    include: [
+                        {
+                            model: User,
+                            required: true,
+                            where: {email: userData.email}
+                        },
+                    ],
+                },
+            ],
+        })
+        if(!authorizedUser){
+            return res
+            .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+            .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+        }
+        if (!['accepted', 'rejected'].includes(req.body.status.toLowerCase())) {
+            return res
+                .status(StatusCodes[UNKNOWN_EVALUATION_REVIEW_STATUS])
+                .send({ UNKNOWN_EVALUATION_REVIEW_STATUS })
+        }
+        evaluation.set({
+            status:
+                req.body.status.charAt(0).toUpperCase() +
+                req.body.status.slice(1),
+        })
+        evaluation.save()
+        return res
+            .status(StatusCodes[EVALUATION_REVIEW_SUCCESSFUL])
+            .send({ EVALUATION_REVIEW_SUCCESSFUL })
+    } catch (err) {
+        return res
+            .status(StatusCodes[EVALUATION_REVIEW_BAD_REQUEST])
+            .send({ EVALUATION_REVIEW_BAD_REQUEST })
+    }
 }

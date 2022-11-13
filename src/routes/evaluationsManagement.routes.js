@@ -10,11 +10,13 @@ const {
     getAssessments,
     getEvaluateesByAssessment,
     getAssessmentsBySupervisor,
+    evaluateeReviewEvaluation,
 } = require('../controllers/evaluationsManagement.controller.js')
 
 router.post('/createListOfClasses', authMiddleware, createListOfClasses)
 router.post('/setAssessmentSupervisor', authMiddleware, setAssessmentSupervisor)
 router.post('/createAssessment', authMiddleware, createAssessment)
+router.post('/evaluateeReviewEvaluation', authMiddleware, evaluateeReviewEvaluation)
 router.get('/getAssessments', authMiddleware, getAssessments)
 router.get(
     '/getEvaluateesByAssessment',

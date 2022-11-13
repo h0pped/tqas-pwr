@@ -52,12 +52,14 @@ sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
 })
 sequelize.models.protocol_question.belongsTo(sequelize.models.protocol)
 sequelize.models.protocol_question.belongsTo(sequelize.models.question)
-sequelize.models.evaluation.hasOne(sequelize.models.protocol)
+sequelize.models.evaluation.belongsTo(sequelize.models.protocol)
+sequelize.models.protocol.hasMany(sequelize.models.evaluation)
 sequelize.models.evaluation.belongsToMany(sequelize.models.protocol_question, {
     through: sequelize.models.protocol_answer,
 })
 sequelize.models.evaluation.belongsTo(sequelize.models.evaluatee)
 sequelize.models.evaluatee.hasMany(sequelize.models.evaluation)
+sequelize.models.evaluatee.belongsTo(sequelize.models.user)
 sequelize.models.evaluation.belongsTo(sequelize.models.course, {
     foreignKey: { name: 'course_code', type: DataTypes.STRING },
 })
