@@ -73,6 +73,11 @@ const config = {
         EVALUATION_REVIEW_SUCCESSFUL: 'Evaluation reviewed successfully',
         EVALUATION_REVIEW_BAD_REQUEST: 'Invalid data provided in the request for reviewing the evaluation',
         USER_NOT_AUTHORIZED_FOR_OPERATION: 'User not authorized to perform this operation',
+        NO_WZHZ_MEMBER_IN_EVALUATION_TEAM: 'No wzhz members were provided in one of the evaluation teams',
+        EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM: 'Evaluatee is trying to be set as the evaluation team member of his own evaluation',
+        EVALUATION_TEAMS_CREATED_SUCCESSFULLY: 'Evaluation teams set successfully',
+        USER_ALREADY_IN_THE_EVALUATION_TEAM: 'The user is being added to the same evaluation team more than once',
+        EVALUATION_TEAM_BAD_REQUREST: 'Invalid data provided in the request for assigning evaluation teams',
     },
 }
 
