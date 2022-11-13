@@ -68,6 +68,12 @@ const config = {
         NOT_UNIQUE_COURSE: 'There is a same course (or multiple same courses) of the same teacher being added multiple times for the same assessment',
         GET_EVALUATEES_BAD_REQUEST: 'Id of assesment is required.',
         GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST: 'Id of supervisor is required.',
+        NO_WZHZ_MEMBER_IN_EVALUATION_TEAM: 'No wzhz members were provided in one of the evaluation teams',
+        EVALUATION_DOES_NOT_EXIST: 'Evaluation with provided id does not exist',
+        EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM: 'Evaluatee is trying to be set as the evaluation team member of his own evaluation',
+        EVALUATION_TEAMS_CREATED_SUCCESSFULLY: 'Evaluation teams set successfully',
+        USER_ALREADY_IN_THE_EVALUATION_TEAM: 'The user is being added to the same evaluation team more than once',
+        EVALUATION_TEAM_BAD_REQUREST: 'Invalid data provided in the request for assigning evaluation teams',
     },
 }
 

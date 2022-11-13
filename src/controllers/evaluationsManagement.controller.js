@@ -6,6 +6,7 @@ const Evaluation = sequelize.models.evaluation
 const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
+const Wzhz = sequelize.models.wzhz
 const Assessments = sequelize.models.assessment
 
 const StatusCodes = require('../config/statusCodes.config')
@@ -27,6 +28,12 @@ const {
         GET_EVALUATEES_SUCCESSFULLY,
         GET_EVALUATEES_BAD_REQUEST,
         GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST,
+        NO_WZHZ_MEMBER_IN_EVALUATION_TEAM,
+        EVALUATION_DOES_NOT_EXIST,
+        EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM,
+        EVALUATION_TEAMS_CREATED_SUCCESSFULLY,
+        USER_ALREADY_IN_THE_EVALUATION_TEAM,
+        EVALUATION_TEAM_BAD_REQUREST,
     },
 } = require('../config/index.config')
 
@@ -304,4 +311,81 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
     return res
         .status(StatusCodes[GET_EVALUATEES_SUCCESSFULLY])
         .send({ evaluatees })
+}
+
+module.exports.createEvaluationTeams = async (req, res) => {
+    try {
+        for (const [evaluationId, users] of Object.entries(req.body)) {
+            const foundWzhzMembers = await Wzhz.findOne({
+                where : {
+                    userId: users.map(x => Object.keys(x)).flat()
+                }
+            })
+            if(!foundWzhzMembers){
+                return res.status(StatusCodes[NO_WZHZ_MEMBER_IN_EVALUATION_TEAM]).send({
+                    message: NO_WZHZ_MEMBER_IN_EVALUATION_TEAM,
+                })
+            }
+            const evaluation = await Evaluation.findByPk(evaluationId)
+            if (!evaluation) {
+                return res.status(StatusCodes[EVALUATION_DOES_NOT_EXIST]).send({
+                    message: EVALUATION_DOES_NOT_EXIST,
+                })
+            }
+            const evaluationTeam = []
+            for (const evaluationTeamMember of users) {
+                const evaluatee = await Evaluation.findOne({
+                    where: { id: evaluationId },
+                    include: [
+                        {
+                            model: Evaluatee,
+                            attributes: ['userId'],
+                            required: true,
+                            where: {
+                                userId: Object.keys(evaluationTeamMember)[0],
+                            },
+                        },
+                    ],
+                })
+
+                if (evaluatee) {
+                    return res
+                        .status(
+                            StatusCodes[
+                                EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM
+                            ]
+                        )
+                        .send({
+                            message:
+                                EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM,
+                        })
+                }
+
+                const user = await User.findByPk(Object.keys(evaluationTeamMember)[0])
+                if (!user) {
+                    return res.status(StatusCodes[USER_DOES_NOT_EXIST]).send({
+                        message: USER_DOES_NOT_EXIST,
+                    })
+                }
+                evaluationTeam.push(user)
+            }
+            evaluation.addUsers(evaluationTeam)
+        }
+        return res
+            .status(StatusCodes[EVALUATION_TEAMS_CREATED_SUCCESSFULLY])
+            .send({
+                message: EVALUATION_TEAMS_CREATED_SUCCESSFULLY,
+            })
+    } catch (err) {
+        if (err.name === 'SequelizeUniqueConstraintError') {
+            return res
+                .status(StatusCodes[USER_ALREADY_IN_THE_EVALUATION_TEAM])
+                .send({
+                    message: USER_ALREADY_IN_THE_EVALUATION_TEAM,
+                })
+        }
+        return res
+            .status(StatusCodes[EVALUATION_TEAM_BAD_REQUREST])
+            .send({ message: EVALUATION_TEAM_BAD_REQUREST })
+    }
 }
