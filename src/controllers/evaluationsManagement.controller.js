@@ -313,7 +313,7 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
         .send({ evaluatees })
 }
 
-module.exports.createEvluationTeams = async (req, res) => {
+module.exports.createEvaluationTeams = async (req, res) => {
     try {
         for (const [evaluationId, users] of Object.entries(req.body)) {
             const foundWzhzMembers = await Wzhz.findOne({
