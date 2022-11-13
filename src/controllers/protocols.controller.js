@@ -19,6 +19,7 @@ module.exports.getProtocolsByETMember = async (req, res) => {
     c.course_name  as "evaluation_course_name",
     e.details as "evaluation_details",
     e.enrolled_students as "evaluation_enrolled_students",
+    a."name" as "semester_of_assessment",
     et."userId" as "et_memeber_id",
     u.id as "evaluatee_id",
     u.academic_title as "evaluatee_academic_title",
@@ -30,6 +31,8 @@ module.exports.getProtocolsByETMember = async (req, res) => {
     on p."evaluationId" = e.id 
     inner join courses c 
     on e.course_code = c.course_code 
+    inner join assessments a 
+    on e."assessmentId" = a.id 
     inner join evaluation_teams et 
     on e.id = et."evaluationId" 
     inner join evaluatees e2 
