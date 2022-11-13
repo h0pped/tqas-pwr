@@ -20,8 +20,8 @@ const config = {
     mailer: {
         service: 'Gmail',
         auth: {
-            user:'257262@student.pwr.edu.pl',
-            pass: '@nton777XLN26112001!',
+            user:'',
+            pass: '',
         },
     },
     responseMessages: {
