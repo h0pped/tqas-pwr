@@ -74,6 +74,7 @@ const config = {
         EVALUATION_TEAMS_CREATED_SUCCESSFULLY: 'Evaluation teams set successfully',
         USER_ALREADY_IN_THE_EVALUATION_TEAM: 'The user is being added to the same evaluation team more than once',
         EVALUATION_TEAM_BAD_REQUREST: 'Invalid data provided in the request for assigning evaluation teams',
+        GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST: 'Id of member is required in order to get evaluations they responsible for.'
     },
 }
 

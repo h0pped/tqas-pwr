@@ -50,6 +50,7 @@ sequelize.models.user.hasOne(sequelize.models.evaluatee, {
 sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
     through: sequelize.models.evaluation_team,
 })
+sequelize.models.evaluation_team.hasMany(sequelize.models.user)
 sequelize.models.evaluation.belongsToMany(sequelize.models.user, {through: sequelize.models.evaluation_team})
 sequelize.models.protocol_question.belongsTo(sequelize.models.protocol)
 sequelize.models.protocol_question.belongsTo(sequelize.models.question)

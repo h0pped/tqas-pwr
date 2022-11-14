@@ -11,6 +11,7 @@ const {
     getEvaluateesByAssessment,
     getAssessmentsBySupervisor,
     createEvaluationTeams,
+    getEvaluationsETMemberResponsibleFor
 } = require('../controllers/evaluationsManagement.controller.js')
 
 router.post('/createListOfClasses', authMiddleware, createListOfClasses)
@@ -21,5 +22,6 @@ router.get('/getAssessments', authMiddleware, getAssessments)
 router.get('/getEvaluateesByAssessment', authMiddleware, getEvaluateesByAssessment)
 router.get('/getAssessmentsBySupervisor', authMiddleware, getAssessmentsBySupervisor)
 router.get('/getEvaluateesByAssessment', authMiddleware, getEvaluateesByAssessment)
+router.get('/getEvaluationsETMemberResponsibleFor', authMiddleware, getEvaluationsETMemberResponsibleFor)
 
 module.exports = router

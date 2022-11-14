@@ -1,5 +1,5 @@
 const sequelize = require('../sequelize')
-const { QueryTypes } = require('sequelize')
+const { QueryTypes, where } = require('sequelize')
 
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
@@ -8,6 +8,7 @@ const User = sequelize.models.user
 const Course = sequelize.models.course
 const Wzhz = sequelize.models.wzhz
 const Assessments = sequelize.models.assessment
+const EvaluationTeam=sequelize.models.evaluation_team
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -34,6 +35,8 @@ const {
         EVALUATION_TEAMS_CREATED_SUCCESSFULLY,
         USER_ALREADY_IN_THE_EVALUATION_TEAM,
         EVALUATION_TEAM_BAD_REQUREST,
+       GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST,
+       GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY
     },
 } = require('../config/index.config')
 
@@ -388,4 +391,84 @@ module.exports.createEvaluationTeams = async (req, res) => {
             .status(StatusCodes[EVALUATION_TEAM_BAD_REQUREST])
             .send({ message: EVALUATION_TEAM_BAD_REQUREST })
     }
+}
+
+module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
+    const memberId = req.query.id;
+
+    if (!memberId) {
+        return res.status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST])
+            .send({ msg: GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST})
+    }
+
+    const evaluationTeamsMemberPartOf = await EvaluationTeam.findAll(
+        { 
+            attributes: [
+                'userId', 
+                'evaluationId'
+            ], 
+            where: { userId: memberId }
+        }
+    );
+
+    const evaluations = await Evaluation.findAll(
+        {
+            include: [
+                {
+                    model: Assessment
+                }, 
+                {
+                    model: Evaluatee
+                }, 
+                {
+                    model: Course
+                }
+            ]
+        }
+    );
+
+    const users = await User.findAll(
+        {
+            attributes: [
+                'id', 
+                'academic_title', 
+                'first_name', 
+                'last_name'
+            ]
+        }
+    );
+
+    const allEvaluationTeams = await EvaluationTeam.findAll(
+        { 
+            attributes: [
+                'userId', 
+                'evaluationId'
+            ]
+        }
+    )
+
+    evaluationTeamsMemberPartOf.forEach( async(et) => {
+        et.setDataValue(
+            'evaluation', evaluations.find(
+                (evaluation) => evaluation.id === et.evaluationId)
+            );
+
+        et.setDataValue(
+            'evaluatee_full', users.find(
+                (user) => user.id === et.getDataValue('evaluation').evaluatee.userId)
+            );
+
+        et.setDataValue(
+            'evaluation_team_mebers', allEvaluationTeams.filter(
+                (member) => member.evaluationId === et.evaluationId)
+            )
+        et.getDataValue(
+            'evaluation_team_mebers').forEach(
+                (member) => member.setDataValue(
+                    'user_full', users.find((user) => user.id === member.userId)
+                )
+            )
+    })
+
+    return res.status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY]).send({ evaluationTeams: evaluationTeamsMemberPartOf });
 }
