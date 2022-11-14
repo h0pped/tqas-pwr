@@ -468,17 +468,17 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
             )
     })
 
-    var evaluateesToBeEvaluatedByMemember = []
+    var evaluateesToBeEvaluatedByMember = []
 
     evaluatees.forEach((evaluatee) => {
         evaluatee.getDataValue('evaluation_team').forEach((etMember) => {
             if (etMember.userId === memberId) {
-                evaluateesToBeEvaluatedByMemember.push(evaluatee)
+                evaluateesToBeEvaluatedByMember.push(evaluatee)
             }
         })
     })
 
     return res
         .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY])
-        .send({ evaluatees: evaluateesToBeEvaluatedByMemember });
+        .send({ evaluatees: evaluateesToBeEvaluatedByMember });
 }
