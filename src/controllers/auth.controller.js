@@ -62,7 +62,7 @@ module.exports.signIn = async (req, res) => {
                     user_type: user.user_type,
                     first_name: user.first_name,
                     last_name: user.last_name,
-                    title: user.title,
+                    academic_title: user.academic_title,
                 },
                 secret,
                 {
