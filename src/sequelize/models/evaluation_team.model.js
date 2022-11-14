@@ -1,5 +1,3 @@
-const { DataTypes } = require('sequelize');
-
 module.exports = (sequelize) => {
-    sequelize.define('evaluation_team', {});
-};
+    sequelize.define('evaluation_team', {})
+}
