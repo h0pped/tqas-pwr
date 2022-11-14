@@ -1,4 +1,4 @@
-module.exports = (name) => `<body
+module.exports = (name, semester) => `<body
 style="
   box-sizing: border-box;
   padding: 0;
@@ -25,10 +25,9 @@ style="
     </h4>
   </header>
   <section>
-    <h2 style="font-size: 28; margin-bottom: 30px; text-align: center;color:black">
-        New Outlined Schedule
+    <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
+      Assessment Approval
     </h2>
-    <div style="margin-bottom: 30px; text-align: left">
       <p
         style="
           line-height: 2rem;
@@ -37,25 +36,24 @@ style="
           color: black;
         "
       >
-        Hello ${name},
+        Dear ${name},
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        We received in our system newly created <b>Outlined schedule</b> that is waiting for your approval.
+        Assessment created by you for <b>${semester} Semester</b> has been successfully approved by a supervisor and Evaluation Teams were assigned.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Please, join <span><a href="https://google.com" style="font-weight:bold;">Teaching Quality Assurance System</a></span> and assign <b>Evaluation Team</b> to it.
+        Please, join the system in order to see assessment status.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        If you have any issues, please contact
+        If you have any issues with, please contact
         administrator using following email address:
-        <a href="mailto:sekretariat.wit@pwr.edu.pl" style="font-weight:bold;">
+        <a href="mailto:sekretariat.wit@pwr.edu.pl ">
           sekretariat.wit@pwr.edu.pl</a
         >
       </p>
-    </div>
   </section>
 </div>
 </body>
