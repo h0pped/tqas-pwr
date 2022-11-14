@@ -397,11 +397,12 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     const memberId = req.query.id;
 
     if (!memberId) {
-        return res.status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST])
+        return res
+            .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST])
             .send({ msg: GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST})
     }
 
-    const evaluationTeamsMemberPartOf = await EvaluationTeam.findAll(
+    const evaluationTeamsMemberIsPartOf = await EvaluationTeam.findAll(
         { 
             attributes: [
                 'userId', 
@@ -447,7 +448,7 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
         }
     )
 
-    evaluationTeamsMemberPartOf.forEach( async(et) => {
+    evaluationTeamsMemberIsPartOf.forEach( async(et) => {
         et.setDataValue(
             'evaluation', evaluations.find(
                 (evaluation) => evaluation.id === et.evaluationId)
@@ -470,5 +471,7 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
             )
     })
 
-    return res.status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY]).send({ evaluationTeams: evaluationTeamsMemberPartOf });
+    return res
+        .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY])
+        .send({ evaluationTeams: evaluationTeamsMemberIsPartOf });
 }
