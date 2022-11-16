@@ -78,6 +78,8 @@ const config = {
         EVALUATION_TEAMS_CREATED_SUCCESSFULLY: 'Evaluation teams set successfully',
         USER_ALREADY_IN_THE_EVALUATION_TEAM: 'The user is being added to the same evaluation team more than once',
         EVALUATION_TEAM_BAD_REQUREST: 'Invalid data provided in the request for assigning evaluation teams',
+        EVALUATION_DELETED_SUCCESSFULLY: 'Evaluation deleted successfully',
+        EVALUATION_DELETION_BAD_REQUEST: 'Invalid data provided in the request for deleting the evaluation',
     },
 }
 

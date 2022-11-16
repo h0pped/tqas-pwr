@@ -38,6 +38,8 @@ const {
         EVALUATION_TEAMS_CREATED_SUCCESSFULLY,
         USER_ALREADY_IN_THE_EVALUATION_TEAM,
         EVALUATION_TEAM_BAD_REQUREST,
+        EVALUATION_DELETED_SUCCESSFULLY,
+        EVALUATION_DELETION_BAD_REQUEST,
     },
 } = require('../config/index.config')
 
@@ -333,25 +335,28 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
         const userData = JSON.parse(
             atob(req.headers.authorization.slice(7).split('.')[1])
         )
-        const authorizedUser = await Evaluation.findByPk(req.body.evaluation_id, {
-            include: [
-                {
-                    model: Evaluatee,
-                    required: true,
-                    include: [
-                        {
-                            model: User,
-                            required: true,
-                            where: {email: userData.email}
-                        },
-                    ],
-                },
-            ],
-        })
-        if(!authorizedUser){
+        const authorizedUser = await Evaluation.findByPk(
+            req.body.evaluation_id,
+            {
+                include: [
+                    {
+                        model: Evaluatee,
+                        required: true,
+                        include: [
+                            {
+                                model: User,
+                                required: true,
+                                where: { email: userData.email },
+                            },
+                        ],
+                    },
+                ],
+            }
+        )
+        if (!authorizedUser) {
             return res
-            .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
-            .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+                .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+                .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
         }
         if (!['accepted', 'rejected'].includes(req.body.status.toLowerCase())) {
             return res
@@ -378,14 +383,16 @@ module.exports.createEvaluationTeams = async (req, res) => {
     try {
         for (const [evaluationId, users] of Object.entries(req.body)) {
             const foundWzhzMembers = await Wzhz.findOne({
-                where : {
-                    userId: users.map(x => Object.keys(x)).flat()
-                }
+                where: {
+                    userId: users.map((x) => Object.keys(x)).flat(),
+                },
             })
-            if(!foundWzhzMembers){
-                return res.status(StatusCodes[NO_WZHZ_MEMBER_IN_EVALUATION_TEAM]).send({
-                    message: NO_WZHZ_MEMBER_IN_EVALUATION_TEAM,
-                })
+            if (!foundWzhzMembers) {
+                return res
+                    .status(StatusCodes[NO_WZHZ_MEMBER_IN_EVALUATION_TEAM])
+                    .send({
+                        message: NO_WZHZ_MEMBER_IN_EVALUATION_TEAM,
+                    })
             }
             const evaluation = await Evaluation.findByPk(evaluationId)
             if (!evaluation) {
@@ -422,7 +429,9 @@ module.exports.createEvaluationTeams = async (req, res) => {
                         })
                 }
 
-                const user = await User.findByPk(Object.keys(evaluationTeamMember)[0])
+                const user = await User.findByPk(
+                    Object.keys(evaluationTeamMember)[0]
+                )
                 if (!user) {
                     return res.status(StatusCodes[USER_DOES_NOT_EXIST]).send({
                         message: USER_DOES_NOT_EXIST,
@@ -448,5 +457,41 @@ module.exports.createEvaluationTeams = async (req, res) => {
         return res
             .status(StatusCodes[EVALUATION_TEAM_BAD_REQUREST])
             .send({ message: EVALUATION_TEAM_BAD_REQUREST })
+    }
+}
+
+module.exports.deleteEvaluation = async (req, res) => {
+    try {
+        const userData = JSON.parse(
+            atob(req.headers.authorization.slice(7).split('.')[1])
+        )
+        const authorizedUser = await User.findOne({
+            where: { email: userData.email, user_type: 'admin' },
+        })
+        if (!authorizedUser) {
+            return res
+                .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+                .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+        }
+        const destroyed = await Evaluation.destroy({
+            where: { id: req.body.evaluation_id },
+        })
+        return res
+            .status(
+                StatusCodes[
+                    destroyed
+                        ? EVALUATION_DELETED_SUCCESSFULLY
+                        : EVALUATION_DOES_NOT_EXIST
+                ]
+            )
+            .send(
+                destroyed
+                    ? { EVALUATION_DELETED_SUCCESSFULLY }
+                    : { EVALUATION_DOES_NOT_EXIST }
+            )
+    } catch (err) {
+        return res
+            .status(StatusCodes[EVALUATION_DELETION_BAD_REQUEST])
+            .send({ EVALUATION_DELETION_BAD_REQUEST })
     }
 }
