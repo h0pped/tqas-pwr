@@ -530,7 +530,7 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     })
 
     evaluatees.filter((evaluatee) => 
-        Object.values(evaluatee.getDataValue('evaluation_team')).includes(memberId)
+        evaluatee.getDataValue('evaluation_team').some((member) => member.userId === memberId)
     )
 
     return res
