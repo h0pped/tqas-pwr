@@ -69,7 +69,7 @@ const config = {
         GET_EVALUATEES_BAD_REQUEST: 'Id of assesment is required.',
         GET_ASSESSMENTS_BY_SUPERVISOR_BAD_REQUEST: 'Id of supervisor is required.',
         EVALUATION_DOES_NOT_EXIST: 'Evaluation with given id does not exist',
-        UNKNOWN_EVALUATION_REVIEW_STATUS: 'Unknown evaluation review status provided. Should be accepted or rejected',
+        UNKNOWN_EVALUATION_REVIEW_STATUS: 'Unknown evaluation review status provided. Should be "accepted" or "rejected"',
         EVALUATION_REVIEW_SUCCESSFUL: 'Evaluation reviewed successfully',
         EVALUATION_REVIEW_BAD_REQUEST: 'Invalid data provided in the request for reviewing the evaluation',
         USER_NOT_AUTHORIZED_FOR_OPERATION: 'User not authorized to perform this operation',
@@ -78,6 +78,9 @@ const config = {
         EVALUATION_TEAMS_CREATED_SUCCESSFULLY: 'Evaluation teams set successfully',
         USER_ALREADY_IN_THE_EVALUATION_TEAM: 'The user is being added to the same evaluation team more than once',
         EVALUATION_TEAM_BAD_REQUREST: 'Invalid data provided in the request for assigning evaluation teams',
+        ASSESSMENT_REVIEW_BAD_REQUEST: 'Invalid data provided in the request for reviewing the assessment',
+        ASSESSMENT_STATUS_NOT_ALLOWED: 'Unknown assessment review status provided. Should be "changes required" or "ongoing"',
+        ASSESSMENT_REVIEW_SUCCESSFUL: 'Assessment reviewed successfully',
     },
 }
 
