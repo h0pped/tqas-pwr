@@ -22,8 +22,10 @@ const {
         EVALUATION_TEAMS_CREATED_SUCCESSFULLY,
         USER_ALREADY_IN_THE_EVALUATION_TEAM,
         EVALUATION_TEAM_BAD_REQUREST,
+        EVALUATION_DELETED_SUCCESSFULLY,
+        EVALUATION_DELETION_BAD_REQUEST,
         GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST,
-        GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY
+        GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY,
     },
 } = require('../config/index.config')
 
@@ -168,6 +170,41 @@ module.exports.createEvaluationTeams = async (req, res) => {
     }
 }
 
+module.exports.deleteEvaluation = async (req, res) => {
+    try {
+        const userData = JSON.parse(
+            atob(req.headers.authorization.slice(7).split('.')[1])
+        )
+        const authorizedUser = await User.findOne({
+            where: { email: userData.email, user_type: 'admin' },
+        })
+        if (!authorizedUser) {
+            return res
+                .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+                .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+        }
+        const destroyed = await Evaluation.destroy({
+            where: { id: req.body.evaluation_id },
+        })
+        return res
+            .status(
+                StatusCodes[
+                    destroyed
+                        ? EVALUATION_DELETED_SUCCESSFULLY
+                        : EVALUATION_DOES_NOT_EXIST
+                ]
+            )
+            .send(
+                destroyed
+                    ? { EVALUATION_DELETED_SUCCESSFULLY }
+                    : { EVALUATION_DOES_NOT_EXIST }
+            )
+    } catch (err) {
+        return res
+            .status(StatusCodes[EVALUATION_DELETION_BAD_REQUEST])
+            .send({ EVALUATION_DELETION_BAD_REQUEST })
+    }
+}
 module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     const memberId = Number(req.query.id);
 

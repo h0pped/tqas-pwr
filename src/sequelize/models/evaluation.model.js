@@ -13,5 +13,8 @@ module.exports = (sequelize) => {
         enrolled_students: {
             type: DataTypes.STRING,
         }
-    })
+    },
+    { paranoid: true }
+    )
 }
+ 

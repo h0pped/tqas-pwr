@@ -78,6 +78,8 @@ const config = {
         EVALUATION_TEAMS_CREATED_SUCCESSFULLY: 'Evaluation teams set successfully',
         USER_ALREADY_IN_THE_EVALUATION_TEAM: 'The user is being added to the same evaluation team more than once',
         EVALUATION_TEAM_BAD_REQUREST: 'Invalid data provided in the request for assigning evaluation teams',
+        EVALUATION_DELETED_SUCCESSFULLY: 'Evaluation deleted successfully',
+        EVALUATION_DELETION_BAD_REQUEST: 'Invalid data provided in the request for deleting the evaluation',
         ASSESSMENT_REVIEW_BAD_REQUEST: 'Invalid data provided in the request for reviewing the assessment',
         ASSESSMENT_STATUS_NOT_ALLOWED: 'Unknown assessment review status provided. Should be "changes required" or "ongoing"',
         ASSESSMENT_REVIEW_SUCCESSFUL: 'Assessment reviewed successfully',
