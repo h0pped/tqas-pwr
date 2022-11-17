@@ -42,6 +42,9 @@ module.exports = (sequelize) => {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
             },
+            department: {
+                type: DataTypes.STRING,
+            },
         },
         { paranoid: true }
     )
