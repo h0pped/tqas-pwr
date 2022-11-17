@@ -81,6 +81,7 @@ const config = {
         ASSESSMENT_REVIEW_BAD_REQUEST: 'Invalid data provided in the request for reviewing the assessment',
         ASSESSMENT_STATUS_NOT_ALLOWED: 'Unknown assessment review status provided. Should be "changes required" or "ongoing"',
         ASSESSMENT_REVIEW_SUCCESSFUL: 'Assessment reviewed successfully',
+        GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST: 'Id of member is required in order to get evaluations they responsible for.',
     },
 }
 
