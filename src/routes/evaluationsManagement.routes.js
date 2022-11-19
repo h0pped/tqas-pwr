@@ -7,12 +7,14 @@ const {
     evaluateeReviewEvaluation,
     createEvaluationTeams,
     deleteEvaluation,
-    getEvaluationsETMemberResponsibleFor
+    getEvaluationsETMemberResponsibleFor,
+    removeEvaluationTeamMember
 } = require('../controllers/evaluationsManagement.controller.js')
 
 router.post('/evaluateeReviewEvaluation', authMiddleware, evaluateeReviewEvaluation)
 router.post('/createEvaluationTeams', authMiddleware, createEvaluationTeams)
 router.post('/deleteEvaluation', authMiddleware, deleteEvaluation)
 router.get('/getEvaluationsETMemberResponsibleFor', authMiddleware, getEvaluationsETMemberResponsibleFor)
+router.post('/removeEvaluationTeamMember', authMiddleware, removeEvaluationTeamMember)
 
 module.exports = router
