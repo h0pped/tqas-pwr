@@ -4,7 +4,7 @@
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.addColumn('protocols', 'protocol_json', {
-            type: Sequelize.STRING,
+            type: Sequelize.STRING(50000),
             allowNull: false,
         })
     },
