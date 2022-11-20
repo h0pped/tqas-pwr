@@ -114,7 +114,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                     message: EVALUATION_DOES_NOT_EXIST,
                 })
             }
-            const evaluationTeam = []
+            const evaluationTeam = {}
             for (const evaluationTeamMember of users) {
                 const evaluatee = await Evaluation.findOne({
                     where: { id: evaluationId },
@@ -151,9 +151,12 @@ module.exports.createEvaluationTeams = async (req, res) => {
                         message: USER_DOES_NOT_EXIST,
                     })
                 }
-                evaluationTeam.push(user)
+                evaluationTeam[user.getDataValue('id')] = {userModel: user, isHead: evaluationTeamMember[Object.keys(evaluationTeamMember)[0]]}
             }
-            evaluation.addUsers(evaluationTeam)
+            for (const [id, userData] of Object.entries(evaluationTeam)){
+                evaluation.addUser(userData.userModel, {through: {is_head_of_team: userData.isHead}})
+            }
+            
         }
         return res
             .status(StatusCodes[EVALUATION_TEAMS_CREATED_SUCCESSFULLY])
