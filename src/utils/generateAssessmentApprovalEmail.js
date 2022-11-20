@@ -40,7 +40,7 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Assessment created by you for <b>${semester} Semester</b> has been successfully approved by a supervisor and Evaluation Teams were assigned.
+        Assessment for <b>${semester} Semester</b> has been successfully approved by a supervisor and Evaluation Teams were assigned.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">

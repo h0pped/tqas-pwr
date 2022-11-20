@@ -29,7 +29,7 @@ const {
         REMOVE_ET_MEMBER_BAD_REQUEST,
         MEMBER_DELETED_SUCCESSFULLY,
         MEMBER_DOES_NOT_EXIST,
-        REMOVE_ET_MEMEBER_BAD_REQUEST
+        REMOVE_ET_MEMEBER_BAD_REQUEST,
     },
 } = require('../config/index.config')
 
@@ -134,7 +134,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                     return res
                         .status(
                             StatusCodes[
-                            EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM
+                                EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM
                             ]
                         )
                         .send({
@@ -193,9 +193,9 @@ module.exports.deleteEvaluation = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                destroyed
-                    ? EVALUATION_DELETED_SUCCESSFULLY
-                    : EVALUATION_DOES_NOT_EXIST
+                    destroyed
+                        ? EVALUATION_DELETED_SUCCESSFULLY
+                        : EVALUATION_DOES_NOT_EXIST
                 ]
             )
             .send(
@@ -210,7 +210,7 @@ module.exports.deleteEvaluation = async (req, res) => {
     }
 }
 module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
-    const memberId = Number(req.query.id);
+    const memberId = Number(req.query.id)
 
     if (!memberId) {
         return res
@@ -218,25 +218,13 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
             .send({ msg: GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST })
     }
 
-    const users = await User.findAll(
-        {
-            attributes: [
-                'id',
-                'academic_title',
-                'first_name',
-                'last_name'
-            ]
-        }
-    );
+    const users = await User.findAll({
+        attributes: ['id', 'academic_title', 'first_name', 'last_name'],
+    })
 
-    const allEvaluationTeams = await EvaluationTeam.findAll(
-        {
-            attributes: [
-                'userId',
-                'evaluationId'
-            ]
-        }
-    )
+    const allEvaluationTeams = await EvaluationTeam.findAll({
+        attributes: ['userId', 'evaluationId'],
+    })
 
     const evaluatees = await User.findAll({
         attributes: [
@@ -256,15 +244,15 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
                         model: Evaluation,
                         required: true,
                         where: { status: 'Ongoing' },
-                        include:
-                            [{
+                        include: [
+                            {
                                 model: Course,
                                 required: true,
                             },
                             {
-                                model: Assessment
-                            }]
-                        ,
+                                model: Assessment,
+                            },
+                        ],
                     },
                 ],
             },
@@ -273,30 +261,34 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
 
     evaluatees.forEach((evaluatee) => {
         evaluatee.setDataValue(
-            'evaluation_team', allEvaluationTeams.filter(
-                (team) => team.evaluationId === evaluatee.evaluatee.evaluations[0].id)
-        )
-        evaluatee.getDataValue(
-            'evaluation_team').forEach(
-                (member) => member.setDataValue(
-                    'user_full', users.find((user) => user.id === member.userId)
-                )
+            'evaluation_team',
+            allEvaluationTeams.filter(
+                (team) =>
+                    team.evaluationId === evaluatee.evaluatee.evaluations[0].id
             )
+        )
+        evaluatee.getDataValue('evaluation_team').forEach((member) =>
+            member.setDataValue(
+                'user_full',
+                users.find((user) => user.id === member.userId)
+            )
+        )
     })
 
     evaluatees.filter((evaluatee) =>
-        evaluatee.getDataValue('evaluation_team').some((member) => member.userId === memberId)
+        evaluatee
+            .getDataValue('evaluation_team')
+            .some((member) => member.userId === memberId)
     )
 
     return res
         .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY])
-        .send({ evaluatees: evaluatees });
+        .send({ evaluatees: evaluatees })
 }
 
-
 module.exports.removeEvaluationTeamMember = async (req, res) => {
-    const userId = req.body.userId;
-    const evaluationId = req.body.evaluationId;
+    const userId = req.body.userId
+    const evaluationId = req.body.evaluationId
 
     if (!userId || !evaluationId) {
         return res
@@ -312,9 +304,9 @@ module.exports.removeEvaluationTeamMember = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                destroyed
-                    ? MEMBER_DELETED_SUCCESSFULLY
-                    : MEMBER_DOES_NOT_EXIST
+                    destroyed
+                        ? MEMBER_DELETED_SUCCESSFULLY
+                        : MEMBER_DOES_NOT_EXIST
                 ]
             )
             .send(
@@ -322,13 +314,9 @@ module.exports.removeEvaluationTeamMember = async (req, res) => {
                     ? { MEMBER_DELETED_SUCCESSFULLY }
                     : { MEMBER_DOES_NOT_EXIST }
             )
-
     } catch (err) {
         return res
             .status(StatusCodes[REMOVE_ET_MEMEBER_BAD_REQUEST])
             .send({ err })
     }
-
-
-
 }
