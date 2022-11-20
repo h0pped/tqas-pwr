@@ -84,6 +84,9 @@ const config = {
         ASSESSMENT_STATUS_NOT_ALLOWED: 'Unknown assessment review status provided. Should be "changes required" or "ongoing"',
         ASSESSMENT_REVIEW_SUCCESSFUL: 'Assessment reviewed successfully',
         GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST: 'Id of member is required in order to get evaluations they responsible for.',
+        PROTOCOL_NAME_NOT_PROVIDED: 'The protocol name was not provided in the request for protocol creation',
+        PROTOCOL_CREATED_SUCCESSFULLY: 'Protocol was created successfully',
+        PROTOCOL_CREATION_BAD_REQUEST: 'Invalid data provided in the request for creating assessment',
     },
 }
 
