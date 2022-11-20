@@ -84,6 +84,9 @@ const config = {
         ASSESSMENT_STATUS_NOT_ALLOWED: 'Unknown assessment review status provided. Should be "changes required" or "ongoing"',
         ASSESSMENT_REVIEW_SUCCESSFUL: 'Assessment reviewed successfully',
         GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST: 'Id of member is required in order to get evaluations they responsible for.',
+        REMOVE_ET_MEMBER_BAD_REQUEST: 'userId and evaluationId is required in order to delete evaluation team member.',
+        MEMBER_DELETED_SUCCESSFULLY: 'Evaluation team member successfully removed.',
+        MEMBER_DOES_NOT_EXIST: 'Evaluation team member does not exist.',
     },
 }
 
