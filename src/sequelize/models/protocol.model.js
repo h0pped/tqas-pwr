@@ -5,6 +5,10 @@ module.exports = (sequelize) => {
         protocol_json: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        protocol_name: {
+            type: DataTypes.STRING,
+            allowNull: false
         }
     });
 };
