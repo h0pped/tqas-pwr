@@ -63,7 +63,7 @@ module.exports.reviewAssessment = async (req, res) => {
                         required: true,
                         where: {
                             email: userData.email,
-                            // user_type: ['dean', 'head of department'],
+                            user_type: ['dean', 'head of department'],
                         },
                     },
                 ],
