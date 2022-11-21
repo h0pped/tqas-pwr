@@ -10,5 +10,10 @@ module.exports = (sequelize) => {
         name: {
             type: DataTypes.STRING,
             allowNull: false,
-        }});
+        },
+        department: {
+            type: DataTypes.STRING,
+            allowNull: false
+        }
+    });
 };
