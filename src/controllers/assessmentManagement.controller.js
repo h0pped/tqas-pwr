@@ -30,12 +30,13 @@ const {
         INVALID_ASSESSMENT_PROVIDED,
         LIST_OF_EVALUATED_CLASSES_CREATED,
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
+        USER_DOES_NOT_EXIST,
     },
 } = require('../config/index.config')
 
 const { sendMail } = require('../mailer')
 const generateNewOutlinedScheduleEmail = require('../utils/generateNewOutlinedScheduleEmail')
-
+const generateAssessmentApprovalEmail = require('../utils/generateAssessmentApprovalEmail')
 
 module.exports.reviewAssessment = async (req, res) => {
     try {
@@ -60,7 +61,10 @@ module.exports.reviewAssessment = async (req, res) => {
                     {
                         model: User,
                         required: true,
-                        where: { email: userData.email, user_type: ['dean', 'head of department'] },
+                        where: {
+                            email: userData.email,
+                            user_type: ['dean', 'head of department'],
+                        },
                     },
                 ],
             }
@@ -70,7 +74,11 @@ module.exports.reviewAssessment = async (req, res) => {
                 .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
                 .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
         }
-        if (!['changes required', 'ongoing'].includes(req.body.status.toLowerCase())) {
+        if (
+            !['changes required', 'ongoing', 'approved'].includes(
+                req.body.status.toLowerCase()
+            )
+        ) {
             return res
                 .status(StatusCodes[ASSESSMENT_STATUS_NOT_ALLOWED])
                 .send({ ASSESSMENT_STATUS_NOT_ALLOWED })
@@ -81,6 +89,24 @@ module.exports.reviewAssessment = async (req, res) => {
                 req.body.status.slice(1),
         })
         assessment.save()
+
+        if (req.body.status.toLowerCase() === 'ongoing') {
+            console.log(assessment)
+            const admins = await User.findAll({
+                where: {
+                    user_type: ['admin'],
+                },
+            })
+            const emails = admins.map((admin) => admin.email)
+            await sendMail(
+                emails,
+                'Assessment Status',
+                generateAssessmentApprovalEmail(
+                    `Administrator`,
+                    assessment.name
+                )
+            )
+        }
         return res
             .status(StatusCodes[ASSESSMENT_REVIEW_SUCCESSFUL])
             .send({ ASSESSMENT_REVIEW_SUCCESSFUL })
@@ -350,7 +376,7 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
         }
 
         foundAssessment.setUser(foundUser)
-        foundAssessment.update({ status: 'Awaiting approval'})
+        foundAssessment.update({ status: 'Awaiting approval' })
 
         sendMail(
             email,
