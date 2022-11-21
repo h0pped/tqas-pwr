@@ -60,13 +60,13 @@ module.exports.getProtocol = async (req, res) => {
         })
         const authorizedTeamMember = await User.findOne({
             where: {
-                id: userData.id
+                id: userData.id,
             },
             include: {
                 model: Evaluation,
-                as: "evaluations_performed_by_user",
+                as: 'evaluations_performed_by_user',
                 required: true,
-                where: {protocolId: req.body.protocol_id}
+                where: { protocolId: req.query.protocol_id },
             },
         })
         if (!authorizedAdmin && !authorizedTeamMember) {
@@ -74,15 +74,15 @@ module.exports.getProtocol = async (req, res) => {
                 .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
                 .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
         }
-        const protocol = await Protocol.findByPk(req.body.protocol_id)
-        if(!protocol) {
+        const protocol = await Protocol.findByPk(req.query.protocol_id)
+        if (!protocol) {
             return res
                 .status(StatusCodes[PROTOCOL_NOT_FOUND])
                 .send({ PROTOCOL_NOT_FOUND })
         }
         return res
             .status(StatusCodes[PROTOCOL_FOUND])
-            .send({...protocol.dataValues})
+            .send({ ...protocol.dataValues })
     } catch (err) {
         return res
             .status(StatusCodes[GET_PROTOCOL_BAD_REQUEST])
