@@ -151,12 +151,18 @@ module.exports.createEvaluationTeams = async (req, res) => {
                         message: USER_DOES_NOT_EXIST,
                     })
                 }
-                evaluationTeam[user.getDataValue('id')] = {userModel: user, isHead: evaluationTeamMember[Object.keys(evaluationTeamMember)[0]]}
+                evaluationTeam[user.getDataValue('id')] = {
+                    userModel: user,
+                    isHead: evaluationTeamMember[
+                        Object.keys(evaluationTeamMember)[0]
+                    ],
+                }
             }
-            for (const [id, userData] of Object.entries(evaluationTeam)){
-                evaluation.addUser(userData.userModel, {through: {is_head_of_team: userData.isHead}})
+            for (const [, userData] of Object.entries(evaluationTeam)) {
+                evaluation.addUser(userData.userModel, {
+                    through: { is_head_of_team: userData.isHead },
+                })
             }
-            
         }
         return res
             .status(StatusCodes[EVALUATION_TEAMS_CREATED_SUCCESSFULLY])
