@@ -11,6 +11,9 @@ const {
         PROTOCOL_NAME_NOT_PROVIDED,
         PROTOCOL_CREATED_SUCCESSFULLY,
         PROTOCOL_CREATION_BAD_REQUEST,
+        PROTOCOL_NOT_FOUND,
+        PROTOCOL_FOUND,
+        GET_PROTOCOL_BAD_REQUEST,
     },
 } = require('../config/index.config')
 
@@ -71,12 +74,18 @@ module.exports.getProtocol = async (req, res) => {
                 .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
                 .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
         }
+        const protocol = await Protocol.findByPk(req.body.protocol_id)
+        if(!protocol) {
+            return res
+                .status(StatusCodes[PROTOCOL_NOT_FOUND])
+                .send({ PROTOCOL_NOT_FOUND })
+        }
         return res
-            .status(StatusCodes[PROTOCOL_CREATED_SUCCESSFULLY])
-            .send({ PROTOCOL_CREATED_SUCCESSFULLY })
+            .status(StatusCodes[PROTOCOL_FOUND])
+            .send({...protocol.dataValues})
     } catch (err) {
         return res
-            .status(StatusCodes[PROTOCOL_CREATION_BAD_REQUEST])
-            .send({ PROTOCOL_CREATION_BAD_REQUEST })
+            .status(StatusCodes[GET_PROTOCOL_BAD_REQUEST])
+            .send({ GET_PROTOCOL_BAD_REQUEST })
     }
 }
