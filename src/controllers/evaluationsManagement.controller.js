@@ -159,9 +159,12 @@ module.exports.createEvaluationTeams = async (req, res) => {
                 }
             }
             for (const [, userData] of Object.entries(evaluationTeam)) {
-                evaluation.addUser(userData.userModel, {
-                    through: { is_head_of_team: userData.isHead },
-                })
+                evaluation.addEvaluation_team_of_evaluation(
+                    userData.userModel,
+                    {
+                        through: { is_head_of_team: userData.isHead },
+                    }
+                )
             }
         }
         return res
