@@ -143,6 +143,7 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
     "first_name",
     "last_name",
     "email" as "member_email",
+    "is_head_of_team" as "is_head_of_team",
     "evaluateeId" as "evaluatee_id",
     "evaluationId" as "evaluation_id"
     from evaluations e 
