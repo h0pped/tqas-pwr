@@ -22,19 +22,16 @@ sequelize
 
 const modelDefiners = [
     require('./models/activation_code.model'),
-    require('./models/answer_option.model'),
     require('./models/evaluatee.model'),
     require('./models/evaluation_team.model'),
     require('./models/evaluation.model'),
-    require('./models/protocol_answer.model'),
-    require('./models/protocol_question.model'),
     require('./models/protocol.model'),
-    require('./models/question.model'),
     require('./models/recovery_code.model'),
     require('./models/user.model'),
     require('./models/wzhz.model'),
     require('./models/assessment.model'),
     require('./models/course.model'),
+    require('./models/filled_protocol.model')
 ]
 
 for (const modelDefiner of modelDefiners) {
@@ -51,13 +48,9 @@ sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
     through: sequelize.models.evaluation_team,
 })
 sequelize.models.evaluation.belongsToMany(sequelize.models.user, {through: sequelize.models.evaluation_team})
-sequelize.models.protocol_question.belongsTo(sequelize.models.protocol)
-sequelize.models.protocol_question.belongsTo(sequelize.models.question)
 sequelize.models.evaluation.belongsTo(sequelize.models.protocol)
 sequelize.models.protocol.hasMany(sequelize.models.evaluation)
-sequelize.models.evaluation.belongsToMany(sequelize.models.protocol_question, {
-    through: sequelize.models.protocol_answer,
-})
+
 sequelize.models.evaluation.belongsTo(sequelize.models.evaluatee)
 sequelize.models.evaluatee.hasMany(sequelize.models.evaluation)
 sequelize.models.evaluatee.belongsTo(sequelize.models.user)
@@ -72,7 +65,13 @@ sequelize.models.assessment.hasMany(sequelize.models.evaluation)
 sequelize.models.assessment.belongsTo(sequelize.models.user, {
     foreignKey: 'supervisor_id',
 })
-sequelize.models.question.hasMany(sequelize.models.answer_option)
+
+sequelize.models.protocol.hasMany(sequelize.models.evaluation)
+sequelize.models.evaluation.belongsTo(sequelize.models.protocol)
+
+sequelize.models.filled_protocol.belongsTo(sequelize.models.evaluation)
+sequelize.models.evaluation.hasOne(sequelize.models.filled_protocol)
+
 sequelize.sync()
 
 console.log('All models were synced!')
