@@ -95,6 +95,30 @@ const config = {
             'The user is being added to the same evaluation team more than once',
         EVALUATION_TEAM_BAD_REQUREST:
             'Invalid data provided in the request for assigning evaluation teams',
+        EVALUATION_DELETED_SUCCESSFULLY: 'Evaluation deleted successfully',
+        EVALUATION_DELETION_BAD_REQUEST:
+            'Invalid data provided in the request for deleting the evaluation',
+        ASSESSMENT_REVIEW_BAD_REQUEST:
+            'Invalid data provided in the request for reviewing the assessment',
+        ASSESSMENT_STATUS_NOT_ALLOWED:
+            'Unknown assessment review status provided. Should be "changes required" or "ongoing"',
+        ASSESSMENT_REVIEW_SUCCESSFUL: 'Assessment reviewed successfully',
+        GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST:
+            'Id of member is required in order to get evaluations they responsible for.',
+        PROTOCOL_NAME_NOT_PROVIDED:
+            'The protocol name was not provided in the request for protocol creation',
+        PROTOCOL_CREATED_SUCCESSFULLY: 'Protocol was created successfully',
+        PROTOCOL_CREATION_BAD_REQUEST:
+            'Invalid data provided in the request for creating assessment',
+        PROTOCOL_NOT_FOUND: 'Protocol with provided id was not found',
+        PROTOCOL_FOUND: 'Protocol found',
+        GET_PROTOCOL_BAD_REQUEST:
+            'Invalid data provided in the request for getting protocol',
+        REMOVE_ET_MEMBER_BAD_REQUEST:
+            'userId and evaluationId is required in order to delete evaluation team member.',
+        MEMBER_DELETED_SUCCESSFULLY:
+            'Evaluation team member successfully removed.',
+        MEMBER_DOES_NOT_EXIST: 'Evaluation team member does not exist.',
     },
 }
 
