@@ -37,6 +37,7 @@ const {
 const { sendMail } = require('../mailer')
 const generateNewOutlinedScheduleEmail = require('../utils/generateNewOutlinedScheduleEmail')
 const generateAssessmentApprovalEmail = require('../utils/generateAssessmentApprovalEmail')
+const generateAssessmentRejectionEmail = require('../utils/generateAssessmentRejectionEmail')
 
 module.exports.reviewAssessment = async (req, res) => {
     try {
@@ -90,20 +91,29 @@ module.exports.reviewAssessment = async (req, res) => {
         })
         assessment.save()
 
+        const admins = await User.findAll({
+            where: {
+                user_type: ['admin'],
+            },
+        })
+        const emails = admins.map(({ email }) => email)
         if (req.body.status.toLowerCase() === 'ongoing') {
-            console.log(assessment)
-            const admins = await User.findAll({
-                where: {
-                    user_type: ['admin'],
-                },
-            })
-            const emails = admins.map((admin) => admin.email)
             await sendMail(
                 emails,
-                'Assessment Status',
+                'Assessment Status - Approved',
                 generateAssessmentApprovalEmail(
                     `Administrator`,
                     assessment.name
+                )
+            )
+        } else if (req.body.status.toLowerCase() === 'changes required') {
+            await sendMail(
+                emails,
+                'Assessment Status - Changes Required',
+                generateAssessmentRejectionEmail(
+                    `Administrator`,
+                    assessment.name,
+                    req.body.reason
                 )
             )
         }
