@@ -31,7 +31,7 @@ const modelDefiners = [
     require('./models/wzhz.model'),
     require('./models/assessment.model'),
     require('./models/course.model'),
-    require('./models/filled_protocol.model')
+    require('./models/filled_protocol.model'),
 ]
 
 for (const modelDefiner of modelDefiners) {
@@ -44,10 +44,15 @@ sequelize.models.user.hasOne(sequelize.models.wzhz)
 sequelize.models.user.hasOne(sequelize.models.evaluatee, {
     foreignKey: { unique: true },
 })
-sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
-    through: sequelize.models.evaluation_team,
+sequelize.models.evaluation.belongsToMany(sequelize.models.user, {
+    as: 'evaluation_team_of_evaluation',
+    through: 'evaluation_teams',
 })
-sequelize.models.evaluation.belongsToMany(sequelize.models.user, {through: sequelize.models.evaluation_team})
+sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
+    as: 'evaluations_performed_by_user',
+    through: 'evaluation_teams',
+})
+
 sequelize.models.evaluation.belongsTo(sequelize.models.protocol)
 sequelize.models.protocol.hasMany(sequelize.models.evaluation)
 
