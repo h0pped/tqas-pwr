@@ -348,12 +348,16 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
                 message: ALREADY_AN_EVALUATEE,
             })
         }
+
         foundAssessment.setUser(foundUser)
+        foundAssessment.update({ status: 'Awaiting approval'})
+
         sendMail(
             email,
             'TQAS - New assessment requires your attention',
             generateNewOutlinedScheduleEmail(`${first_name} ${last_name}`)
         )
+
         return res.status(StatusCodes[SUPERVISOR_SET_SUCCESSFULLY]).send({
             message: SUPERVISOR_SET_SUCCESSFULLY,
         })

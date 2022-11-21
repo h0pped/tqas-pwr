@@ -87,6 +87,9 @@ const config = {
         PROTOCOL_NAME_NOT_PROVIDED: 'The protocol name was not provided in the request for protocol creation',
         PROTOCOL_CREATED_SUCCESSFULLY: 'Protocol was created successfully',
         PROTOCOL_CREATION_BAD_REQUEST: 'Invalid data provided in the request for creating assessment',
+        REMOVE_ET_MEMBER_BAD_REQUEST: 'userId and evaluationId is required in order to delete evaluation team member.',
+        MEMBER_DELETED_SUCCESSFULLY: 'Evaluation team member successfully removed.',
+        MEMBER_DOES_NOT_EXIST: 'Evaluation team member does not exist.',
     },
 }
 
