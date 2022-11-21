@@ -40,7 +40,7 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Assessment created by you for <b>${semester} Semester</b> has been rejected by a supervisor.
+        Assessment created for <b>${semester} Semester</b> has been rejected by a supervisor.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
