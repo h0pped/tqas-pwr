@@ -57,6 +57,7 @@ async function parse_csv(file) {
                 account_status: 'inactive',
                 status_date: Date.now(),
                 user_type: props[4],
+                department: props[6]
             },
             {
                 fields: [
@@ -98,6 +99,7 @@ async function parse_excel(buffer) {
                     account_status: 'inactive',
                     status_date: Date.now(),
                     user_type: arr[i].E,
+                    department: arr[i].G,
                 },
                 {
                     fields: [
