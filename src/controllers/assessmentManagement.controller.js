@@ -238,6 +238,7 @@ module.exports.createAssessment = async (req, res) => {
     try {
         await Assessment.create({
             name: req.body.name,
+            department: req.body.department,
         })
         return res.status(StatusCodes[ASSESSMENT_CREATED_SUCCESSFULLY]).send({
             message: ASSESSMENT_CREATED_SUCCESSFULLY,
