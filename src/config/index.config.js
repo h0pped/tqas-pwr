@@ -90,6 +90,7 @@ const config = {
         PROTOCOL_NOT_FOUND: 'Protocol with provided id was not found',
         PROTOCOL_FOUND: 'Protocol found',
         GET_PROTOCOL_BAD_REQUEST: 'Invalid data provided in the request for getting protocol',
+        REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION: 'Rejection comment is provided for an accepted evaluation'
     },
 }
 

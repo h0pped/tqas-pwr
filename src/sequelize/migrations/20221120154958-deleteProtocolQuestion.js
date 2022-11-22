@@ -1,5 +1,7 @@
 'use strict'
 
+const { promises } = require('nodemailer/lib/xoauth2')
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
