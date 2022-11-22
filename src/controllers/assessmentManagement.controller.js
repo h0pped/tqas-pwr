@@ -31,6 +31,7 @@ const {
         LIST_OF_EVALUATED_CLASSES_CREATED,
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
         USER_DOES_NOT_EXIST,
+        REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT,
     },
 } = require('../config/index.config')
 
@@ -84,10 +85,22 @@ module.exports.reviewAssessment = async (req, res) => {
                 .status(StatusCodes[ASSESSMENT_STATUS_NOT_ALLOWED])
                 .send({ ASSESSMENT_STATUS_NOT_ALLOWED })
         }
+        if (
+            req.body.status.toLowerCase() !== 'changes required' &&
+            req.body.rejection_reason
+        ) {
+            return res
+                .status(StatusCodes[REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT])
+                .send({ REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT })
+        }
         assessment.set({
             status:
                 req.body.status.charAt(0).toUpperCase() +
                 req.body.status.slice(1),
+            rejection_reason:
+                req.body.status.toLowerCase() !== 'changes required'
+                    ? null
+                    : req.body.rejection_reason,
         })
         assessment.save()
 
