@@ -27,6 +27,7 @@ const {
         EVALUATION_DELETION_BAD_REQUEST,
         GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST,
         GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY,
+        REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION,
         REMOVE_ET_MEMBER_BAD_REQUEST,
         MEMBER_DELETED_SUCCESSFULLY,
         MEMBER_DOES_NOT_EXIST,
@@ -80,10 +81,22 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
                 .status(StatusCodes[UNKNOWN_EVALUATION_REVIEW_STATUS])
                 .send({ UNKNOWN_EVALUATION_REVIEW_STATUS })
         }
+        if (
+            req.body.status.toLowerCase() === 'accepted' &&
+            req.body.rejection_reason
+        ) {
+            return res
+                .status(StatusCodes[REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION])
+                .send({ REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION })
+        }
         evaluation.set({
             status:
                 req.body.status.charAt(0).toUpperCase() +
                 req.body.status.slice(1),
+            rejection_reason:
+                req.body.status.toLowerCase() === 'accepted'
+                    ? null
+                    : req.body.rejection_reason,
         })
         evaluation.save()
         return res
@@ -101,10 +114,26 @@ module.exports.createEvaluationTeams = async (req, res) => {
         for (const [evaluationId, users] of Object.entries(req.body)) {
             const foundWzhzMembers = await Wzhz.findOne({
                 where: {
-                    userId: users.map((x) => Object.keys(x)).flat(),
+                    userId: users.map((user) => Object.keys(user)).flat(),
                 },
             })
-            if (!foundWzhzMembers) {
+            const existingTeamWzhzMembers = await Evaluation.findAll({
+                where: {id: evaluationId},
+                include: [
+                    {
+                        model: User,
+                        as: 'evaluation_team_of_evaluation',
+                        required: true,
+                        include: [
+                            {
+                                model: Wzhz,
+                                required: true
+                            }
+                        ]
+                    },
+                ],
+            })
+            if (!foundWzhzMembers && !existingTeamWzhzMembers) {
                 return res
                     .status(StatusCodes[NO_WZHZ_MEMBER_IN_EVALUATION_TEAM])
                     .send({
@@ -165,7 +194,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                 evaluation.addEvaluation_team_of_evaluation(
                     userData.userModel,
                     {
-                        through: { is_head_of_team: userData.isHead },
+                       through: { is_head_of_team: userData.isHead },
                     }
                 )
             }
