@@ -137,7 +137,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                     return res
                         .status(
                             StatusCodes[
-                            EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM
+                                EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM
                             ]
                         )
                         .send({
@@ -208,10 +208,10 @@ module.exports.deleteEvaluation = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                destroyed
-                    ? EVALUATION_DELETED_SUCCESSFULLY
-                    : EVALUATION_DOES_NOT_EXIST
-                ]
+                    destroyed
+                        ? EVALUATION_DELETED_SUCCESSFULLY
+                        : EVALUATION_DOES_NOT_EXIST
+                    ]
             )
             .send(
                 destroyed
@@ -341,10 +341,10 @@ module.exports.removeEvaluationTeamMember = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                destroyed
-                    ? MEMBER_DELETED_SUCCESSFULLY
-                    : MEMBER_DOES_NOT_EXIST
-                ]
+                    destroyed
+                        ? MEMBER_DELETED_SUCCESSFULLY
+                        : MEMBER_DOES_NOT_EXIST
+                    ]
             )
             .send(
                 destroyed
