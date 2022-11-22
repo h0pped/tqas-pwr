@@ -56,22 +56,7 @@ module.exports.reviewAssessment = async (req, res) => {
         const userData = JSON.parse(
             atob(req.headers.authorization.slice(7).split('.')[1])
         )
-        const authorizedUser = await Assessment.findByPk(
-            req.body.assessment_id,
-            {
-                include: [
-                    {
-                        model: User,
-                        required: true,
-                        where: {
-                            email: userData.email,
-                            user_type: ['dean', 'head of department'],
-                        },
-                    },
-                ],
-            }
-        )
-        if (!authorizedUser) {
+        if (userData.id !== assessment.supervisor_id) {
             return res
                 .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
                 .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
