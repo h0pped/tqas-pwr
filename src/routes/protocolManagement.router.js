@@ -5,7 +5,7 @@ const router = express.Router()
 
 const {
     createProtocol,
-    getProtocol
+    getProtocol,
 } = require('../controllers/protocolManagement.controller.js')
 
 router.post('/createProtocol', authMiddleware, createProtocol)

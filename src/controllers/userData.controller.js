@@ -24,6 +24,7 @@ module.exports.getUsers = async (req, res) => {
             'user_type',
             'email',
             'account_status',
+            'department'
         ],
         include: [
             {
@@ -55,6 +56,7 @@ module.exports.updateUser = async (req, res) => {
             academic_title: req.body.academic_title,
             user_type: req.body.user_type,
             email: req.body.email,
+            department: req.body.department
         })
         await foundUser.save()
         if (req.body.last_evaluated_date) {
@@ -98,6 +100,7 @@ module.exports.createUser = async (req, res) => {
             account_status: 'inactive',
             status_date: Date.now(),
             user_type: req.body.user_type,
+            department: req.body.department
         })
         const evaluatee = await Evaluatee.create({
             last_evaluated_date: req.body.last_evaluated_date,

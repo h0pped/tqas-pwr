@@ -1,4 +1,4 @@
-module.exports = (name) => `<body
+module.exports = (name, semester, reason) => `<body
 style="
   box-sizing: border-box;
   padding: 0;
@@ -25,10 +25,9 @@ style="
     </h4>
   </header>
   <section>
-    <h2 style="font-size: 28; margin-bottom: 30px; text-align: center;color:black">
-        New Outlined Schedule
+    <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
+        Assessment Rejection
     </h2>
-    <div style="margin-bottom: 30px; text-align: left">
       <p
         style="
           line-height: 2rem;
@@ -37,25 +36,27 @@ style="
           color: black;
         "
       >
-        Hello ${name},
+        Dear ${name},
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        We received in our system newly created <b>Outlined schedule</b> that is waiting for your approval.
+        Assessment created for <b>${semester} Semester</b> has been rejected by a supervisor.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Please, join <span><a href="https://google.com" style="font-weight:bold;">Teaching Quality Assurance System</a></span> and assign <b>Evaluation Team</b> to it.
-      </p>
+      Reason: ${reason || 'No reason provided'}
+    </p>
+    <p style="line-height: 2rem; font-size: 1rem; color: black">
+      Evaluation teams were not assigned. Please, join the system in order to make changes to the assessment according to provided reason and resubmit it.
+    </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
         If you have any issues, please contact
         administrator using following email address:
-        <a href="mailto:sekretariat.wit@pwr.edu.pl" style="font-weight:bold;">
+        <a href="mailto:sekretariat.wit@pwr.edu.pl ">
           sekretariat.wit@pwr.edu.pl</a
         >
       </p>
-    </div>
   </section>
 </div>
 </body>

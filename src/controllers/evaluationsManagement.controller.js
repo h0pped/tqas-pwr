@@ -27,6 +27,10 @@ const {
         GET_EVALUATIONS_BY_ET_MEMBER_BAD_REQUEST,
         GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY,
         REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION,
+        REMOVE_ET_MEMBER_BAD_REQUEST,
+        MEMBER_DELETED_SUCCESSFULLY,
+        MEMBER_DOES_NOT_EXIST,
+        REMOVE_ET_MEMEBER_BAD_REQUEST,
     },
 } = require('../config/index.config')
 
@@ -123,7 +127,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                     message: EVALUATION_DOES_NOT_EXIST,
                 })
             }
-            const evaluationTeam = []
+            const evaluationTeam = {}
             for (const evaluationTeamMember of users) {
                 const evaluatee = await Evaluation.findOne({
                     where: { id: evaluationId },
@@ -160,9 +164,21 @@ module.exports.createEvaluationTeams = async (req, res) => {
                         message: USER_DOES_NOT_EXIST,
                     })
                 }
-                evaluationTeam.push(user)
+                evaluationTeam[user.getDataValue('id')] = {
+                    userModel: user,
+                    isHead: evaluationTeamMember[
+                        Object.keys(evaluationTeamMember)[0]
+                    ],
+                }
             }
-            evaluation.addUsers(evaluationTeam)
+            for (const [, userData] of Object.entries(evaluationTeam)) {
+                evaluation.addEvaluation_team_of_evaluation(
+                    userData.userModel,
+                    {
+                        through: { is_head_of_team: userData.isHead },
+                    }
+                )
+            }
         }
         return res
             .status(StatusCodes[EVALUATION_TEAMS_CREATED_SUCCESSFULLY])
@@ -293,4 +309,39 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     return res
         .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY])
         .send({ evaluatees: evaluatees })
+}
+
+module.exports.removeEvaluationTeamMember = async (req, res) => {
+    const userId = req.body.userId
+    const evaluationId = req.body.evaluationId
+
+    if (!userId || !evaluationId) {
+        return res
+            .status(StatusCodes[REMOVE_ET_MEMBER_BAD_REQUEST])
+            .send({ REMOVE_ET_MEMBER_BAD_REQUEST })
+    }
+
+    try {
+        const destroyed = await EvaluationTeam.destroy({
+            where: { userId: userId, evaluationId: evaluationId },
+        })
+
+        return res
+            .status(
+                StatusCodes[
+                    destroyed
+                        ? MEMBER_DELETED_SUCCESSFULLY
+                        : MEMBER_DOES_NOT_EXIST
+                ]
+            )
+            .send(
+                destroyed
+                    ? { MEMBER_DELETED_SUCCESSFULLY }
+                    : { MEMBER_DOES_NOT_EXIST }
+            )
+    } catch (err) {
+        return res
+            .status(StatusCodes[REMOVE_ET_MEMEBER_BAD_REQUEST])
+            .send({ err })
+    }
 }

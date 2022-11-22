@@ -30,12 +30,14 @@ const {
         INVALID_ASSESSMENT_PROVIDED,
         LIST_OF_EVALUATED_CLASSES_CREATED,
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
+        USER_DOES_NOT_EXIST,
     },
 } = require('../config/index.config')
 
 const { sendMail } = require('../mailer')
 const generateNewOutlinedScheduleEmail = require('../utils/generateNewOutlinedScheduleEmail')
-
+const generateAssessmentApprovalEmail = require('../utils/generateAssessmentApprovalEmail')
+const generateAssessmentRejectionEmail = require('../utils/generateAssessmentRejectionEmail')
 
 module.exports.reviewAssessment = async (req, res) => {
     try {
@@ -60,7 +62,10 @@ module.exports.reviewAssessment = async (req, res) => {
                     {
                         model: User,
                         required: true,
-                        where: { email: userData.email, user_type: ['dean', 'head of department'] },
+                        where: {
+                            email: userData.email,
+                            user_type: ['dean', 'head of department'],
+                        },
                     },
                 ],
             }
@@ -70,7 +75,11 @@ module.exports.reviewAssessment = async (req, res) => {
                 .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
                 .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
         }
-        if (!['changes required', 'ongoing'].includes(req.body.status.toLowerCase())) {
+        if (
+            !['changes required', 'ongoing', 'approved'].includes(
+                req.body.status.toLowerCase()
+            )
+        ) {
             return res
                 .status(StatusCodes[ASSESSMENT_STATUS_NOT_ALLOWED])
                 .send({ ASSESSMENT_STATUS_NOT_ALLOWED })
@@ -81,6 +90,33 @@ module.exports.reviewAssessment = async (req, res) => {
                 req.body.status.slice(1),
         })
         assessment.save()
+
+        const admins = await User.findAll({
+            where: {
+                user_type: ['admin'],
+            },
+        })
+        const emails = admins.map(({ email }) => email)
+        if (req.body.status.toLowerCase() === 'ongoing') {
+            await sendMail(
+                emails,
+                'Assessment Status - Approved',
+                generateAssessmentApprovalEmail(
+                    `Administrator`,
+                    assessment.name
+                )
+            )
+        } else if (req.body.status.toLowerCase() === 'changes required') {
+            await sendMail(
+                emails,
+                'Assessment Status - Changes Required',
+                generateAssessmentRejectionEmail(
+                    `Administrator`,
+                    assessment.name,
+                    req.body.reason
+                )
+            )
+        }
         return res
             .status(StatusCodes[ASSESSMENT_REVIEW_SUCCESSFUL])
             .send({ ASSESSMENT_REVIEW_SUCCESSFUL })
@@ -107,6 +143,7 @@ module.exports.getEvaluateesByAssessment = async (req, res) => {
     "first_name",
     "last_name",
     "email" as "member_email",
+    "is_head_of_team" as "is_head_of_team",
     "evaluateeId" as "evaluatee_id",
     "evaluationId" as "evaluation_id"
     from evaluations e 
@@ -201,6 +238,7 @@ module.exports.createAssessment = async (req, res) => {
     try {
         await Assessment.create({
             name: req.body.name,
+            department: req.body.department,
         })
         return res.status(StatusCodes[ASSESSMENT_CREATED_SUCCESSFULLY]).send({
             message: ASSESSMENT_CREATED_SUCCESSFULLY,
@@ -348,12 +386,16 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
                 message: ALREADY_AN_EVALUATEE,
             })
         }
+
         foundAssessment.setUser(foundUser)
+        foundAssessment.update({ status: 'Awaiting approval' })
+
         sendMail(
             email,
             'TQAS - New assessment requires your attention',
             generateNewOutlinedScheduleEmail(`${first_name} ${last_name}`)
         )
+
         return res.status(StatusCodes[SUPERVISOR_SET_SUCCESSFULLY]).send({
             message: SUPERVISOR_SET_SUCCESSFULLY,
         })
