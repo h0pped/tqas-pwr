@@ -14,6 +14,7 @@ const {
         PROTOCOL_NOT_FOUND,
         PROTOCOL_FOUND,
         GET_PROTOCOL_BAD_REQUEST,
+        EVALUATION_DOES_NOT_EXIST,
     },
 } = require('../config/index.config')
 
@@ -66,7 +67,7 @@ module.exports.getProtocol = async (req, res) => {
                 model: Evaluation,
                 as: 'evaluations_performed_by_user',
                 required: true,
-                where: { protocolId: req.query.protocol_id },
+                where: { evaluationId: req.query.evaluationId },
             },
         })
         if (!authorizedAdmin && !authorizedTeamMember) {
@@ -74,12 +75,21 @@ module.exports.getProtocol = async (req, res) => {
                 .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
                 .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
         }
-        const protocol = await Protocol.findByPk(req.query.protocol_id)
+        const evaluation = await Evaluation.findByPk(req.query.evaluationId, {
+            include: [{ model: Protocol, required: true }],
+        })
+        if (!evaluation) {
+            return res
+                .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
+                .send({ EVALUATION_DOES_NOT_EXIST })
+        }
+        const protocol = evaluation.getProtocol()
         if (!protocol) {
             return res
                 .status(StatusCodes[PROTOCOL_NOT_FOUND])
                 .send({ PROTOCOL_NOT_FOUND })
         }
+        const protocolJson = JSON.parse(protocol.getDataValue('protocol_json'))
         return res
             .status(StatusCodes[PROTOCOL_FOUND])
             .send({ ...protocol.dataValues })
