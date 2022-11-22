@@ -46,11 +46,11 @@ sequelize.models.user.hasOne(sequelize.models.evaluatee, {
 })
 sequelize.models.evaluation.belongsToMany(sequelize.models.user, {
     as: 'evaluation_team_of_evaluation',
-    through: 'evaluation_teams',
+    through: sequelize.models.evaluation_team,
 })
 sequelize.models.user.belongsToMany(sequelize.models.evaluation, {
     as: 'evaluations_performed_by_user',
-    through: 'evaluation_teams',
+    through: sequelize.models.evaluation_team,
 })
 
 sequelize.models.evaluation.belongsTo(sequelize.models.protocol)

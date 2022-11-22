@@ -98,10 +98,26 @@ module.exports.createEvaluationTeams = async (req, res) => {
         for (const [evaluationId, users] of Object.entries(req.body)) {
             const foundWzhzMembers = await Wzhz.findOne({
                 where: {
-                    userId: users.map((x) => Object.keys(x)).flat(),
+                    userId: users.map((user) => Object.keys(user)).flat(),
                 },
             })
-            if (!foundWzhzMembers) {
+            const existingTeamWzhzMembers = await Evaluation.findAll({
+                where: {id: evaluationId},
+                include: [
+                    {
+                        model: User,
+                        as: 'evaluation_team_of_evaluation',
+                        required: true,
+                        include: [
+                            {
+                                model: Wzhz,
+                                required: true
+                            }
+                        ]
+                    },
+                ],
+            })
+            if (!foundWzhzMembers && !existingTeamWzhzMembers) {
                 return res
                     .status(StatusCodes[NO_WZHZ_MEMBER_IN_EVALUATION_TEAM])
                     .send({
@@ -162,7 +178,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                 evaluation.addEvaluation_team_of_evaluation(
                     userData.userModel,
                     {
-                        through: { is_head_of_team: userData.isHead },
+                       through: { is_head_of_team: userData.isHead },
                     }
                 )
             }
