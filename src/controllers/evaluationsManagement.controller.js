@@ -80,7 +80,7 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
         }
         if (
             req.body.status.toLowerCase() === 'accepted' &&
-            req.body.rejection_comment
+            req.body.rejection_reason
         ) {
             return res
                 .status(StatusCodes[REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION])
