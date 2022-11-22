@@ -211,7 +211,7 @@ module.exports.deleteEvaluation = async (req, res) => {
                     destroyed
                         ? EVALUATION_DELETED_SUCCESSFULLY
                         : EVALUATION_DOES_NOT_EXIST
-                    ]
+                ]
             )
             .send(
                 destroyed
@@ -344,7 +344,7 @@ module.exports.removeEvaluationTeamMember = async (req, res) => {
                     destroyed
                         ? MEMBER_DELETED_SUCCESSFULLY
                         : MEMBER_DOES_NOT_EXIST
-                    ]
+                ]
             )
             .send(
                 destroyed
