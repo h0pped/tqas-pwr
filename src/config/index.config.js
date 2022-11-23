@@ -119,6 +119,8 @@ const config = {
         MEMBER_DELETED_SUCCESSFULLY:
             'Evaluation team member successfully removed.',
         MEMBER_DOES_NOT_EXIST: 'Evaluation team member does not exist.',
+        GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND:
+            'Assessment for this evaluatee was not found',
     },
 }
 
