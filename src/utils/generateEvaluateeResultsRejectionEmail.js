@@ -26,7 +26,7 @@ style="
   </header>
   <section>
     <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
-      Results Declined
+      Results Rejected
     </h2>
       <p
         style="
@@ -40,7 +40,7 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Evaluated <b>${evaluatee}</b> has declined their final result of evaluation.
+        Evaluated <b>${evaluatee}</b> has rejected their final result of evaluation.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">

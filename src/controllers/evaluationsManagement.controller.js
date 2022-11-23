@@ -117,15 +117,15 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
 
         if (req.body.status.toLowerCase() === 'accepted') {
             sendMail(
-                emails,
+                'anton.chernukha.ed@gmail.com',
                 `TQAS - Results of evaluation were accepted by ${academic_title} ${first_name} ${last_name}.`,
-                generateEvaluateeResultsApprovalEmail(`${academic_title} ${first_name} ${last_name}`)
+                generateEvaluateeResultsApprovalEmail('Administrator', `${academic_title} ${first_name} ${last_name}`)
             )
         } else {
             sendMail(
-                emails,
+                'anton.chernukha.ed@gmail.com',
                 `TQAS - Results of evaluation were rejected by ${academic_title} ${first_name} ${last_name}.`,
-                generateEvaluateeResultsRejectionEmail(`${academic_title} ${first_name} ${last_name}`)
+                generateEvaluateeResultsRejectionEmail('Administrator',`${academic_title} ${first_name} ${last_name}`)
             )
         }
 
