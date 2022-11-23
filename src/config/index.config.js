@@ -94,7 +94,9 @@ const config = {
         REMOVE_ET_MEMBER_BAD_REQUEST: 'userId and evaluationId is required in order to delete evaluation team member.',
         MEMBER_DELETED_SUCCESSFULLY: 'Evaluation team member successfully removed.',
         MEMBER_DOES_NOT_EXIST: 'Evaluation team member does not exist.',
-        REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT: 'Rejection comment added in the request for accepting the assessment',
+        GET_EVALUATIONS_BY_ET_MEMBER_USER_DNE_BAD_REQUEST: 'User with such id does not exist.',
+        GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST: 'Requested user is not a part of any of the evaluation teams.',
+        REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT: 'Rejection comment added in the request for accepting the assessment'
     },
 }
 
