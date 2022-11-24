@@ -277,12 +277,11 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     }
 
     const allETUserIsPartOf = await EvaluationTeam.findAll({
-        attributes: ['userId', 'evaluationId'],
+        attributes: ['userId', 'evaluationId', 'is_head_of_team'],
         where: {
             userId: requestedUser.id,
         },
     })
-
     if (allETUserIsPartOf.length === 0) {
         return res
             .status(
@@ -304,7 +303,7 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     })
 
     const allEvaluationTeams = await EvaluationTeam.findAll({
-        attributes: ['userId', 'evaluationId'],
+        attributes: ['userId', 'evaluationId', 'is_head_of_team'],
     })
 
     const evaluatees = await Evaluatee.findAll({

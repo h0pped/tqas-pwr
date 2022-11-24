@@ -48,7 +48,7 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        If you have any issues with, please contact
+        If you have any issues please contact
         administrator using following email address:
         <a href="mailto:sekretariat.wit@pwr.edu.pl ">
           sekretariat.wit@pwr.edu.pl</a
