@@ -9,6 +9,7 @@ const {
     deleteEvaluation,
     getEvaluationsETMemberResponsibleFor,
     removeEvaluationTeamMember,
+    getEvaluationByEvaluatee,
 } = require('../controllers/evaluationsManagement.controller.js')
 
 const {
@@ -56,6 +57,11 @@ router.get(
     '/getAssessmentsBySupervisor',
     authMiddleware,
     getAssessmentsBySupervisor
+)
+router.get(
+    '/getEvaluationByEvaluatee',
+    authMiddleware,
+    getEvaluationByEvaluatee
 )
 
 module.exports = router

@@ -1,5 +1,5 @@
 const sequelize = require('../sequelize')
-const { Op } = require("sequelize");
+const { Op } = require('sequelize')
 
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
@@ -33,7 +33,9 @@ const {
         MEMBER_DOES_NOT_EXIST,
         REMOVE_ET_MEMEBER_BAD_REQUEST,
         GET_EVALUATIONS_BY_ET_MEMBER_USER_DNE_BAD_REQUEST,
-        GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST
+        GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST,
+        GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND,
+        GET_EVALUATION_FOR_EVALUATEE_SUCCESSFULY,
     },
 } = require('../config/index.config')
 
@@ -118,7 +120,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                 },
             })
             const existingTeamWzhzMembers = await Evaluation.findAll({
-                where: {id: evaluationId},
+                where: { id: evaluationId },
                 include: [
                     {
                         model: User,
@@ -127,9 +129,9 @@ module.exports.createEvaluationTeams = async (req, res) => {
                         include: [
                             {
                                 model: Wzhz,
-                                required: true
-                            }
-                        ]
+                                required: true,
+                            },
+                        ],
                     },
                 ],
             })
@@ -194,7 +196,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                 evaluation.addEvaluation_team_of_evaluation(
                     userData.userModel,
                     {
-                       through: { is_head_of_team: userData.isHead },
+                        through: { is_head_of_team: userData.isHead },
                     }
                 )
             }
@@ -268,61 +270,73 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
 
     if (!requestedUser) {
         return res
-            .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_USER_DNE_BAD_REQUEST])
+            .status(
+                StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_USER_DNE_BAD_REQUEST]
+            )
             .send({ GET_EVALUATIONS_BY_ET_MEMBER_USER_DNE_BAD_REQUEST })
     }
 
-    const allETUserIsPartOf = await EvaluationTeam.findAll(
-        {
-            attributes: ['userId', 'evaluationId'],
-            where:
-            {
-                userId: requestedUser.id
-            }
-        })
+    const allETUserIsPartOf = await EvaluationTeam.findAll({
+        attributes: ['userId', 'evaluationId'],
+        where: {
+            userId: requestedUser.id,
+        },
+    })
 
     if (allETUserIsPartOf.length === 0) {
         return res
-            .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST])
+            .status(
+                StatusCodes[
+                    GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST
+                ]
+            )
             .send({ GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST })
     }
 
     const users = await User.findAll({
-        attributes: ['id', 'academic_title', 'first_name', 'last_name', 'email'],
+        attributes: [
+            'id',
+            'academic_title',
+            'first_name',
+            'last_name',
+            'email',
+        ],
     })
 
     const allEvaluationTeams = await EvaluationTeam.findAll({
-        attributes: ['userId', 'evaluationId']
+        attributes: ['userId', 'evaluationId'],
     })
 
     const evaluatees = await Evaluatee.findAll({
         include: [
             {
                 model: User,
-                attributes: ['academic_title', 'first_name', 'last_name', 'email'],
+                attributes: [
+                    'academic_title',
+                    'first_name',
+                    'last_name',
+                    'email',
+                ],
                 required: true,
             },
             {
                 model: Evaluation,
                 required: true,
                 where: {
-                    [Op.or]: [
-                        { status: 'ongoing' },
-                        { status: 'Ongoing' }
-                    ]
+                    [Op.or]: [{ status: 'ongoing' }, { status: 'Ongoing' }],
                 },
                 include: [
                     {
                         model: Course,
-                        required: true
+                        required: true,
                     },
                     {
                         model: Assessment,
-                        required: true
-                    }
-                ]
+                        required: true,
+                    },
+                ],
             },
-        ]
+        ],
     })
 
     evaluatees.forEach((evaluatee) => {
@@ -330,7 +344,8 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
             'evaluation_team',
             allEvaluationTeams.filter(
                 (team) =>
-                    team.getDataValue('evaluationId') === evaluatee.evaluations[0].id
+                    team.getDataValue('evaluationId') ===
+                    evaluatee.evaluations[0].id
             )
         )
         evaluatee.getDataValue('evaluation_team').forEach((member) =>
@@ -344,7 +359,9 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     const evaluationsUserResponsibleFor = evaluatees.filter((evaluatee) =>
         evaluatee
             .getDataValue('evaluation_team')
-            .some((member) => member.getDataValue('userId') === requestedUser.id)
+            .some(
+                (member) => member.getDataValue('userId') === requestedUser.id
+            )
     )
 
     return res
@@ -385,4 +402,58 @@ module.exports.removeEvaluationTeamMember = async (req, res) => {
             .status(StatusCodes[REMOVE_ET_MEMEBER_BAD_REQUEST])
             .send({ err })
     }
+}
+
+module.exports.getEvaluationByEvaluatee = async (req, res) => {
+    const id = Number(req.query.id)
+
+    if (!id) {
+        return res
+            .status(StatusCodes[GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND])
+            .send({ msg: GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND })
+    }
+
+    const evaluatee = await Evaluatee.findAll({
+        include: [
+            {
+                model: User,
+                attributes: [
+                    'id',
+                    'academic_title',
+                    'first_name',
+                    'last_name',
+                    'email',
+                ],
+                required: true,
+            },
+            {
+                model: Evaluation,
+                required: true,
+                where: {
+                    [Op.or]: [
+                        { status: 'in review' },
+                        { status: 'In review' },
+                        { status: 'Rejected' },
+                        { status: 'rejected' },
+                        { status: 'Accepted' },
+                        { status: 'accepted' },
+                    ],
+                },
+                include: [
+                    {
+                        model: Assessment,
+                        required: true,
+                    },
+                ],
+            },
+        ],
+    })
+
+    const evaluationsOfEvaluatee = evaluatee.filter(
+        (evaluatee) => evaluatee.user.getDataValue('id') === id
+    )
+
+    return res
+        .status(StatusCodes[GET_EVALUATION_FOR_EVALUATEE_SUCCESSFULY])
+        .send({ evaluatee: evaluationsOfEvaluatee })
 }

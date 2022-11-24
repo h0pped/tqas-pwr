@@ -31,8 +31,6 @@ const {
         LIST_OF_EVALUATED_CLASSES_CREATED,
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
         USER_DOES_NOT_EXIST,
-        GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND,
-        GET_EVALUATION_FOR_EVALUATEE_SUCCESSFULY,
         REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT,
     },
 } = require('../config/index.config')
@@ -404,33 +402,4 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
             message: SUPERVISOR_SET_BAD_REQUEST,
         })
     }
-}
-
-module.exports.getEvaluationByEvaluatee = async (req, res) => {
-    const evaluateeId = Number(req.query.id)
-
-    if (!evaluateeId) {
-        return res
-            .status(StatusCodes[GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND])
-            .send({ msg: GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND })
-    }
-
-    const assessments = await Assessment.findAll({
-        where: { evaluatee_id: evaluateeId },
-    })
-
-    const evaluations = await sequelize.query(
-        'select distinct "assessmentId" FROM evaluations',
-        { type: QueryTypes.SELECT }
-    )
-
-    assessments.forEach(function (assessment, i) {
-        const evaluationsInAssessment = evaluations.filter(
-            ({ assessmentId }) => assessmentId === assessment.id
-        )
-
-        if (!evaluationsInAssessment) {
-            assessments[i].setDataValue()
-        }
-    })
 }

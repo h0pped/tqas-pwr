@@ -18,7 +18,15 @@ router.post('/setAssessmentSupervisor', authMiddleware, setAssessmentSupervisor)
 router.post('/createAssessment', authMiddleware, createAssessment)
 router.post('/reviewAssessment', authMiddleware, reviewAssessment)
 router.get('/getAssessments', authMiddleware, getAssessments)
-router.get('/getEvaluateesByAssessment', authMiddleware, getEvaluateesByAssessment)
-router.get('/getAssessmentsBySupervisor', authMiddleware, getAssessmentsBySupervisor)
+router.get(
+    '/getEvaluateesByAssessment',
+    authMiddleware,
+    getEvaluateesByAssessment
+)
+router.get(
+    '/getAssessmentsBySupervisor',
+    authMiddleware,
+    getAssessmentsBySupervisor
+)
 
 module.exports = router
