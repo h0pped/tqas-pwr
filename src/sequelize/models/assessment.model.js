@@ -14,6 +14,9 @@ module.exports = (sequelize) => {
         department: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        rejection_reason: {
+            type: DataTypes.STRING,
         }
     });
 };

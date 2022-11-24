@@ -33,6 +33,7 @@ const {
         USER_DOES_NOT_EXIST,
         GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND,
         GET_EVALUATION_FOR_EVALUATEE_SUCCESSFULY,
+        REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT,
     },
 } = require('../config/index.config')
 
@@ -57,22 +58,7 @@ module.exports.reviewAssessment = async (req, res) => {
         const userData = JSON.parse(
             atob(req.headers.authorization.slice(7).split('.')[1])
         )
-        const authorizedUser = await Assessment.findByPk(
-            req.body.assessment_id,
-            {
-                include: [
-                    {
-                        model: User,
-                        required: true,
-                        where: {
-                            email: userData.email,
-                            user_type: ['dean', 'head of department'],
-                        },
-                    },
-                ],
-            }
-        )
-        if (!authorizedUser) {
+        if (userData.id !== assessment.supervisor_id) {
             return res
                 .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
                 .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
@@ -86,10 +72,22 @@ module.exports.reviewAssessment = async (req, res) => {
                 .status(StatusCodes[ASSESSMENT_STATUS_NOT_ALLOWED])
                 .send({ ASSESSMENT_STATUS_NOT_ALLOWED })
         }
+        if (
+            req.body.status.toLowerCase() !== 'changes required' &&
+            req.body.rejection_reason
+        ) {
+            return res
+                .status(StatusCodes[REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT])
+                .send({ REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT })
+        }
         assessment.set({
             status:
                 req.body.status.charAt(0).toUpperCase() +
                 req.body.status.slice(1),
+            rejection_reason:
+                req.body.status.toLowerCase() !== 'changes required'
+                    ? null
+                    : req.body.rejection_reason,
         })
         assessment.save()
 

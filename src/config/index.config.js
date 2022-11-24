@@ -121,6 +121,14 @@ const config = {
         MEMBER_DOES_NOT_EXIST: 'Evaluation team member does not exist.',
         GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND:
             'Assessment for this evaluatee was not found',
+        REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION:
+            'Rejection comment is provided for an accepted evaluation',
+        GET_EVALUATIONS_BY_ET_MEMBER_USER_DNE_BAD_REQUEST:
+            'User with such id does not exist.',
+        GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST:
+            'Requested user is not a part of any of the evaluation teams.',
+        REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT:
+            'Rejection comment added in the request for accepting the assessment',
     },
 }
 

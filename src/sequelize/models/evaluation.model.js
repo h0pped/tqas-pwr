@@ -12,6 +12,9 @@ module.exports = (sequelize) => {
         },
         enrolled_students: {
             type: DataTypes.STRING,
+        },
+        rejection_reason: {
+            type: DataTypes.STRING,
         }
     },
     { paranoid: true }
