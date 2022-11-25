@@ -34,6 +34,8 @@ const {
         REMOVE_ET_MEMEBER_BAD_REQUEST,
         GET_EVALUATIONS_BY_ET_MEMBER_USER_DNE_BAD_REQUEST,
         GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST,
+        GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND,
+        GET_EVALUATION_FOR_EVALUATEE_SUCCESSFULY,
     },
 } = require('../config/index.config')
 
@@ -399,4 +401,58 @@ module.exports.removeEvaluationTeamMember = async (req, res) => {
             .status(StatusCodes[REMOVE_ET_MEMEBER_BAD_REQUEST])
             .send({ err })
     }
+}
+
+module.exports.getEvaluationByEvaluatee = async (req, res) => {
+    const id = Number(req.query.id)
+
+    if (!id) {
+        return res
+            .status(StatusCodes[GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND])
+            .send({ msg: GET_EVALUATION_FOR_EVALUATEE_NOT_FOUND })
+    }
+
+    const evaluatee = await Evaluatee.findAll({
+        include: [
+            {
+                model: User,
+                attributes: [
+                    'id',
+                    'academic_title',
+                    'first_name',
+                    'last_name',
+                    'email',
+                ],
+                required: true,
+            },
+            {
+                model: Evaluation,
+                required: true,
+                where: {
+                    [Op.or]: [
+                        { status: 'in review' },
+                        { status: 'In review' },
+                        { status: 'Rejected' },
+                        { status: 'rejected' },
+                        { status: 'Accepted' },
+                        { status: 'accepted' },
+                    ],
+                },
+                include: [
+                    {
+                        model: Assessment,
+                        required: true,
+                    },
+                ],
+            },
+        ],
+    })
+
+    const evaluationsOfEvaluatee = evaluatee.filter(
+        (evaluatee) => evaluatee.user.getDataValue('id') === id
+    )
+
+    return res
+        .status(StatusCodes[GET_EVALUATION_FOR_EVALUATEE_SUCCESSFULY])
+        .send({ evaluatee: evaluationsOfEvaluatee })
 }
