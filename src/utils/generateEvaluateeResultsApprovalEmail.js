@@ -1,4 +1,4 @@
-module.exports = (name, semester) => `<body
+module.exports = (name, evaluatee) => `<body
 style="
   box-sizing: border-box;
   padding: 0;
@@ -26,7 +26,7 @@ style="
   </header>
   <section>
     <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
-      Assessment Approval
+      Results Approval
     </h2>
       <p
         style="
@@ -40,11 +40,11 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Assessment for <b>${semester} Semester</b> has been successfully approved by a supervisor and Evaluation Teams were assigned.
+        Evaluated <b>${evaluatee}</b> has accepted their final result of evaluation.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Please, join the system in order to see assessment status.
+        Please, join the system in order to see details.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">

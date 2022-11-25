@@ -39,6 +39,11 @@ const {
     },
 } = require('../config/index.config')
 
+const { sendMail } = require('../mailer')
+const generateEvaluateeResultsApprovalEmail = require('../utils/generateEvaluateeResultsApprovalEmail')
+const generateEvaluateeResultsRejectionEmail = require('../utils/generateEvaluateeResultsRejectionEmail')
+
+
 module.exports.evaluateeReviewEvaluation = async (req, res) => {
     try {
         if (!req.body.evaluation_id) {
@@ -91,6 +96,9 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
                 .status(StatusCodes[REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION])
                 .send({ REJECTION_COMMENT_FOR_ACCEPTED_EVALUATION })
         }
+
+        const { academic_title, first_name, last_name } = authorizedUser.getDataValue('evaluatee').getDataValue('user');
+
         evaluation.set({
             status:
                 req.body.status.charAt(0).toUpperCase() +
@@ -101,6 +109,28 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
                     : req.body.rejection_reason,
         })
         evaluation.save()
+
+        const admins = await User.findAll({
+            where: {
+                user_type: ['admin'],
+            },
+        })
+        const emails = admins.map(({ email }) => email)
+
+        if (req.body.status.toLowerCase() === 'accepted') {
+            sendMail(
+                emails,
+                `TQAS - Results of evaluation were accepted by ${academic_title} ${first_name} ${last_name}.`,
+                generateEvaluateeResultsApprovalEmail('Administrator', `${academic_title} ${first_name} ${last_name}`)
+            )
+        } else {
+            sendMail(
+                emails,
+                `TQAS - Results of evaluation were rejected by ${academic_title} ${first_name} ${last_name}.`,
+                generateEvaluateeResultsRejectionEmail('Administrator',`${academic_title} ${first_name} ${last_name}`)
+            )
+        }
+
         return res
             .status(StatusCodes[EVALUATION_REVIEW_SUCCESSFUL])
             .send({ EVALUATION_REVIEW_SUCCESSFUL })
@@ -168,7 +198,7 @@ module.exports.createEvaluationTeams = async (req, res) => {
                     return res
                         .status(
                             StatusCodes[
-                                EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM
+                            EVALUATEE_CAN_NOT_BE_IN_OWN_EVALUATION_TEAM
                             ]
                         )
                         .send({
@@ -239,9 +269,9 @@ module.exports.deleteEvaluation = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                    destroyed
-                        ? EVALUATION_DELETED_SUCCESSFULLY
-                        : EVALUATION_DOES_NOT_EXIST
+                destroyed
+                    ? EVALUATION_DELETED_SUCCESSFULLY
+                    : EVALUATION_DOES_NOT_EXIST
                 ]
             )
             .send(
@@ -386,9 +416,9 @@ module.exports.removeEvaluationTeamMember = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                    destroyed
-                        ? MEMBER_DELETED_SUCCESSFULLY
-                        : MEMBER_DOES_NOT_EXIST
+                destroyed
+                    ? MEMBER_DELETED_SUCCESSFULLY
+                    : MEMBER_DOES_NOT_EXIST
                 ]
             )
             .send(
