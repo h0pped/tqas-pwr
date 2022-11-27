@@ -67,7 +67,7 @@ module.exports.getProtocol = async (req, res) => {
                 model: Evaluation,
                 as: 'evaluations_performed_by_user',
                 required: true,
-                where: { evaluationId: req.query.evaluationId },
+                where: { id: req.query.evaluationId },
             },
         })
         if (!authorizedAdmin && !authorizedTeamMember) {
@@ -83,16 +83,53 @@ module.exports.getProtocol = async (req, res) => {
                 .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
                 .send({ EVALUATION_DOES_NOT_EXIST })
         }
-        const protocol = evaluation.getProtocol()
+        const protocol = await evaluation.getProtocol()
         if (!protocol) {
             return res
                 .status(StatusCodes[PROTOCOL_NOT_FOUND])
                 .send({ PROTOCOL_NOT_FOUND })
         }
         const protocolJson = JSON.parse(protocol.getDataValue('protocol_json'))
-        return res
-            .status(StatusCodes[PROTOCOL_FOUND])
-            .send({ ...protocol.dataValues })
+        const evaluatee = await evaluation.getEvaluatee()
+        const user = await evaluatee.getUser()
+        const course = await evaluation.getCourse()
+        protocolJson['Informacje wstępne'][
+            protocolJson['Informacje wstępne'].findIndex(
+                (question) =>
+                    question.question_text ===
+                    'Prowadzący zajęcia/Jednostka organizacyjna '
+            )
+        ].answer =
+            user.getDataValue('academic_title') +
+            ' ' +
+            user.getDataValue('first_name') +
+            ' ' +
+            user.getDataValue('last_name') +
+            ', ' +
+            user.getDataValue('department')
+
+        protocolJson['Informacje wstępne'][
+            protocolJson['Informacje wstępne'].findIndex(
+                (question) =>
+                    question.question_text === 'Nazwa kursu/kierunek studiów:'
+            )
+        ].answer = course.getDataValue('course_name')
+
+        protocolJson['Informacje wstępne'][
+            protocolJson['Informacje wstępne'].findIndex(
+                (question) =>
+                    question.question_text === 'Kod kursu'
+            )
+        ].answer = course.getDataValue('course_code')
+
+        protocolJson['Informacje wstępne'][
+            protocolJson['Informacje wstępne'].findIndex(
+                (question) =>
+                    question.question_text === 'Miejsce i termin zajęć'
+            )
+        ].answer = evaluation.getDataValue('details')  
+
+        return res.status(StatusCodes[PROTOCOL_FOUND]).send({ ...protocolJson })
     } catch (err) {
         return res
             .status(StatusCodes[GET_PROTOCOL_BAD_REQUEST])
