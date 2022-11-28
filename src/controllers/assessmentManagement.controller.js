@@ -1,5 +1,6 @@
 const sequelize = require('../sequelize')
 const { QueryTypes } = require('sequelize')
+const ExcelJS = require('exceljs')
 
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
@@ -7,6 +8,7 @@ const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
 const Assessments = sequelize.models.assessment
+const EvaluationTeam = sequelize.models.evaluation_team
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -32,6 +34,9 @@ const {
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
         USER_DOES_NOT_EXIST,
         REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT,
+        EXPORT_ID_REQUIRED_BAD_REQUEST,
+        EXPORT_DNE_BAD_REQUEST,
+        EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST
     },
 } = require('../config/index.config')
 
@@ -403,3 +408,244 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
         })
     }
 }
+
+module.exports.exportAssessmentSchedule = async (req, res) => {
+    const assessmentId = req.query.id;
+    const merged = true;
+
+    if (!assessmentId) {
+        return res
+            .status(StatusCodes[EXPORT_ID_REQUIRED_BAD_REQUEST])
+            .send({ msg: EXPORT_ID_REQUIRED_BAD_REQUEST })
+    }
+
+    const requestedAssessment = await Assessment.findOne({
+        where: { id: assessmentId }
+    })
+
+    if (!requestedAssessment) {
+        return res.status(StatusCodes[EXPORT_DNE_BAD_REQUEST]).send({
+            message: EXPORT_DNE_BAD_REQUEST,
+        })
+    }
+
+    if (requestedAssessment.status !== 'Ongoing') {
+        return res.status(StatusCodes[EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST]).send({
+            message: EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
+        })
+    }
+
+    const evaluations = await Evaluation.findAll(
+        {
+            where: { assessmentId: assessmentId },
+            include:
+                [
+                    {
+                        model: Course
+                    },
+                    {
+                        model: Evaluatee,
+                        include: {
+                            model: User
+                        }
+                    },
+                ]
+        }
+    )
+
+    const evaluationTeams = await EvaluationTeam.findAll()
+    const users = await User.findAll({
+        attributes: [
+            'id',
+            'academic_title',
+            'first_name',
+            'last_name',
+            'email',
+        ],
+    })
+
+    evaluations.forEach((e) => {
+        const evaluationTeamForEvaluatee = evaluationTeams.filter(
+            (et) => et.evaluationId === e.id
+        )
+        e.setDataValue('evaluation_team', evaluationTeamForEvaluatee)
+        e.getDataValue('evaluation_team').forEach((member) =>
+            member.setDataValue(
+                'user_full',
+                users.find((user) => user.id === member.getDataValue('userId'))
+            )
+        )
+    })
+
+    evaluations.sort(function (a, b) {
+        if (a.evaluatee.userId < b.evaluatee.userId) { return -1; }
+        if (a.evaluatee.userId > b.evaluatee.userId) { return 1; }
+        return 0;
+    })
+
+    const duplicates = {}
+
+    evaluations.forEach(function (obj) {
+        var key = obj.evaluatee.userId
+        duplicates[key] = (duplicates[key] || 0) + 1
+    })
+
+    // XLSX
+
+    const workbook = new ExcelJS.Workbook();
+    workbook.creator = 'WIT Teaching Quality Assurance System';
+
+    const worksheet = workbook.addWorksheet('Ramowy harmonogram hospitacji zajęć')
+
+
+
+    worksheet.columns = [
+        { header: 'Lp.', key: 'sNo', width: 5 },
+        { header: 'Nazwa i kod kursu', key: 'course', width: 30 },
+        { header: 'Tytuł/stopień naukowy,\nimię i nazwisko hospitowanego', key: 'evaluatee', width: 50, style: { font: { bold: true } } },
+        { header: 'Liczba osób zapisanych na zajęcia dydaktyczne', key: 'numOfEnrolled', width: 15 },
+        { header: 'Miejsce i termin zajęć dydaktycznych', key: 'placeAndTime', width: 50 },
+        { header: 'Tytuł/stopień naukowy,\nimię i nazwisko członka zespołu hospitującego', key: 'evaluationTeam', width: 50 }
+    ]
+
+    const header = worksheet.getRow(1);
+
+    header.height = 60;
+
+    let counter = 1;
+
+    evaluations.forEach((evaluation) => {
+        worksheet.addRow({
+            //sNo: counter,
+            course: `${evaluation.course.course_name}\n${evaluation.course.course_code}`,
+            evaluatee: `${evaluation.evaluatee.user.academic_title} ${evaluation.evaluatee.user.first_name} ${evaluation.evaluatee.user.last_name}`,
+            numOfEnrolled: evaluation.enrolled_students,
+            placeAndTime: evaluation.details,
+            evaluationTeam: evaluation.getDataValue('evaluation_team').map(function (member) {
+                return `${member.getDataValue('user_full').academic_title} ${member.getDataValue('user_full').first_name} ${member.getDataValue('user_full').last_name}`
+            }).join('\n')
+        })
+
+
+        worksheet.getRow(counter + 1).eachCell({ includeEmpty: false }, function (cell) {
+            cell.border = {
+                top: { style: 'medium' },
+                left: { style: 'medium' },
+                bottom: { style: 'medium' },
+                right: { style: 'medium' }
+            };
+            cell.alignment = {
+                wrapText: true,
+                vertical: 'middle'
+            };
+            cell.font = {
+                name: 'Times New Roman',
+                size: 12
+            }
+        })
+
+        counter++;
+    })
+
+    if (merged) {
+        let currentPos = 2;
+        Object.values(duplicates).forEach(function (value, i) {
+            console.log('----------------------\t')
+            console.log(`${i} ---:: ${value}`)
+            console.log(`\nrow ---:: ${currentPos}`)
+
+
+            if (value > 1) {
+                console.log(`merging: C${currentPos}:C${currentPos + value - 1}`)
+                worksheet.mergeCells(`A${currentPos}:A${currentPos + value - 1}`)
+                worksheet.mergeCells(`C${currentPos}:C${currentPos + value - 1}`)
+                worksheet.mergeCells(`F${currentPos}:F${currentPos + value - 1}`)
+                currentPos += value;
+            } else {
+                currentPos += 1;
+            }
+            console.log('----------------------\t')
+        });
+    }
+
+    let sNo = 0;
+    const sNoCol = worksheet.getColumn('sNo');
+
+    let isAlready = false;
+
+    sNoCol.eachCell(function (cell) {
+        if (cell.row !== 1) {
+            if (!cell.isMerged) {
+                isAlready = false;
+                sNo += 1
+                cell.value = sNo
+            } else {
+                if (!isAlready) {
+                    sNo += 1
+                    cell.value = sNo
+                    isAlready = true
+                }
+            }
+        }
+
+        cell.border = {
+            top: { style: 'medium' },
+            left: { style: 'medium' },
+            bottom: { style: 'medium' },
+            right: { style: 'medium' }
+        };
+        cell.alignment = {
+            wrapText: true,
+            vertical: 'middle',
+            horizontal: 'left'
+        };
+        cell.font = {
+            name: 'Times New Roman',
+            size: 12
+        }
+    })
+
+    header.eachCell({ includeEmpty: false }, function (cell) {
+        cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+        cell.border = {
+            top: { style: 'medium' },
+            left: { style: 'medium' },
+            bottom: { style: 'medium' },
+            right: { style: 'medium' }
+        };
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'lightGray',
+        };
+        cell.font = { name: 'Times New Roman', size: 12, bold: true }
+    });
+
+
+    const evaluateeCol = worksheet.getColumn('evaluatee');
+    evaluateeCol.eachCell(function (cell) {
+        cell.font = { name: 'Times New Roman', size: 12, bold: true }
+    });
+
+
+    const downloadPath = '/Users/anton/Desktop'
+
+    const timeNum = new Date().getTime()
+
+    try {
+        const data = await workbook.xlsx.writeFile(`${downloadPath}/${timeNum}_Harmonogram.xlsx`)
+            .then(() => {
+                res.send({
+                    duplicates: duplicates,
+                    data: evaluations,
+                    status: "success",
+                    message: "File successfully downloaded",
+                    path: `${downloadPath}/${timeNum}-harmonogram.xlsx`,
+                });
+            });
+    } catch (err) {
+        res.send({
+            status: "error",
+            message: "Something went wrong",
+        });
+    }
+};
