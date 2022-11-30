@@ -502,10 +502,10 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
     worksheet.columns = [
         { header: 'Lp.', key: 'sNo', width: 5 },
         { header: 'Nazwa i kod kursu', key: 'course', width: 30 },
-        { header: 'Tytuł/stopień naukowy,\nimię i nazwisko hospitowanego', key: 'evaluatee', width: 50, style: { font: { bold: true } } },
+        { header: 'Tytuł/stopień naukowy,\nimię i nazwisko hospitowanego', key: 'evaluatee', width: 30, style: { font: { bold: true } } },
         { header: 'Liczba osób zapisanych na zajęcia dydaktyczne', key: 'numOfEnrolled', width: 15 },
-        { header: 'Miejsce i termin zajęć dydaktycznych', key: 'placeAndTime', width: 50 },
-        { header: 'Tytuł/stopień naukowy,\nimię i nazwisko członka zespołu hospitującego', key: 'evaluationTeam', width: 50 }
+        { header: 'Miejsce i termin zajęć dydaktycznych', key: 'placeAndTime', width: 35 },
+        { header: 'Tytuł/stopień naukowy,\nimię i nazwisko członka zespołu hospitującego', key: 'evaluationTeam', width: 30 }
     ]
 
     const header = worksheet.getRow(1);
@@ -615,7 +615,8 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         };
         cell.fill = {
             type: 'pattern',
-            pattern: 'lightGray',
+            pattern: 'solid',
+            fgColor: { argb: 'ececec' },
         };
         cell.font = { name: 'Times New Roman', size: 12, bold: true }
     });
