@@ -420,6 +420,18 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
             .send({ msg: EXPORT_ID_REQUIRED_BAD_REQUEST })
     }
 
+    const userData = JSON.parse(
+        atob(req.headers.authorization.slice(7).split('.')[1])
+    )
+    const authorizedUser = await User.findOne({
+        where: { email: userData.email, user_type: 'admin' },
+    })
+    if (!authorizedUser) {
+        return res
+            .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+            .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+    }
+
     const requestedAssessment = await Assessment.findOne({
         where: { id: assessmentId }
     })
