@@ -37,7 +37,8 @@ const {
         EXPORT_ID_REQUIRED_BAD_REQUEST,
         EXPORT_DNE_BAD_REQUEST,
         EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
-        EXPORT_ERROR_BAD_REQUEST
+        EXPORT_ERROR_BAD_REQUEST,
+        EXPORT_ASSESSMENT_SCHEDULE_SUCCESS
     },
 } = require('../config/index.config')
 
@@ -654,7 +655,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
 
     try {
         await workbook.xlsx.write(res).then(function () {
-            res.status(200).end();
+            res.status(StatusCodes[EXPORT_ASSESSMENT_SCHEDULE_SUCCESS]).end();
         })
     } catch (err) {
         return res.status(StatusCodes[EXPORT_ERROR_BAD_REQUEST]).send({
