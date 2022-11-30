@@ -411,7 +411,6 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
 
 module.exports.exportAssessmentSchedule = async (req, res) => {
     const assessmentId = req.query.id;
-    const merged = true;
 
     if (!assessmentId) {
         return res
@@ -483,21 +482,18 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         return 0;
     })
 
-    const duplicates = {}
+    const numOfEvaluationsPerEvaluatee = {}
 
-    evaluations.forEach(function (obj) {
-        var key = obj.evaluatee.userId
-        duplicates[key] = (duplicates[key] || 0) + 1
+    evaluations.forEach(function (evaluation) {
+        var key = evaluation.evaluatee.userId
+        numOfEvaluationsPerEvaluatee[key] = (numOfEvaluationsPerEvaluatee[key] || 0) + 1
     })
 
     // XLSX
-
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'WIT Teaching Quality Assurance System';
 
     const worksheet = workbook.addWorksheet('Ramowy harmonogram hospitacji zajęć')
-
-
 
     worksheet.columns = [
         { header: 'Lp.', key: 'sNo', width: 5 },
@@ -547,47 +543,74 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         counter++;
     })
 
-    if (merged) {
-        let currentPos = 2;
-        Object.values(duplicates).forEach(function (value, i) {
-            console.log('----------------------\t')
-            console.log(`${i} ---:: ${value}`)
-            console.log(`\nrow ---:: ${currentPos}`)
+    let currentPos = 2;
+    Object.values(numOfEvaluationsPerEvaluatee).forEach(function (value, i) {
+        console.log('----------------------\t')
+        console.log(`${i} ---:: ${value}`)
+        console.log(`\nrow ---:: ${currentPos}`)
 
 
-            if (value > 1) {
-                console.log(`merging: C${currentPos}:C${currentPos + value - 1}`)
-                worksheet.mergeCells(`A${currentPos}:A${currentPos + value - 1}`)
-                worksheet.mergeCells(`C${currentPos}:C${currentPos + value - 1}`)
-                worksheet.mergeCells(`F${currentPos}:F${currentPos + value - 1}`)
-                currentPos += value;
-            } else {
-                currentPos += 1;
-            }
-            console.log('----------------------\t')
-        });
-    }
+        if (value > 1) {
+            console.log(`merging: C${currentPos}:C${currentPos + value - 1}`)
+            worksheet.mergeCells(`A${currentPos}:A${currentPos + value - 1}`)
+            worksheet.mergeCells(`C${currentPos}:C${currentPos + value - 1}`)
+            worksheet.mergeCells(`F${currentPos}:F${currentPos + value - 1}`)
+            currentPos += value;
+        } else {
+            currentPos += 1;
+        }
+        console.log('----------------------\t')
+    });
 
-    let sNo = 0;
+
+
     const sNoCol = worksheet.getColumn('sNo');
 
-    let isAlready = false;
+    const rowRangesPerEvaluatees = []
 
-    sNoCol.eachCell(function (cell) {
-        if (cell.row !== 1) {
-            if (!cell.isMerged) {
-                isAlready = false;
-                sNo += 1
-                cell.value = sNo
-            } else {
-                if (!isAlready) {
-                    sNo += 1
-                    cell.value = sNo
-                    isAlready = true
-                }
+    let lastVisitedCell = 1;
+
+    Object.values(numOfEvaluationsPerEvaluatee).forEach((numOfEvaluations) => {
+        const singleEvaluateeRowRange = []
+
+        for (let i = 1; i < numOfEvaluations + 1; i++) {
+            const currentCell = `A${i + lastVisitedCell}`;
+            singleEvaluateeRowRange.push(currentCell);
+
+            if (i === numOfEvaluations) {
+                lastVisitedCell = lastVisitedCell + numOfEvaluations;
             }
         }
 
+        rowRangesPerEvaluatees.push(singleEvaluateeRowRange);
+    })
+
+    let sNo = 0;
+    rowRangesPerEvaluatees.forEach((row) => {
+        sNo += 1;
+        worksheet.getCell(row[0]).value = sNo
+    })
+
+    let rowNumber = 0;
+    rowRangesPerEvaluatees.forEach((range) => {
+        rowNumber += 1;
+        if (rowNumber % 2 === 0) {
+            range.forEach((cell) => {
+                const currentRow = worksheet.getCell(cell).row
+
+                worksheet.getRow(currentRow).eachCell(function (cell) {
+                    cell.fill = {
+                        type: 'pattern',
+                        pattern: 'solid',
+                        fgColor: { argb: 'f6f6f6' },
+                    }
+                })
+
+            })
+        }
+    })
+
+    sNoCol.eachCell(function (cell) {
         cell.border = {
             top: { style: 'medium' },
             left: { style: 'medium' },
@@ -616,7 +639,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         cell.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'ececec' },
+            fgColor: { argb: 'd8d8d8' },
         };
         cell.font = { name: 'Times New Roman', size: 12, bold: true }
     });
@@ -632,17 +655,20 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
 
     const timeNum = new Date().getTime()
 
+    res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+
+    res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=" + `${timeNum}.xlsx`
+    );
+
     try {
-        const data = await workbook.xlsx.writeFile(`${downloadPath}/${timeNum}_Harmonogram.xlsx`)
-            .then(() => {
-                res.send({
-                    duplicates: duplicates,
-                    data: evaluations,
-                    status: "success",
-                    message: "File successfully downloaded",
-                    path: `${downloadPath}/${timeNum}-harmonogram.xlsx`,
-                });
-            });
+        await workbook.xlsx.write(res).then(function () {
+            res.status(200).end();
+        })
     } catch (err) {
         res.send({
             status: "error",
