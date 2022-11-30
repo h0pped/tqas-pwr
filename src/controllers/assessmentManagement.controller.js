@@ -36,7 +36,8 @@ const {
         REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT,
         EXPORT_ID_REQUIRED_BAD_REQUEST,
         EXPORT_DNE_BAD_REQUEST,
-        EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST
+        EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
+        EXPORT_ERROR_BAD_REQUEST
     },
 } = require('../config/index.config')
 
@@ -428,7 +429,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         })
     }
 
-    if (requestedAssessment.status !== 'Ongoing') {
+    if (requestedAssessment.status.toLowerCase() !== 'ongoing') {
         return res.status(StatusCodes[EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST]).send({
             message: EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
         })
@@ -489,11 +490,10 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         numOfEvaluationsPerEvaluatee[key] = (numOfEvaluationsPerEvaluatee[key] || 0) + 1
     })
 
-    // XLSX
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'WIT Teaching Quality Assurance System';
 
-    const worksheet = workbook.addWorksheet('Ramowy harmonogram hospitacji zajęć')
+    const worksheet = workbook.addWorksheet('Ramowy harmonogram hospitacji')
 
     worksheet.columns = [
         { header: 'Lp.', key: 'sNo', width: 5 },
@@ -505,14 +505,12 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
     ]
 
     const header = worksheet.getRow(1);
-
     header.height = 60;
 
-    let counter = 1;
+    let currentlyEditingRow = 1;
 
     evaluations.forEach((evaluation) => {
         worksheet.addRow({
-            //sNo: counter,
             course: `${evaluation.course.course_name}\n${evaluation.course.course_code}`,
             evaluatee: `${evaluation.evaluatee.user.academic_title} ${evaluation.evaluatee.user.first_name} ${evaluation.evaluatee.user.last_name}`,
             numOfEnrolled: evaluation.enrolled_students,
@@ -522,8 +520,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
             }).join('\n')
         })
 
-
-        worksheet.getRow(counter + 1).eachCell({ includeEmpty: false }, function (cell) {
+        worksheet.getRow(currentlyEditingRow + 1).eachCell({ includeEmpty: false }, function (cell) {
             cell.border = {
                 top: { style: 'medium' },
                 left: { style: 'medium' },
@@ -540,34 +537,27 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
             }
         })
 
-        counter++;
+        currentlyEditingRow++;
     })
 
-    let currentPos = 2;
+    let correntRowPosition = 2;
     Object.values(numOfEvaluationsPerEvaluatee).forEach(function (value, i) {
-        console.log('----------------------\t')
-        console.log(`${i} ---:: ${value}`)
-        console.log(`\nrow ---:: ${currentPos}`)
-
-
         if (value > 1) {
-            console.log(`merging: C${currentPos}:C${currentPos + value - 1}`)
-            worksheet.mergeCells(`A${currentPos}:A${currentPos + value - 1}`)
-            worksheet.mergeCells(`C${currentPos}:C${currentPos + value - 1}`)
-            worksheet.mergeCells(`F${currentPos}:F${currentPos + value - 1}`)
-            currentPos += value;
-        } else {
-            currentPos += 1;
-        }
-        console.log('----------------------\t')
-    });
+            const rowPositionToMergeTo = correntRowPosition + value - 1;
+            worksheet.mergeCells(`A${correntRowPosition}:A${rowPositionToMergeTo}`)
+            worksheet.mergeCells(`C${correntRowPosition}:C${rowPositionToMergeTo}`)
+            worksheet.mergeCells(`F${correntRowPosition}:F${rowPositionToMergeTo}`)
 
+            correntRowPosition += value;
+        } else {
+            correntRowPosition += 1;
+        }
+    });
 
 
     const sNoCol = worksheet.getColumn('sNo');
 
     const rowRangesPerEvaluatees = []
-
     let lastVisitedCell = 1;
 
     Object.values(numOfEvaluationsPerEvaluatee).forEach((numOfEvaluations) => {
@@ -583,13 +573,13 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         }
 
         rowRangesPerEvaluatees.push(singleEvaluateeRowRange);
-    })
+    });
 
     let sNo = 0;
     rowRangesPerEvaluatees.forEach((row) => {
         sNo += 1;
         worksheet.getCell(row[0]).value = sNo
-    })
+    });
 
     let rowNumber = 0;
     rowRangesPerEvaluatees.forEach((range) => {
@@ -603,12 +593,12 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
                         type: 'pattern',
                         pattern: 'solid',
                         fgColor: { argb: 'f6f6f6' },
-                    }
-                })
+                    };
+                });
 
-            })
-        }
-    })
+            });
+        };
+    });
 
     sNoCol.eachCell(function (cell) {
         cell.border = {
@@ -625,8 +615,8 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         cell.font = {
             name: 'Times New Roman',
             size: 12
-        }
-    })
+        };
+    });
 
     header.eachCell({ includeEmpty: false }, function (cell) {
         cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
@@ -634,14 +624,14 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
             top: { style: 'medium' },
             left: { style: 'medium' },
             bottom: { style: 'medium' },
-            right: { style: 'medium' }
+            right: { style: 'medium' },
         };
         cell.fill = {
             type: 'pattern',
             pattern: 'solid',
             fgColor: { argb: 'd8d8d8' },
         };
-        cell.font = { name: 'Times New Roman', size: 12, bold: true }
+        cell.font = { name: 'Times New Roman', size: 12, bold: true };
     });
 
 
@@ -650,10 +640,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         cell.font = { name: 'Times New Roman', size: 12, bold: true }
     });
 
-
-    const downloadPath = '/Users/anton/Desktop'
-
-    const timeNum = new Date().getTime()
+    const fileName = new Date().getTime()
 
     res.setHeader(
         'Content-Type',
@@ -662,7 +649,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
 
     res.setHeader(
         "Content-Disposition",
-        "attachment; filename=" + `${timeNum}.xlsx`
+        "attachment; filename=" + `${fileName}.xlsx`
     );
 
     try {
@@ -670,9 +657,8 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
             res.status(200).end();
         })
     } catch (err) {
-        res.send({
-            status: "error",
-            message: "Something went wrong",
-        });
+        return res.status(StatusCodes[EXPORT_ERROR_BAD_REQUEST]).send({
+            message: EXPORT_ERROR_BAD_REQUEST,
+        })
     }
 };

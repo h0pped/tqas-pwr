@@ -131,7 +131,8 @@ const config = {
             'Rejection comment added in the request for accepting the assessment',
         EXPORT_ID_REQUIRED_BAD_REQUEST: 'Id of assessment is required in order to export its schedule.',
         EXPORT_DNE_BAD_REQUEST: 'Assessment with provided id does NOT exist.',
-        EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST: 'Requested assessment is not approved yet. You can only export approved schedule of assessment.'
+        EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST: 'Requested assessment is not approved yet. You can only export approved schedule of assessment.',
+        EXPORT_ERROR_BAD_REQUEST: 'Error while exporting the assessment schedule.'
     },
 }
 
