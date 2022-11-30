@@ -5,6 +5,11 @@ module.exports = (sequelize) => {
         protocol_json: {
             type: DataTypes.STRING,
             allowNull: false
-        }
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            default: 'Draft'
+        },
     });
 };
