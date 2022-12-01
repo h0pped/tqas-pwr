@@ -178,9 +178,6 @@ module.exports.saveDraftProtocol = async (req, res) => {
         {
             conflictFields: ['evaluationId']
         })
-        /*await FilledProtocol.destroy({where: {evaluationId: req.body.evaluation_id}})
-        const filledProtocol = await FilledProtocol.create({ protocol_json: req.body.protocol_draft, status: 'Draft' })
-        evaluation.setFilled_protocol(filledProtocol)*/
         return res
             .status(StatusCodes[DRAFT_PROTOCOL_SAVED])
             .send({ DRAFT_PROTOCOL_SAVED })
