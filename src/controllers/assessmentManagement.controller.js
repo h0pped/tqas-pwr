@@ -1,8 +1,8 @@
 const sequelize = require('../sequelize')
 const { QueryTypes } = require('sequelize')
 
-const fileNameGenerator = require('../utils/fileNameGenerator');
-const generateOutlinedSchduleXLSX = require('../utils/generateOutlinedScheduleXLSX')
+const fileNameGenerator = require('../utils/generateFileName');
+const generateOutlinedScheduleXLSX = require('../utils/generateOutlinedScheduleXLSX')
 
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
@@ -505,7 +505,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         numOfEvaluationsPerEvaluatee[key] = (numOfEvaluationsPerEvaluatee[key] || 0) + 1
     })
 
-    const workbook = generateOutlinedSchduleXLSX(evaluations, numOfEvaluationsPerEvaluatee)
+    const workbook = generateOutlinedScheduleXLSX(evaluations, numOfEvaluationsPerEvaluatee)
 
     res.setHeader(
         'Content-Type',
