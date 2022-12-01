@@ -103,7 +103,7 @@ module.exports = (evaluations, numOfEvaluationsPerEvaluatee,) => {
                     cell.fill = {
                         type: 'pattern',
                         pattern: 'solid',
-                        fgColor: { argb: 'f6f6f6' },
+                        fgColor: { argb: 'efefef' },
                     };
                 });
 
@@ -140,7 +140,7 @@ module.exports = (evaluations, numOfEvaluationsPerEvaluatee,) => {
         cell.fill = {
             type: 'pattern',
             pattern: 'solid',
-            fgColor: { argb: 'd8d8d8' },
+            fgColor: { argb: 'c9c9c9' },
         };
         cell.font = { name: 'Times New Roman', size: 12, bold: true };
     });
