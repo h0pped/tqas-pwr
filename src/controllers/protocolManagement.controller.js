@@ -256,11 +256,16 @@ module.exports.fillProtocol = async (req, res) => {
                 .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
                 .send({ EVALUATION_DOES_NOT_EXIST })
         }
-        await FilledProtocol.destroy({where: {evaluationId: req.body.evaluation_id}})
-        const filledProtocol = await FilledProtocol.create({ protocol_json: req.body.protocol_json, status: 'Filled' })
+        await FilledProtocol.upsert(            {
+            protocol_json: req.body.protocol_json,
+            status: 'Filled',
+            evaluationId: req.body.evaluation_id
+        },
+        {
+            conflictFields: ['evaluationId']
+        })
         evaluation.set({status: 'In review'})
         evaluation.save()
-        evaluation.setFilled_protocol(filledProtocol)
         return res
             .status(StatusCodes[PROTOCOL_FILLED_SUCCESSFULLY])
             .send({ PROTOCOL_FILLED_SUCCESSFULLY })
