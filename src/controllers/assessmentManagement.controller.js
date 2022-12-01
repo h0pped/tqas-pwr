@@ -492,11 +492,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         )
     })
 
-    evaluations.sort(function (a, b) {
-        if (a.evaluatee.userId < b.evaluatee.userId) { return -1; }
-        if (a.evaluatee.userId > b.evaluatee.userId) { return 1; }
-        return 0;
-    })
+    evaluations.sort((a, b) => (a.evaluatee.userId > b.evaluatee.userId) ? 1 : -1)
 
     const numOfEvaluationsPerEvaluatee = {}
 
