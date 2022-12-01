@@ -7,7 +7,7 @@ const { server } = require('./config/index.config')
 const app = express()
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({exposedHeaders: ['Content-Disposition']}))
 app.use(routes)
 
 const PORT = server.port
