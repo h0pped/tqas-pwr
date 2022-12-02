@@ -129,6 +129,9 @@ const config = {
             'Requested user is not a part of any of the evaluation teams.',
         REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT:
             'Rejection comment added in the request for accepting the assessment',
+        DRAFT_PROTOCOL_SAVED: 'Draft protocol saved successfully',
+        DRAFT_PROTOCOL_BAD_REQUEST:
+            'Invalid data provided in the request for saving draft protocol',
     },
 }
 
