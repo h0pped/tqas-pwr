@@ -97,7 +97,6 @@ module.exports.reviewAssessment = async (req, res) => {
                     : req.body.rejection_reason,
         })
         assessment.save()
-
         const admins = await User.findAll({
             where: {
                 user_type: ['admin'],
@@ -124,6 +123,13 @@ module.exports.reviewAssessment = async (req, res) => {
                 )
             )
         }
+        if(req.body.status.toLowerCase() === 'ongoing'){
+            await Evaluation.update(
+                {status: 'Ongoing'},
+                {where: {assessmentId: req.body.assessment_id}}
+            )
+        }
+
         return res
             .status(StatusCodes[ASSESSMENT_REVIEW_SUCCESSFUL])
             .send({ ASSESSMENT_REVIEW_SUCCESSFUL })
