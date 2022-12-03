@@ -221,10 +221,7 @@ module.exports.getAssessmentsBySupervisor = async (req, res) => {
     }
 
     const assessments = await Assessments.findAll({
-        where: { supervisor_id: supervisorId, [Op.or]: [
-            { status: 'Awaiting approval' },
-            { status: 'awaiting approval' },
-        ], },
+        where: { supervisor_id: supervisorId },
     })
 
     const evaluations = await sequelize.query(
