@@ -363,39 +363,35 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
                         model: Assessment,
                         required: true,
                     },
+                    {
+                        model: User,
+                        attributes: ['id', 'first_name', 'last_name', 'email'],
+                        as: 'evaluation_team_of_evaluation',
+                        required: true,
+                        where: { id: requestedUser.id }
+                    }
                 ],
             },
         ],
     })
 
     evaluatees.forEach((evaluatee) => {
-        evaluatee.setDataValue(
-            'evaluation_team',
-            allEvaluationTeams.filter(
-                (team) =>
-                    team.getDataValue('evaluationId') ===
-                    evaluatee.evaluations[0].id
-            )
-        )
-        evaluatee.getDataValue('evaluation_team').forEach((member) =>
-            member.setDataValue(
-                'user_full',
-                users.find((user) => user.id === member.getDataValue('userId'))
-            )
-        )
+        evaluatee.evaluations.forEach((evaluation) => {
+            evaluation.setDataValue(
+                'evaluation_team', 
+                allEvaluationTeams.filter(
+                    (team) => team.getDataValue('evaluationId') === evaluation.id))
+            
+            evaluation.getDataValue('evaluation_team').forEach((member) => {
+                member.setDataValue('user_full', users.find((user) => user.id === member.getDataValue('userId')))
+            })
+        })
     })
 
-    const evaluationsUserResponsibleFor = evaluatees.filter((evaluatee) =>
-        evaluatee
-            .getDataValue('evaluation_team')
-            .some(
-                (member) => member.getDataValue('userId') === requestedUser.id
-            )
-    )
 
     return res
         .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY])
-        .send({ evaluatees: evaluationsUserResponsibleFor })
+        .send({ evaluatees })
 }
 
 module.exports.removeEvaluationTeamMember = async (req, res) => {
