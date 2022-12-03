@@ -363,6 +363,13 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
                         model: Assessment,
                         required: true,
                     },
+                    {
+                        model: User,
+                        attributes: ['id', 'first_name', 'last_name', 'email'],
+                        as: 'evaluation_team_of_evaluation',
+                        required: true,
+                        where: { id: requestedUser.id }
+                    }
                 ],
             },
         ],
@@ -381,21 +388,10 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
         })
     })
 
-    const evaluationsUserResponsibleFor = [];
-
-    evaluatees.forEach((evaluatee) => {
-        evaluatee.getDataValue('evaluations').forEach((evaluation) => {
-            evaluation.getDataValue('evaluation_team').forEach((member) => {
-                if (member.userId === requestedUser.id) {
-                    evaluationsUserResponsibleFor.push(evaluatee)
-                }
-            })
-        })
-    })
 
     return res
         .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY])
-        .send({ evaluatees: evaluationsUserResponsibleFor })
+        .send({ evaluatees })
 }
 
 module.exports.removeEvaluationTeamMember = async (req, res) => {
