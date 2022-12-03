@@ -1,6 +1,5 @@
 const sequelize = require('../sequelize')
 const { QueryTypes } = require('sequelize')
-const { Op } = require('sequelize')
 
 const fileNameGenerator = require('../utils/generateFileName');
 const generateOutlinedScheduleXLSX = require('../utils/generateOutlinedScheduleXLSX')

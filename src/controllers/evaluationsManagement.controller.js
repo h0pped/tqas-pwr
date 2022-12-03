@@ -127,7 +127,7 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
             sendMail(
                 emails,
                 `TQAS - Results of evaluation were rejected by ${academic_title} ${first_name} ${last_name}.`,
-                generateEvaluateeResultsRejectionEmail('Administrator', `${academic_title} ${first_name} ${last_name}`)
+                generateEvaluateeResultsRejectionEmail('Administrator',`${academic_title} ${first_name} ${last_name}`)
             )
         }
 
@@ -316,7 +316,7 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST
+                    GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST
                 ]
             )
             .send({ GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST })
