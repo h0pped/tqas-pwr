@@ -1,5 +1,6 @@
 const sequelize = require('../sequelize')
 const { QueryTypes } = require('sequelize')
+const { Op } = require('sequelize')
 
 const fileNameGenerator = require('../utils/generateFileName');
 const generateOutlinedScheduleXLSX = require('../utils/generateOutlinedScheduleXLSX')
@@ -220,7 +221,10 @@ module.exports.getAssessmentsBySupervisor = async (req, res) => {
     }
 
     const assessments = await Assessments.findAll({
-        where: { supervisor_id: supervisorId },
+        where: { supervisor_id: supervisorId, [Op.or]: [
+            { status: 'Awaiting approval' },
+            { status: 'awaiting approval' },
+        ], },
     })
 
     const evaluations = await sequelize.query(
