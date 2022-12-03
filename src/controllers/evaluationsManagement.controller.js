@@ -127,7 +127,7 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
             sendMail(
                 emails,
                 `TQAS - Results of evaluation were rejected by ${academic_title} ${first_name} ${last_name}.`,
-                generateEvaluateeResultsRejectionEmail('Administrator',`${academic_title} ${first_name} ${last_name}`)
+                generateEvaluateeResultsRejectionEmail('Administrator', `${academic_title} ${first_name} ${last_name}`)
             )
         }
 
@@ -316,7 +316,7 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
         return res
             .status(
                 StatusCodes[
-                    GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST
+                GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST
                 ]
             )
             .send({ GET_EVALUATIONS_BY_ET_MEMBER_NOT_PART_OF_ANY_BAD_REQUEST })
@@ -369,29 +369,29 @@ module.exports.getEvaluationsETMemberResponsibleFor = async (req, res) => {
     })
 
     evaluatees.forEach((evaluatee) => {
-        evaluatee.setDataValue(
-            'evaluation_team',
-            allEvaluationTeams.filter(
-                (team) =>
-                    team.getDataValue('evaluationId') ===
-                    evaluatee.evaluations[0].id
-            )
-        )
-        evaluatee.getDataValue('evaluation_team').forEach((member) =>
-            member.setDataValue(
-                'user_full',
-                users.find((user) => user.id === member.getDataValue('userId'))
-            )
-        )
+        evaluatee.evaluations.forEach((evaluation) => {
+            evaluation.setDataValue(
+                'evaluation_team', 
+                allEvaluationTeams.filter(
+                    (team) => team.getDataValue('evaluationId') === evaluation.id))
+            
+            evaluation.getDataValue('evaluation_team').forEach((member) => {
+                member.setDataValue('user_full', users.find((user) => user.id === member.getDataValue('userId')))
+            })
+        })
     })
 
-    const evaluationsUserResponsibleFor = evaluatees.filter((evaluatee) =>
-        evaluatee
-            .getDataValue('evaluation_team')
-            .some(
-                (member) => member.getDataValue('userId') === requestedUser.id
-            )
-    )
+    const evaluationsUserResponsibleFor = [];
+
+    evaluatees.forEach((evaluatee) => {
+        evaluatee.getDataValue('evaluations').forEach((evaluation) => {
+            evaluation.getDataValue('evaluation_team').forEach((member) => {
+                if (member.userId === requestedUser.id) {
+                    evaluationsUserResponsibleFor.push(evaluatee)
+                }
+            })
+        })
+    })
 
     return res
         .status(StatusCodes[GET_EVALUATIONS_BY_ET_MEMBER_SUCCESSFULLY])
