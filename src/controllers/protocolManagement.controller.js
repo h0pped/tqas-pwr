@@ -4,6 +4,8 @@ const User = sequelize.models.user
 const Protocol = sequelize.models.protocol
 const Evaluation = sequelize.models.evaluation
 
+const generateWordDocument = require('../utils/protocolPdfGeneration')
+
 const StatusCodes = require('../config/statusCodes.config')
 const {
     responseMessages: {
@@ -15,6 +17,8 @@ const {
         PROTOCOL_FOUND,
         GET_PROTOCOL_BAD_REQUEST,
         EVALUATION_DOES_NOT_EXIST,
+        PROTOCOL_PDF_BAD_REQUEST,
+        NO_FILLED_PROTOCOL,
     },
 } = require('../config/index.config')
 
@@ -117,8 +121,7 @@ module.exports.getProtocol = async (req, res) => {
 
         protocolJson['Informacje wstępne'][
             protocolJson['Informacje wstępne'].findIndex(
-                (question) =>
-                    question.question_text === 'Kod kursu'
+                (question) => question.question_text === 'Kod kursu'
             )
         ].answer = course.getDataValue('course_code')
 
@@ -127,12 +130,52 @@ module.exports.getProtocol = async (req, res) => {
                 (question) =>
                     question.question_text === 'Miejsce i termin zajęć'
             )
-        ].answer = evaluation.getDataValue('details')  
+        ].answer = evaluation.getDataValue('details')
 
         return res.status(StatusCodes[PROTOCOL_FOUND]).send({ ...protocolJson })
     } catch (err) {
         return res
             .status(StatusCodes[GET_PROTOCOL_BAD_REQUEST])
             .send({ GET_PROTOCOL_BAD_REQUEST })
+    }
+}
+
+module.exports.getProtocolPDF = async (req, res) => {
+    try {
+        const evaluation = await Evaluation.findByPk(req.query.evaluation_id)
+        if (!evaluation) {
+            return res.status(StatusCodes[EVALUATION_DOES_NOT_EXIST]).send({
+                message: EVALUATION_DOES_NOT_EXIST,
+            })
+        }
+        const evaluationTeamMembers =
+            await evaluation.getEvaluation_team_of_evaluation()
+        const evaluationTeamMemberNames = evaluationTeamMembers.map(
+            (member) =>
+                member.getDataValue('academic_title') +
+                ' ' +
+                member.getDataValue('first_name') +
+                ' ' +
+                member.getDataValue('last_name') +
+                ', ' +
+                member.getDataValue('department')
+        )
+        const filledProtocol = await evaluation.getFilled_protocol()
+        if(!filledProtocol){
+            return res.status(StatusCodes[NO_FILLED_PROTOCOL]).send({
+                message: NO_FILLED_PROTOCOL,
+            })
+        }
+        const generatedPdfBuffer = await generateWordDocument(
+            filledProtocol.getDataValue('protocol_json'),
+            evaluationTeamMemberNames
+        )
+        res.contentType('application/pdf')
+        res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf')
+        return res.send(generatedPdfBuffer)
+    } catch (err) {
+        return res.status(StatusCodes[PROTOCOL_PDF_BAD_REQUEST]).send({
+            message: PROTOCOL_PDF_BAD_REQUEST,
+        })
     }
 }
