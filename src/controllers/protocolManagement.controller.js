@@ -5,6 +5,9 @@ const Protocol = sequelize.models.protocol
 const Evaluation = sequelize.models.evaluation
 const FilledProtocol = sequelize.models.filled_protocol
 
+const { sendMail } = require('../mailer')
+const generateEvaluationResultsAvailableEmail = require('../utils/generateEvaluationResultsAvailable')
+
 const generateWordDocument = require('../utils/protocolPdfGeneration')
 
 const StatusCodes = require('../config/statusCodes.config')
@@ -271,6 +274,16 @@ module.exports.fillProtocol = async (req, res) => {
         })
         evaluation.set({status: 'In review'})
         evaluation.save()
+
+        const evaluateeId = evaluation.evaluateeId;
+
+        const userToSendEmailTo = await User.findOne({where: {id: evaluateeId}})
+
+        sendMail(
+            userToSendEmailTo.email,
+            `TQAS - Results of your evaluation are in!`,
+            generateEvaluationResultsAvailableEmail(`${userToSendEmailTo.academic_title} ${userToSendEmailTo.first_name} ${userToSendEmailTo.last_name}`)
+        )
         return res
             .status(StatusCodes[PROTOCOL_FILLED_SUCCESSFULLY])
             .send({ PROTOCOL_FILLED_SUCCESSFULLY })
