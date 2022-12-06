@@ -332,6 +332,7 @@ module.exports.createListOfClasses = async (req, res) => {
                     assessmentId: foundAssessment.dataValues.id,
                     evaluateeId: userId,
                     enrolled_students: properties.enrolled_students,
+                    protocolId: 3,
                 })
             }
         }
