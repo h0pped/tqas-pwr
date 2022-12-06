@@ -40,7 +40,7 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Results of your evaluations are in!
+        Results of your evaluation are in!
       </p>
 
 
