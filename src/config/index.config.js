@@ -129,6 +129,9 @@ const config = {
             'Requested user is not a part of any of the evaluation teams.',
         REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT:
             'Rejection comment added in the request for accepting the assessment',
+        PROTOCOL_PDF_BAD_REQUEST: 'Invalid data provided in the request for downloading pdf of the filled protocol',
+        PROTOCOL_GENERATED_SUCCESSFULLY: 'Protocol generated successfully',
+        NO_FILLED_PROTOCOL: 'Given evaluation does not have a filled protocol yet',
         PROTOCOL_FILLED_SUCCESSFULLY: 'Protocol filled successfully',
         FILL_PROTOCOL_BAD_REQUEST: 'Invalid data provided in the request for filling protocol',
         EXPORT_ID_REQUIRED_BAD_REQUEST: 'Id of assessment is required in order to export its schedule.',
