@@ -129,6 +129,8 @@ const config = {
             'Requested user is not a part of any of the evaluation teams.',
         REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT:
             'Rejection comment added in the request for accepting the assessment',
+        PROTOCOL_FILLED_SUCCESSFULLY: 'Protocol filled successfully',
+        FILL_PROTOCOL_BAD_REQUEST: 'Invalid data provided in the request for filling protocol',
         EXPORT_ID_REQUIRED_BAD_REQUEST: 'Id of assessment is required in order to export its schedule.',
         EXPORT_DNE_BAD_REQUEST: 'Assessment with provided id does NOT exist.',
         EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST: 'Requested assessment is not approved yet. You can only export approved schedule of assessment.',
