@@ -18,6 +18,8 @@ const {
         EVALUATION_DOES_NOT_EXIST,
         PROTOCOL_FILLED_SUCCESSFULLY,
         FILL_PROTOCOL_BAD_REQUEST,
+        DRAFT_PROTOCOL_SAVED,
+        DRAFT_PROTOCOL_BAD_REQUEST,
     },
 } = require('../config/index.config')
 
@@ -86,6 +88,10 @@ module.exports.getProtocol = async (req, res) => {
                 .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
                 .send({ EVALUATION_DOES_NOT_EXIST })
         }
+        const draftProtocol = await evaluation.getFilled_protocol({where: {status: 'Draft'}})
+        if(draftProtocol){
+            return res.status(StatusCodes[PROTOCOL_FOUND]).send({ ...JSON.parse(draftProtocol.getDataValue('protocol_json')) })
+        }
         const protocol = await evaluation.getProtocol()
         if (!protocol) {
             return res
@@ -120,8 +126,7 @@ module.exports.getProtocol = async (req, res) => {
 
         protocolJson['Informacje wstępne'][
             protocolJson['Informacje wstępne'].findIndex(
-                (question) =>
-                    question.question_text === 'Kod kursu'
+                (question) => question.question_text === 'Kod kursu'
             )
         ].answer = course.getDataValue('course_code')
 
@@ -130,7 +135,7 @@ module.exports.getProtocol = async (req, res) => {
                 (question) =>
                     question.question_text === 'Miejsce i termin zajęć'
             )
-        ].answer = evaluation.getDataValue('details')  
+        ].answer = evaluation.getDataValue('details')
 
         return res.status(StatusCodes[PROTOCOL_FOUND]).send({ ...protocolJson })
     } catch (err) {
@@ -226,6 +231,51 @@ module.exports.getProtocol = async (req, res) => {
         return res
             .status(StatusCodes[GET_PROTOCOL_BAD_REQUEST])
             .send({ GET_PROTOCOL_BAD_REQUEST })
+    }
+}
+
+module.exports.saveDraftProtocol = async (req, res) => {
+    try {
+        const userData = JSON.parse(
+            atob(req.headers.authorization.slice(7).split('.')[1])
+        )
+        const authorizedTeamMember = await User.findOne({
+            where: {
+                id: userData.id,
+            },
+            include: {
+                model: Evaluation,
+                as: 'evaluations_performed_by_user',
+                required: true,
+                where: { id: req.body.evaluation_id },
+            },
+        })
+        if (!authorizedTeamMember) {
+            return res
+                .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+                .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+        }
+        const evaluation = await Evaluation.findByPk(req.body.evaluation_id)
+        if (!evaluation) {
+            return res
+                .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
+                .send({ EVALUATION_DOES_NOT_EXIST })
+        }
+        await FilledProtocol.upsert(            {
+            protocol_json: req.body.protocol_draft,
+            status: 'Draft',
+            evaluationId: req.body.evaluation_id
+        },
+        {
+            conflictFields: ['evaluationId']
+        })
+        return res
+            .status(StatusCodes[DRAFT_PROTOCOL_SAVED])
+            .send({ DRAFT_PROTOCOL_SAVED })
+    } catch (err) {
+        return res
+            .status(StatusCodes[DRAFT_PROTOCOL_BAD_REQUEST])
+            .send({ DRAFT_PROTOCOL_BAD_REQUEST })
     }
 }
 

@@ -1,5 +1,9 @@
 const sequelize = require('../sequelize')
 const { QueryTypes } = require('sequelize')
+const { Op } = require('sequelize')
+
+const fileNameGenerator = require('../utils/generateFileName');
+const generateOutlinedScheduleXLSX = require('../utils/generateOutlinedScheduleXLSX')
 
 const Evaluatee = sequelize.models.evaluatee
 const Evaluation = sequelize.models.evaluation
@@ -7,6 +11,7 @@ const Assessment = sequelize.models.assessment
 const User = sequelize.models.user
 const Course = sequelize.models.course
 const Assessments = sequelize.models.assessment
+const EvaluationTeam = sequelize.models.evaluation_team
 
 const StatusCodes = require('../config/statusCodes.config')
 const {
@@ -32,6 +37,11 @@ const {
         LIST_OF_EVALUATED_CLASSES_BAD_REQUEST,
         USER_DOES_NOT_EXIST,
         REJECTION_COMMENT_FOR_ACCEPTED_ASSESSMENT,
+        EXPORT_ID_REQUIRED_BAD_REQUEST,
+        EXPORT_DNE_BAD_REQUEST,
+        EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
+        EXPORT_ERROR_BAD_REQUEST,
+        EXPORT_ASSESSMENT_SCHEDULE_SUCCESS
     },
 } = require('../config/index.config')
 
@@ -88,7 +98,6 @@ module.exports.reviewAssessment = async (req, res) => {
                     : req.body.rejection_reason,
         })
         assessment.save()
-
         const admins = await User.findAll({
             where: {
                 user_type: ['admin'],
@@ -115,6 +124,13 @@ module.exports.reviewAssessment = async (req, res) => {
                 )
             )
         }
+        if(req.body.status.toLowerCase() === 'ongoing'){
+            await Evaluation.update(
+                {status: 'Ongoing'},
+                {where: {assessmentId: req.body.assessment_id}}
+            )
+        }
+
         return res
             .status(StatusCodes[ASSESSMENT_REVIEW_SUCCESSFUL])
             .send({ ASSESSMENT_REVIEW_SUCCESSFUL })
@@ -205,7 +221,10 @@ module.exports.getAssessmentsBySupervisor = async (req, res) => {
     }
 
     const assessments = await Assessments.findAll({
-        where: { supervisor_id: supervisorId },
+        where: { supervisor_id: supervisorId, [Op.or]: [
+            { status: 'Awaiting approval' },
+            { status: 'awaiting approval' },
+        ], },
     })
 
     const evaluations = await sequelize.query(
@@ -403,3 +422,114 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
         })
     }
 }
+
+module.exports.exportAssessmentSchedule = async (req, res) => {
+    const assessmentId = req.query.id;
+
+    if (!assessmentId) {
+        return res
+            .status(StatusCodes[EXPORT_ID_REQUIRED_BAD_REQUEST])
+            .send({ msg: EXPORT_ID_REQUIRED_BAD_REQUEST })
+    }
+
+    const userData = JSON.parse(
+        atob(req.headers.authorization.slice(7).split('.')[1])
+    )
+    const authorizedUser = await User.findOne({
+        where: { email: userData.email, user_type: 'admin' },
+    })
+    if (!authorizedUser) {
+        return res
+            .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+            .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+    }
+
+    const requestedAssessment = await Assessment.findOne({
+        where: { id: assessmentId }
+    })
+
+    if (!requestedAssessment) {
+        return res.status(StatusCodes[EXPORT_DNE_BAD_REQUEST]).send({
+            message: EXPORT_DNE_BAD_REQUEST,
+        })
+    }
+
+    if (requestedAssessment.status.toLowerCase() !== 'ongoing') {
+        return res.status(StatusCodes[EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST]).send({
+            message: EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
+        })
+    }
+
+    const evaluations = await Evaluation.findAll(
+        {
+            where: { assessmentId: assessmentId },
+            include:
+                [
+                    {
+                        model: Course
+                    },
+                    {
+                        model: Evaluatee,
+                        include: {
+                            model: User
+                        }
+                    },
+                ]
+        }
+    )
+
+    const evaluationTeams = await EvaluationTeam.findAll()
+    const users = await User.findAll({
+        attributes: [
+            'id',
+            'academic_title',
+            'first_name',
+            'last_name',
+            'email',
+        ],
+    })
+
+    evaluations.forEach((evaluation) => {
+        const evaluationTeamForEvaluatee = evaluationTeams.filter(
+            ({ evaluationId} ) => evaluationId === evaluation.id
+        )
+        evaluation.setDataValue('evaluation_team', evaluationTeamForEvaluatee)
+        evaluation.getDataValue('evaluation_team').forEach((member) =>
+            member.setDataValue(
+                'user_full',
+                users.find(({ id }) => id === member.getDataValue('userId'))
+            )
+        )
+    })
+
+    evaluations.sort((a, b) => (a.evaluatee.userId > b.evaluatee.userId) ? 1 : -1)
+
+    const numOfEvaluationsPerEvaluatee = {}
+
+    evaluations.forEach((evaluation) => {
+        const key = evaluation.evaluatee.userId
+        numOfEvaluationsPerEvaluatee[key] = (numOfEvaluationsPerEvaluatee[key] || 0) + 1
+    })
+
+    const workbook = generateOutlinedScheduleXLSX(evaluations, numOfEvaluationsPerEvaluatee)
+
+    res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+
+    res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=" + fileNameGenerator(requestedAssessment.name, 'xlsx')
+    );
+
+    try {
+        workbook.xlsx.write(res).then(function () {
+            res.status(StatusCodes[EXPORT_ASSESSMENT_SCHEDULE_SUCCESS]).send();
+        })
+    } catch (err) {
+        return res.status(StatusCodes[EXPORT_ERROR_BAD_REQUEST]).send({
+            message: EXPORT_ERROR_BAD_REQUEST,
+        })
+    }
+};
