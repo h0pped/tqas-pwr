@@ -132,6 +132,8 @@ const config = {
         PROTOCOL_PDF_BAD_REQUEST: 'Invalid data provided in the request for downloading pdf of the filled protocol',
         PROTOCOL_GENERATED_SUCCESSFULLY: 'Protocol generated successfully',
         NO_FILLED_PROTOCOL: 'Given evaluation does not have a filled protocol yet',
+        PROTOCOL_FILLED_SUCCESSFULLY: 'Protocol filled successfully',
+        FILL_PROTOCOL_BAD_REQUEST: 'Invalid data provided in the request for filling protocol',
         EXPORT_ID_REQUIRED_BAD_REQUEST: 'Id of assessment is required in order to export its schedule.',
         EXPORT_DNE_BAD_REQUEST: 'Assessment with provided id does NOT exist.',
         EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST: 'Requested assessment is not approved yet. You can only export approved schedule of assessment.',

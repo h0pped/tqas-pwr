@@ -20,6 +20,8 @@ const {
         EVALUATION_DOES_NOT_EXIST,
         PROTOCOL_PDF_BAD_REQUEST,
         NO_FILLED_PROTOCOL,
+        PROTOCOL_FILLED_SUCCESSFULLY,
+        FILL_PROTOCOL_BAD_REQUEST,
         DRAFT_PROTOCOL_SAVED,
         DRAFT_PROTOCOL_BAD_REQUEST,
     },
@@ -229,5 +231,52 @@ module.exports.saveDraftProtocol = async (req, res) => {
         return res
             .status(StatusCodes[DRAFT_PROTOCOL_BAD_REQUEST])
             .send({ DRAFT_PROTOCOL_BAD_REQUEST })
+    }
+}
+
+module.exports.fillProtocol = async (req, res) => {
+    try {
+        const userData = JSON.parse(
+            atob(req.headers.authorization.slice(7).split('.')[1])
+        )
+        const authorizedTeamMember = await User.findOne({
+            where: {
+                id: userData.id,
+            },
+            include: {
+                model: Evaluation,
+                as: 'evaluations_performed_by_user',
+                required: true,
+                where: { id: req.body.evaluation_id },
+            },
+        })
+        if (!authorizedTeamMember) {
+            return res
+                .status(StatusCodes[USER_NOT_AUTHORIZED_FOR_OPERATION])
+                .send({ USER_NOT_AUTHORIZED_FOR_OPERATION })
+        }
+        const evaluation = await Evaluation.findByPk(req.body.evaluation_id)
+        if (!evaluation) {
+            return res
+                .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
+                .send({ EVALUATION_DOES_NOT_EXIST })
+        }
+        await FilledProtocol.upsert(            {
+            protocol_json: req.body.protocol_json,
+            status: 'Filled',
+            evaluationId: req.body.evaluation_id
+        },
+        {
+            conflictFields: ['evaluationId']
+        })
+        evaluation.set({status: 'In review'})
+        evaluation.save()
+        return res
+            .status(StatusCodes[PROTOCOL_FILLED_SUCCESSFULLY])
+            .send({ PROTOCOL_FILLED_SUCCESSFULLY })
+    } catch (err) {
+        return res
+            .status(StatusCodes[FILL_PROTOCOL_BAD_REQUEST])
+            .send({ FILL_PROTOCOL_BAD_REQUEST })
     }
 }
