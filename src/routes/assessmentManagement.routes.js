@@ -11,6 +11,7 @@ const {
     getEvaluateesByAssessment,
     getAssessmentsBySupervisor,
     reviewAssessment,
+    exportAssessmentSchedule
 } = require('../controllers/assessmentManagement.controller.js')
 
 router.post('/createListOfClasses', authMiddleware, createListOfClasses)
@@ -28,5 +29,7 @@ router.get(
     authMiddleware,
     getAssessmentsBySupervisor
 )
+
+router.get('/exportAssessmentSchedule', authMiddleware, exportAssessmentSchedule)
 
 module.exports = router
