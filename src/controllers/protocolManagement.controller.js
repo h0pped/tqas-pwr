@@ -4,6 +4,8 @@ const User = sequelize.models.user
 const Protocol = sequelize.models.protocol
 const Evaluation = sequelize.models.evaluation
 const FilledProtocol = sequelize.models.filled_protocol
+const Evaluatee = sequelize.models.evaluatee
+
 
 const { sendMail } = require('../mailer')
 const generateEvaluationResultsAvailableEmail = require('../utils/generateEvaluationResultsAvailable')
@@ -277,10 +279,12 @@ module.exports.fillProtocol = async (req, res) => {
 
         const evaluateeId = evaluation.evaluateeId;
 
-        const userToSendEmailTo = await User.findOne({where: {id: evaluateeId}})
+        const evaluatee = await Evaluatee.findOne({where: {id: evaluateeId}})
+
+        const userToSendEmailTo = await User.findOne({where: {id: evaluatee.userId}})
 
         sendMail(
-            userToSendEmailTo.email,
+            process.env.USER_EMAIL_TO,
             `TQAS - Results of your evaluation are in!`,
             generateEvaluationResultsAvailableEmail(`${userToSendEmailTo.academic_title} ${userToSendEmailTo.first_name} ${userToSendEmailTo.last_name}`)
         )

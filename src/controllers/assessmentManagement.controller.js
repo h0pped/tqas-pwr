@@ -98,12 +98,13 @@ module.exports.reviewAssessment = async (req, res) => {
                     : req.body.rejection_reason,
         })
         assessment.save()
-        const admins = await User.findAll({
-            where: {
-                user_type: ['admin'],
-            },
-        })
-        const emails = admins.map(({ email }) => email)
+        //const admins = await User.findAll({
+        //     where: {
+        //         user_type: ['admin'],
+        //     },
+        // })
+        //const emails = admins.map(({ email }) => email)
+
         if (req.body.status.toLowerCase() === 'ongoing') {
             await sendMail(
                 process.env.USER_EMAIL_TO,
