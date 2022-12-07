@@ -29,7 +29,6 @@ module.exports.getUsers = async (req, res) => {
         include: [
             {
                 model: Evaluatee,
-                required: true,
                 attributes: ['last_evaluated_date'],
             },
         ],

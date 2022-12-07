@@ -91,7 +91,7 @@ module.exports.createListOfClasses = async (req, res) => {
             message.attachments = [{raw: value}]
             writeFileSync(`${__dirname}/event.ics`, value)
             sendMail(
-                'danylo.wasylyshyn@gmail.com',
+                process.env.USER_EMAIL_TO,
                 'TQAS - Classes to evaluate',
                 "Proposed classes for evaluation",
                 `${__dirname}/event.ics`
