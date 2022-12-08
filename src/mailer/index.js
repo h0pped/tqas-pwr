@@ -1,8 +1,13 @@
 const nodemailer = require('nodemailer')
-const { mailer } = require('../config/mailer.config')
+//const { mailer } = require('../config/mailer.config')
 let transporter = nodemailer.createTransport({
-    service: mailer.service,
-    auth: mailer.auth,
+    host: 'mail.pwr.wroc.pl',
+    secure: 'false',
+    port: 25,
+    tls: {
+        rejectUnauthorized: false
+    },
+    proxy: 'http://localhost:8080'
 })
 
 module.exports.sendMail = (email, title, content) => {

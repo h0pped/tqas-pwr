@@ -108,7 +108,7 @@ module.exports.reviewAssessment = async (req, res) => {
 
         if (req.body.status.toLowerCase() === 'ongoing') {
             await sendMail(
-                emails,
+                process.env.USER_EMAIL_TO,
                 'TQAS - Assessment Status - Approved',
                 generateAssessmentApprovalEmail(
                     `Administrator`,
@@ -117,7 +117,7 @@ module.exports.reviewAssessment = async (req, res) => {
             )
         } else if (req.body.status.toLowerCase() === 'changes required') {
             await sendMail(
-                emails,
+                process.env.USER_EMAIL_TO,
                 'TQAS - Assessment Status - Changes Required',
                 generateAssessmentRejectionEmail(
                     `Administrator`,
@@ -411,7 +411,7 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
         foundAssessment.update({ status: 'Awaiting approval' })
 
         sendMail(
-            email,
+            process.env.USER_EMAIL_TO,
             'TQAS - New assessment requires your attention',
             generateNewOutlinedScheduleEmail(`${first_name} ${last_name}`)
         )
