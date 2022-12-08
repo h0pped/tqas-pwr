@@ -98,16 +98,17 @@ module.exports.reviewAssessment = async (req, res) => {
                     : req.body.rejection_reason,
         })
         assessment.save()
-        //const admins = await User.findAll({
-        //     where: {
-        //         user_type: ['admin'],
-        //     },
-        // })
-        //const emails = admins.map(({ email }) => email)
+
+        const admins = await User.findAll({
+            where: {
+                user_type: ['admin'],
+            },
+        })
+        const emails = admins.map(({ email }) => email)
 
         if (req.body.status.toLowerCase() === 'ongoing') {
             await sendMail(
-                process.env.USER_EMAIL_TO,
+                emails,
                 'TQAS - Assessment Status - Approved',
                 generateAssessmentApprovalEmail(
                     `Administrator`,
@@ -116,7 +117,7 @@ module.exports.reviewAssessment = async (req, res) => {
             )
         } else if (req.body.status.toLowerCase() === 'changes required') {
             await sendMail(
-                process.env.USER_EMAIL_TO,
+                emails,
                 'TQAS - Assessment Status - Changes Required',
                 generateAssessmentRejectionEmail(
                     `Administrator`,
@@ -410,7 +411,7 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
         foundAssessment.update({ status: 'Awaiting approval' })
 
         sendMail(
-            process.env.USER_EMAIL_TO,
+            email,
             'TQAS - New assessment requires your attention',
             generateNewOutlinedScheduleEmail(`${first_name} ${last_name}`)
         )
