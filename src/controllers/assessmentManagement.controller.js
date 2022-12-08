@@ -230,7 +230,7 @@ module.exports.getAssessmentsBySupervisor = async (req, res) => {
     })
 
     const evaluations = await sequelize.query(
-        'select distinct "assessmentId" , "evaluateeId"  FROM evaluations',
+        'select distinct "assessmentId" , "evaluateeId"  FROM evaluations where "deletedAt" is null',
         { type: QueryTypes.SELECT }
     )
 
