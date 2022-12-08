@@ -98,16 +98,18 @@ module.exports.reviewAssessment = async (req, res) => {
                     : req.body.rejection_reason,
         })
         assessment.save()
+
         const admins = await User.findAll({
             where: {
                 user_type: ['admin'],
             },
         })
         const emails = admins.map(({ email }) => email)
+
         if (req.body.status.toLowerCase() === 'ongoing') {
             await sendMail(
                 emails,
-                'Assessment Status - Approved',
+                'TQAS - Assessment Status - Approved',
                 generateAssessmentApprovalEmail(
                     `Administrator`,
                     assessment.name
@@ -116,7 +118,7 @@ module.exports.reviewAssessment = async (req, res) => {
         } else if (req.body.status.toLowerCase() === 'changes required') {
             await sendMail(
                 emails,
-                'Assessment Status - Changes Required',
+                'TQAS - Assessment Status - Changes Required',
                 generateAssessmentRejectionEmail(
                     `Administrator`,
                     assessment.name,
@@ -330,7 +332,7 @@ module.exports.createListOfClasses = async (req, res) => {
                     details: properties.details,
                     course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
-                    evaluateeId: userId,
+                    evaluateeId: foundEvaluatee.getDataValue('id'),
                     enrolled_students: properties.enrolled_students,
                     protocolId: 3,
                 })
