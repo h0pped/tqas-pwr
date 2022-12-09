@@ -10,9 +10,10 @@ const transporter = nodemailer.createTransport({
 module.exports.sendMail = (email, title, content) => {
     const message = {
         to: email,
-        from: 'Teaching Quality Assurance System <hospitacje@pwr.edu.pl>',
+        from: 'Hospitacje <hospitacje@pwr.edu.pl>',
         subject: title,
         text: content,
+        html: content
     }
     return new Promise((resolve, reject) => {
         transporter.sendMail(message, function (err, info) {
