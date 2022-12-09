@@ -274,10 +274,22 @@ module.exports.fillProtocol = async (req, res) => {
         {
             conflictFields: ['evaluationId']
         })
+
+        const assessmentId = evaluation.assessmentId;
+        const evaluateeId = evaluation.evaluateeId;
+
+        const allEvaluationsOfEvaluateeInAssessment = await Evaluation.findAll({
+            where: {assessmentId: assessmentId, evaluateeId: evaluateeId}
+        })
+
+        allEvaluationsOfEvaluateeInAssessment.forEach((evaluation) => {
+            evaluation.set({status: 'Inactive'})
+            evaluation.save()
+        })
+
         evaluation.set({status: 'In review'})
         evaluation.save()
 
-        const evaluateeId = evaluation.evaluateeId;
 
         const evaluatee = await Evaluatee.findOne({where: {id: evaluateeId}})
 
