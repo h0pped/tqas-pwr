@@ -284,7 +284,7 @@ module.exports.fillProtocol = async (req, res) => {
         const userToSendEmailTo = await User.findOne({where: {id: evaluatee.userId}})
 
         sendMail(
-            process.env.USER_EMAIL_TO,
+            userToSendEmailTo,
             `TQAS - Results of your evaluation are in!`,
             generateEvaluationResultsAvailableEmail(`${userToSendEmailTo.academic_title} ${userToSendEmailTo.first_name} ${userToSendEmailTo.last_name}`)
         )
