@@ -46,7 +46,7 @@ style="
       <p style="line-height: 2rem; font-size: 1rem; color: black">
         Assessment schedule for <b>${semester} Semester</b> has been rejected by a supervisor and evaluation teams were NOT assigned.
       </p>
-      <p>
+      <p style="line-height: 2rem; font-size: 1rem; color: black">
         Reason: ${reason || '---'}
       </p>
 
@@ -82,7 +82,7 @@ style="
         <p style="line-height: 2rem; font-size: 1rem; color: black">
             Ramowy harmonogram hospitacji zajęć <b>${semester} Semestr</b> został pomyślnie odrzucony przez przełożonego i zespoły hospitujący NIE zostały przydzielone.
         </p>
-        <p>
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
             Powód: ${reason || '---'}
           </p>
   
