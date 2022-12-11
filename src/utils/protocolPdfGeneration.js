@@ -2,11 +2,21 @@ const docx = require('docx')
 const libre = require('libreoffice-convert');
 libre.convertAsync = require('util').promisify(libre.convert);
 
-module.exports = (filledProtocol, evaluationTeamMemberNames) => {
+module.exports = (filledProtocol, evaluationTeamMemberNames, evaluateeName) => {
     const documentJson = JSON.parse(filledProtocol)
     const preparedDocumentStructure = []
     let sectionNumber = 1
     let subsectionNumber = 1
+    preparedDocumentStructure.push(new docx.Paragraph({children: [new docx.TextRun({
+        text: "Hospitowany prowadzący:",
+        bold: true,
+        underline: true,
+        font: {
+            name: 'Times New Roman',
+        },
+    })]}))
+    preparedDocumentStructure.push(new docx.Paragraph(evaluateeName))
+    preparedDocumentStructure.push(new docx.Paragraph(""))
     preparedDocumentStructure.push(new docx.Paragraph({children: [new docx.TextRun({
         text: "Zespół hospitujący:",
         bold: true,
@@ -57,6 +67,7 @@ module.exports = (filledProtocol, evaluationTeamMemberNames) => {
                         layout: docx.TableLayoutType.FIXED,
                         columnWidths: columnWidth
                     }))
+                    preparedDocumentStructure.push(new docx.Paragraph(""))
                     tableStructure = []
                     columnWidth = [64, 34]
                 }
@@ -95,6 +106,7 @@ module.exports = (filledProtocol, evaluationTeamMemberNames) => {
                         layout: docx.TableLayoutType.FIXED,
                         columnWidths: columnWidth
                     }))
+                    preparedDocumentStructure.push(new docx.Paragraph(""))
                     tableStructure = []
                     columnWidth = [10, 56, 34]
                     preparedDocumentStructure.push(new docx.Paragraph(""))
@@ -142,6 +154,7 @@ module.exports = (filledProtocol, evaluationTeamMemberNames) => {
             columnWidths: columnWidth
         })
         preparedDocumentStructure.push(tempTable)
+        preparedDocumentStructure.push(new docx.Paragraph(""))
         sectionNumber += 1
         subsectionNumber = 1
     }
@@ -174,6 +187,7 @@ function generateRowsForRegularQuestions(
     if (isSubsection) {
         cells.push(
             new docx.TableCell({
+                margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
                 children: [
                     new docx.Paragraph({
                         children: [
@@ -223,6 +237,7 @@ function generateRowsForRegularQuestions(
     }
     cells.push(
         new docx.TableCell({
+            margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
             children: [
                 new docx.Paragraph({
                     text:
@@ -259,6 +274,7 @@ function generateRowsForRegularQuestions(
     )
     cells.push(
         new docx.TableCell({
+            margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
             children: [
                 new docx.Paragraph({
                     alignment: docx.AlignmentType.RIGHT,
@@ -321,6 +337,7 @@ function generateRowsForQuestionWithAdditionalFields(
             if (isSubsection) {
                 cells.push(
                     new docx.TableCell({
+                        margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
                         children: [
                             new docx.Paragraph({
                                 children: [
@@ -372,6 +389,7 @@ function generateRowsForQuestionWithAdditionalFields(
             if (subquestion === 'answer') {
                 cells.push(
                     new docx.TableCell({
+                        margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
                         children: [
                             new docx.Paragraph({
                                 text:
@@ -408,6 +426,7 @@ function generateRowsForQuestionWithAdditionalFields(
                 )
                 cells.push(
                     new docx.TableCell({
+                        margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
                         children: [
                             new docx.Paragraph({
                                 alignment: docx.AlignmentType.RIGHT,
@@ -449,6 +468,7 @@ function generateRowsForQuestionWithAdditionalFields(
             } else {
                 cells.push(
                     new docx.TableCell({
+                        margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
                         children: [
                             new docx.Paragraph({
                                 text:
@@ -487,6 +507,7 @@ function generateRowsForQuestionWithAdditionalFields(
                 )
                 cells.push(
                     new docx.TableCell({
+                        margins: {marginUnitType: docx.WidthType.DXA, top: 50, bottom: 50},
                         children: [
                             new docx.Paragraph({
                                 alignment: docx.AlignmentType.RIGHT,
