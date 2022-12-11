@@ -6,7 +6,6 @@ const Evaluation = sequelize.models.evaluation
 const FilledProtocol = sequelize.models.filled_protocol
 const Evaluatee = sequelize.models.evaluatee
 
-
 const { sendMail } = require('../mailer')
 const generateEvaluationResultsAvailableEmail = require('../utils/generateEvaluationResultsAvailable')
 
@@ -97,9 +96,15 @@ module.exports.getProtocol = async (req, res) => {
                 .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
                 .send({ EVALUATION_DOES_NOT_EXIST })
         }
-        const draftProtocol = await evaluation.getFilled_protocol({where: {status: 'Draft'}})
-        if(draftProtocol){
-            return res.status(StatusCodes[PROTOCOL_FOUND]).send({ ...JSON.parse(draftProtocol.getDataValue('protocol_json')) })
+        const draftProtocol = await evaluation.getFilled_protocol({
+            where: { status: 'Draft' },
+        })
+        if (draftProtocol) {
+            return res
+                .status(StatusCodes[PROTOCOL_FOUND])
+                .send({
+                    ...JSON.parse(draftProtocol.getDataValue('protocol_json')),
+                })
         }
         const protocol = await evaluation.getProtocol()
         if (!protocol) {
@@ -174,18 +179,29 @@ module.exports.getProtocolPDF = async (req, res) => {
                 ', ' +
                 member.getDataValue('department')
         )
+        const evaluatee = await evaluation.getEvaluatee()
+        const evaluateeUserDate = await evaluatee.getUser()
+        const evaluateeName =
+            evaluateeUserDate.getDataValue('academic_title') +
+            ' ' +
+            evaluateeUserDate.getDataValue('first_name') +
+            ' ' +
+            evaluateeUserDate.getDataValue('last_name') +
+            ', ' +
+            evaluateeUserDate.getDataValue('department')
         const filledProtocol = await evaluation.getFilled_protocol()
-        if(!filledProtocol){
+        if (!filledProtocol) {
             return res.status(StatusCodes[NO_FILLED_PROTOCOL]).send({
                 message: NO_FILLED_PROTOCOL,
             })
         }
         const generatedPdfBuffer = await generateWordDocument(
             filledProtocol.getDataValue('protocol_json'),
-            evaluationTeamMemberNames
+            evaluationTeamMemberNames,
+            evaluateeName
         )
         res.contentType('application/pdf')
-        res.setHeader('Content-Disposition', 'attachment; filename=quote.pdf')
+        res.setHeader('Content-Disposition', 'attachment; filename=' + 'hospitacja' + evaluateeName.replaceAll(', ', '_').replaceAll(' ', '_') + '.pdf')
         return res.send(generatedPdfBuffer)
     } catch (err) {
         return res.status(StatusCodes[PROTOCOL_PDF_BAD_REQUEST]).send({
@@ -221,14 +237,16 @@ module.exports.saveDraftProtocol = async (req, res) => {
                 .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
                 .send({ EVALUATION_DOES_NOT_EXIST })
         }
-        await FilledProtocol.upsert(            {
-            protocol_json: req.body.protocol_draft,
-            status: 'Draft',
-            evaluationId: req.body.evaluation_id
-        },
-        {
-            conflictFields: ['evaluationId']
-        })
+        await FilledProtocol.upsert(
+            {
+                protocol_json: req.body.protocol_draft,
+                status: 'Draft',
+                evaluationId: req.body.evaluation_id,
+            },
+            {
+                conflictFields: ['evaluationId'],
+            }
+        )
         return res
             .status(StatusCodes[DRAFT_PROTOCOL_SAVED])
             .send({ DRAFT_PROTOCOL_SAVED })
@@ -266,39 +284,46 @@ module.exports.fillProtocol = async (req, res) => {
                 .status(StatusCodes[EVALUATION_DOES_NOT_EXIST])
                 .send({ EVALUATION_DOES_NOT_EXIST })
         }
-        await FilledProtocol.upsert(            {
-            protocol_json: req.body.protocol_json,
-            status: 'Filled',
-            evaluationId: req.body.evaluation_id
-        },
-        {
-            conflictFields: ['evaluationId']
-        })
+        await FilledProtocol.upsert(
+            {
+                protocol_json: req.body.protocol_json,
+                status: 'Filled',
+                evaluationId: req.body.evaluation_id,
+            },
+            {
+                conflictFields: ['evaluationId'],
+            }
+        )
 
-        const assessmentId = evaluation.assessmentId;
-        const evaluateeId = evaluation.evaluateeId;
+        const assessmentId = evaluation.assessmentId
+        const evaluateeId = evaluation.evaluateeId
 
         const allEvaluationsOfEvaluateeInAssessment = await Evaluation.findAll({
-            where: {assessmentId: assessmentId, evaluateeId: evaluateeId}
+            where: { assessmentId: assessmentId, evaluateeId: evaluateeId },
         })
 
         allEvaluationsOfEvaluateeInAssessment.forEach((evaluation) => {
-            evaluation.set({status: 'Inactive'})
+            evaluation.set({ status: 'Inactive' })
             evaluation.save()
         })
 
-        evaluation.set({status: 'In review'})
+        evaluation.set({ status: 'In review' })
         evaluation.save()
 
+        const evaluatee = await Evaluatee.findOne({
+            where: { id: evaluateeId },
+        })
 
-        const evaluatee = await Evaluatee.findOne({where: {id: evaluateeId}})
-
-        const userToSendEmailTo = await User.findOne({where: {id: evaluatee.userId}})
+        const userToSendEmailTo = await User.findOne({
+            where: { id: evaluatee.userId },
+        })
 
         sendMail(
             userToSendEmailTo.email,
             `TQAS - Results of your evaluation are in!`,
-            generateEvaluationResultsAvailableEmail(`${userToSendEmailTo.academic_title} ${userToSendEmailTo.first_name} ${userToSendEmailTo.last_name}`)
+            generateEvaluationResultsAvailableEmail(
+                `${userToSendEmailTo.academic_title} ${userToSendEmailTo.first_name} ${userToSendEmailTo.last_name}`
+            )
         )
         return res
             .status(StatusCodes[PROTOCOL_FILLED_SUCCESSFULLY])
