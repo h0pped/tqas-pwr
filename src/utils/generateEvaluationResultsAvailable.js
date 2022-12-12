@@ -1,11 +1,12 @@
-module.exports = (name) => `<body
+module.exports = (name) => `
+<body
 style="
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   width: 100%;
   height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
 "
 >
 <div>
@@ -25,6 +26,9 @@ style="
     </h4>
   </header>
   <section>
+    <div style="width: 100%; display: flex; justify-content: flex-end;">
+        <p style="font-weight: bold; color: #D9372A">[EN]</p>
+    </div>
     <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
         New evaluation results
     </h2>
@@ -59,8 +63,45 @@ style="
           sekretariat.wit@pwr.edu.pl</a
         >
       </p>
+      <br />
+      <div style="width: 100%; display: flex; justify-content: flex-end; border-top: dashed #B8B8B8;">
+          <p style="font-weight: bold; color: #D9372A">[PL]</p>
+      </div>
+      <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
+        Nowe wyniki hospitacji
+    </h2>
+      <p
+        style="
+          line-height: 2rem;
+          font-size: 1.2rem;
+
+          color: black;
+        "
+      >
+        Witaj!
+      </p>
+
+      <p style="line-height: 2rem; font-size: 1rem; color: black">
+        Wyniki Twojej hospitacji zostały wprowadzone do systemu!
+      </p>
+
+
+    <p style="line-height: 2rem; font-size: 1rem; color: black">
+        Otrzymaliśmy wyniki Twojej hospitacji i są one gotowe do Twojej recenzji. Jeśli uważasz, że ostateczne wyniki są nieprawidłowe lub uważasz, że nastąpiła pomyłka, możesz odrzucić swoje wyniki.
+    </p>
+
+    <p style="line-height: 2rem; font-size: 1rem; color: black">
+        Uwaga: masz tylko 14 dni na zaakceptowanie lub odrzucenie wyników.
+    </p>
+
+    <p style="line-height: 2rem; font-size: 1rem; color: black">
+        Jeśli masz jakiekolwiek problemy, skontaktuj się z administratorem za pomocą
+        następującego adresu e-mail:
+        <a href="mailto:sekretariat.wit@pwr.edu.pl ">
+            sekretariat.wit@pwr.edu.pl
+        </a>
+    </p>
   </section>
 </div>
 </body>
-
 `

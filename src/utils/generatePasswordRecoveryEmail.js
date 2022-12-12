@@ -1,12 +1,13 @@
 module.exports = (name, code) =>
-    `<body
+    `
+    <body
 style="
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   width: 100%;
   height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
 "
 >
 <div>
@@ -26,8 +27,11 @@ style="
     </h4>
   </header>
   <section>
+    <div style="width: 100%; display: flex; justify-content: flex-end;">
+        <p style="font-weight: bold; color: #D9372A">[EN]</p>
+    </div>
     <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
-      Account Activation
+      Password recovery
     </h2>
     <div style="margin-bottom: 30px; text-align: left">
       <p
@@ -42,15 +46,15 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        We received a password recovery request for your account
+        We received a password recovery request for your account.
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Your code: ${code}
+        Your code:  <b>${code}</b>
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        If you did not send a request password recovery, please,
+        If you did not send a password recovery request, please
         disregard this email and do not share the code with
         anybody.
       </p>
@@ -62,6 +66,44 @@ style="
           sekretariat.wit@pwr.edu.pl</a
         >
       </p>
+      <br />
+      <div style="width: 100%; display: flex; justify-content: flex-end; border-top: dashed #B8B8B8;">
+          <p style="font-weight: bold; color: #D9372A">[PL]</p>
+      </div>
+      <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
+        Password recovery
+      </h2>
+      <div style="margin-bottom: 30px; text-align: left">
+        <p
+          style="
+            line-height: 2rem;
+            font-size: 1.2rem;
+  
+            color: black;
+          "
+        >
+          Witaj!
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Otrzymaliśmy prośbę o odzyskanie hasła do Twojego konta.
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Twój kod:  <b>${code}</b>
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Jeśli nie wysłałeś prośby o odzyskanie hasła, zignoruj tę wiadomość i nie udostępniaj nikomu kodu.
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Jeśli masz jakiekolwiek problemy, skontaktuj się z administratorem za pomocą
+            następującego adresu e-mail:
+            <a href="mailto:sekretariat.wit@pwr.edu.pl ">
+                sekretariat.wit@pwr.edu.pl
+            </a>
+        </p>
     </div>
   </section>
 </div>

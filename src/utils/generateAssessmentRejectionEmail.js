@@ -1,11 +1,12 @@
-module.exports = (name, semester, reason) => `<body
+module.exports = (name, semester, reason) => `
+<body
 style="
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   width: 100%;
   height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
 "
 >
 <div>
@@ -25,8 +26,11 @@ style="
     </h4>
   </header>
   <section>
+    <div style="width: 100%; display: flex; justify-content: flex-end;">
+        <p style="font-weight: bold; color: #D9372A">[EN]</p>
+    </div>
     <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
-        Assessment Rejection
+      Assessment schedule rejection
     </h2>
       <p
         style="
@@ -40,15 +44,15 @@ style="
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-        Assessment created for <b>${semester} Semester</b> has been rejected by a supervisor.
+        Assessment schedule for <b>${semester} Semester</b> has been rejected by a supervisor and evaluation teams were NOT assigned.
+      </p>
+      <p style="line-height: 2rem; font-size: 1rem; color: black">
+        Reason: ${reason || '---'}
       </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
-      Reason: ${reason || 'No reason provided'}
-    </p>
-    <p style="line-height: 2rem; font-size: 1rem; color: black">
-      Evaluation teams were not assigned. Please, join the system in order to make changes to the assessment according to provided reason and resubmit it.
-    </p>
+        Please, join the system in order to see rejected assessment schedule and make necessary adjustments.
+      </p>
 
       <p style="line-height: 2rem; font-size: 1rem; color: black">
         If you have any issues, please contact
@@ -57,8 +61,43 @@ style="
           sekretariat.wit@pwr.edu.pl</a
         >
       </p>
+      <br />
+      <div style="width: 100%; display: flex; justify-content: flex-end; border-top: dashed #B8B8B8;">
+          <p style="font-weight: bold; color: #D9372A">[PL]</p>
+      </div>
+      <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
+        Odrzucenie ramowego harmonogramu
+      </h2>
+        <p
+          style="
+            line-height: 2rem;
+            font-size: 1.2rem;
+  
+            color: black;
+          "
+        >
+          Witaj!
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Ramowy harmonogram hospitacji zajęć <b>${semester} Semestr</b> został pomyślnie odrzucony przez przełożonego i zespoły hospitujący NIE zostały przydzielone.
+        </p>
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Powód: ${reason || '---'}
+          </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Dołącz do systemu, aby zobaczyć odrzucony harmonogram hospitacji i dokonać niezbędnych korekt.
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Jeśli masz jakiekolwiek problemy, skontaktuj się z administratorem za pomocą
+            następującego adresu e-mail:
+            <a href="mailto:sekretariat.wit@pwr.edu.pl ">
+                sekretariat.wit@pwr.edu.pl
+            </a>
+        </p>
   </section>
 </div>
 </body>
-
 `

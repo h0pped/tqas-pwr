@@ -1,11 +1,12 @@
-module.exports = (name, evaluatee) => `<body
+module.exports = (name, evaluatee) => `
+<body
 style="
   box-sizing: border-box;
   padding: 0;
   margin: 0;
   width: 100%;
   height: 100%;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
 "
 >
 <div>
@@ -25,8 +26,11 @@ style="
     </h4>
   </header>
   <section>
+    <div style="width: 100%; display: flex; justify-content: flex-end;">
+        <p style="font-weight: bold; color: #D9372A">[EN]</p>
+    </div>
     <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
-      Results Rejected
+      Results rejection
     </h2>
       <p
         style="
@@ -54,8 +58,40 @@ style="
           sekretariat.wit@pwr.edu.pl</a
         >
       </p>
+      <br />
+      <div style="width: 100%; display: flex; justify-content: flex-end; border-top: dashed #B8B8B8;">
+          <p style="font-weight: bold; color: #D9372A">[PL]</p>
+      </div>
+      <h2 style="font-size: 28; margin-bottom: 30px; text-align: center">
+        Odrzucenie oceny końcowej
+      </h2>
+        <p
+          style="
+            line-height: 2rem;
+            font-size: 1.2rem;
+  
+            color: black;
+          "
+        >
+          Witaj!
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+        Hospitujący(-ca) <b>${evaluatee}</b> odrzucił(-a) ocenę końcową.
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Dołącz do systemu, aby zobaczyć szczegóły.
+        </p>
+  
+        <p style="line-height: 2rem; font-size: 1rem; color: black">
+            Jeśli masz jakiekolwiek problemy, skontaktuj się z administratorem za pomocą
+            następującego adresu e-mail:
+            <a href="mailto:sekretariat.wit@pwr.edu.pl ">
+                sekretariat.wit@pwr.edu.pl
+            </a>
+        </p>
   </section>
 </div>
 </body>
-
 `
