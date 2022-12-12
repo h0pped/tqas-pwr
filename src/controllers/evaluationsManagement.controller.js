@@ -108,7 +108,26 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
                     ? null
                     : req.body.rejection_reason,
         })
-        evaluation.save()
+        
+        await evaluation.save()
+
+        const assessmentIdOfEvaluation = evaluation.assessmentId;
+        const assessmentOfEvaluation = await Assessment.findOne({where: {id: assessmentIdOfEvaluation}, include: {model: Evaluation}})
+        const evaluationsOfAssessment = assessmentOfEvaluation.getDataValue('evaluations');
+
+        let isAllResultsReviewedByTeacher = true;
+        evaluationsOfAssessment.forEach(({status}) => {
+            const statusLower = status.toLowerCase();
+            if (statusLower !== 'accepted' && statusLower !== 'rejected' && statusLower !== 'inactive') {
+                isAllResultsReviewedByTeacher = false;
+            }
+        })
+
+        if (isAllResultsReviewedByTeacher) {
+            assessmentOfEvaluation.set({status: 'Done'});
+            assessmentOfEvaluation.save();
+        }
+
 
         const admins = await User.findAll({
             where: {
