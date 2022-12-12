@@ -117,8 +117,8 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
 
         let isAllResultsReviewedByTeacher = true;
         evaluationsOfAssessment.forEach(({status}) => {
-            const statusLower = status.toLowerCase();
-            if (statusLower !== 'accepted' && statusLower !== 'rejected' && statusLower !== 'inactive') {
+            const statusLowerCase = status.toLowerCase();
+            if (statusLowerCase !== 'accepted' && statusLowerCase !== 'rejected' && statusLowerCase !== 'inactive') {
                 isAllResultsReviewedByTeacher = false;
             }
         })
