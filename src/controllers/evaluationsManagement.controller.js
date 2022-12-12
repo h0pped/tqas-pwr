@@ -110,6 +110,14 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
         })
         evaluation.save()
 
+        if (
+            req.body.status.toLowerCase() === 'accepted') {
+            const evaluatee = await authorizedUser.getEvaluatee()
+            evaluatee.set({
+                last_evaluated_date: (new Date()).toISOString()
+            })
+            evaluatee.save()
+        }
         const admins = await User.findAll({
             where: {
                 user_type: ['admin'],
