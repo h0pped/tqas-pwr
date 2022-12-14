@@ -128,7 +128,6 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
             assessmentOfEvaluation.save();
         }
 
-
         if (
             req.body.status.toLowerCase() === 'accepted') {
             const evaluatee = await authorizedUser.getEvaluatee()

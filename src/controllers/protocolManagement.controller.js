@@ -176,8 +176,7 @@ module.exports.getProtocolPDF = async (req, res) => {
                 member.getDataValue('first_name') +
                 ' ' +
                 member.getDataValue('last_name') +
-                ', ' +
-                member.getDataValue('department')
+                (member.getDataValue('department') ? ', ' + member.getDataValue('department') : '')
         )
         const evaluatee = await evaluation.getEvaluatee()
         const evaluateeUserDate = await evaluatee.getUser()
@@ -187,8 +186,8 @@ module.exports.getProtocolPDF = async (req, res) => {
             evaluateeUserDate.getDataValue('first_name') +
             ' ' +
             evaluateeUserDate.getDataValue('last_name') +
-            ', ' +
-            evaluateeUserDate.getDataValue('department')
+            (evaluateeUserDate.getDataValue('department') ? ', ' + evaluateeUserDate.getDataValue('department') : '')
+        
         const filledProtocol = await evaluation.getFilled_protocol()
         if (!filledProtocol) {
             return res.status(StatusCodes[NO_FILLED_PROTOCOL]).send({
@@ -201,7 +200,7 @@ module.exports.getProtocolPDF = async (req, res) => {
             evaluateeName
         )
         res.contentType('application/pdf')
-        res.setHeader('Content-Disposition', 'attachment; filename=' + 'hospitacja' + evaluateeName.replaceAll(', ', '_').replaceAll(' ', '_') + '.pdf')
+        res.setHeader('Content-Disposition', 'attachment; filename=' + 'hospitacja.pdf')
         return res.send(generatedPdfBuffer)
     } catch (err) {
         return res.status(StatusCodes[PROTOCOL_PDF_BAD_REQUEST]).send({
