@@ -65,6 +65,7 @@ async function parse_csv(file) {
                     'last_name',
                     'academic_title',
                     'user_type',
+                    'department'
                 ],
                 conflictFields: ['email'],
             }
@@ -107,6 +108,7 @@ async function parse_excel(buffer) {
                         'last_name',
                         'academic_title',
                         'user_type',
+                        'department'
                     ],
                     conflictFields: ['email'],
                 }
