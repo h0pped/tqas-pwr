@@ -2,7 +2,7 @@ const sequelize = require('../sequelize')
 const { QueryTypes } = require('sequelize')
 const { Op } = require('sequelize')
 
-const fileNameGenerator = require('../utils/generateFileName');
+const fileNameGenerator = require('../utils/generateFileName')
 const generateOutlinedScheduleXLSX = require('../utils/generateOutlinedScheduleXLSX')
 
 const Evaluatee = sequelize.models.evaluatee
@@ -41,7 +41,7 @@ const {
         EXPORT_DNE_BAD_REQUEST,
         EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
         EXPORT_ERROR_BAD_REQUEST,
-        EXPORT_ASSESSMENT_SCHEDULE_SUCCESS
+        EXPORT_ASSESSMENT_SCHEDULE_SUCCESS,
     },
 } = require('../config/index.config')
 
@@ -126,10 +126,10 @@ module.exports.reviewAssessment = async (req, res) => {
                 )
             )
         }
-        if(req.body.status.toLowerCase() === 'ongoing'){
+        if (req.body.status.toLowerCase() === 'ongoing') {
             await Evaluation.update(
-                {status: 'Ongoing'},
-                {where: {assessmentId: req.body.assessment_id}}
+                { status: 'Ongoing' },
+                { where: { assessmentId: req.body.assessment_id } }
             )
         }
 
@@ -223,10 +223,13 @@ module.exports.getAssessmentsBySupervisor = async (req, res) => {
     }
 
     const assessments = await Assessments.findAll({
-        where: { supervisor_id: supervisorId, [Op.or]: [
-            { status: 'Awaiting approval' },
-            { status: 'awaiting approval' },
-        ], },
+        where: {
+            supervisor_id: supervisorId,
+            [Op.or]: [
+                { status: 'Awaiting approval' },
+                { status: 'awaiting approval' },
+            ],
+        },
     })
 
     const evaluations = await sequelize.query(
@@ -427,7 +430,7 @@ module.exports.setAssessmentSupervisor = async (req, res) => {
 }
 
 module.exports.exportAssessmentSchedule = async (req, res) => {
-    const assessmentId = req.query.id;
+    const assessmentId = req.query.id
 
     if (!assessmentId) {
         return res
@@ -448,7 +451,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
     }
 
     const requestedAssessment = await Assessment.findOne({
-        where: { id: assessmentId }
+        where: { id: assessmentId },
     })
 
     if (!requestedAssessment) {
@@ -458,28 +461,27 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
     }
 
     if (requestedAssessment.status.toLowerCase() !== 'ongoing') {
-        return res.status(StatusCodes[EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST]).send({
-            message: EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
-        })
+        return res
+            .status(StatusCodes[EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST])
+            .send({
+                message: EXPORT_MUST_BE_APPROVED_FIRST_BAD_REQUEST,
+            })
     }
 
-    const evaluations = await Evaluation.findAll(
-        {
-            where: { assessmentId: assessmentId },
-            include:
-                [
-                    {
-                        model: Course
-                    },
-                    {
-                        model: Evaluatee,
-                        include: {
-                            model: User
-                        }
-                    },
-                ]
-        }
-    )
+    const evaluations = await Evaluation.findAll({
+        where: { assessmentId: assessmentId },
+        include: [
+            {
+                model: Course,
+            },
+            {
+                model: Evaluatee,
+                include: {
+                    model: User,
+                },
+            },
+        ],
+    })
 
     const evaluationTeams = await EvaluationTeam.findAll()
     const users = await User.findAll({
@@ -494,7 +496,7 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
 
     evaluations.forEach((evaluation) => {
         const evaluationTeamForEvaluatee = evaluationTeams.filter(
-            ({ evaluationId} ) => evaluationId === evaluation.id
+            ({ evaluationId }) => evaluationId === evaluation.id
         )
         evaluation.setDataValue('evaluation_team', evaluationTeamForEvaluatee)
         evaluation.getDataValue('evaluation_team').forEach((member) =>
@@ -505,34 +507,41 @@ module.exports.exportAssessmentSchedule = async (req, res) => {
         )
     })
 
-    evaluations.sort((a, b) => (a.evaluatee.userId > b.evaluatee.userId) ? 1 : -1)
+    evaluations.sort((a, b) =>
+        a.evaluatee.userId > b.evaluatee.userId ? 1 : -1
+    )
 
     const numOfEvaluationsPerEvaluatee = {}
 
     evaluations.forEach((evaluation) => {
         const key = evaluation.evaluatee.userId
-        numOfEvaluationsPerEvaluatee[key] = (numOfEvaluationsPerEvaluatee[key] || 0) + 1
+        numOfEvaluationsPerEvaluatee[key] =
+            (numOfEvaluationsPerEvaluatee[key] || 0) + 1
     })
 
-    const workbook = generateOutlinedScheduleXLSX(evaluations, numOfEvaluationsPerEvaluatee)
+    const workbook = generateOutlinedScheduleXLSX(
+        evaluations,
+        numOfEvaluationsPerEvaluatee
+    )
 
     res.setHeader(
         'Content-Type',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    );
+    )
 
     res.setHeader(
-        "Content-Disposition",
-        "attachment; filename=" + fileNameGenerator(requestedAssessment.name, 'xlsx')
-    );
+        'Content-Disposition',
+        'attachment; filename=' +
+            fileNameGenerator(requestedAssessment.name, 'xlsx')
+    )
 
     try {
         workbook.xlsx.write(res).then(function () {
-            res.status(StatusCodes[EXPORT_ASSESSMENT_SCHEDULE_SUCCESS]).send();
+            res.status(StatusCodes[EXPORT_ASSESSMENT_SCHEDULE_SUCCESS]).send()
         })
     } catch (err) {
         return res.status(StatusCodes[EXPORT_ERROR_BAD_REQUEST]).send({
             message: EXPORT_ERROR_BAD_REQUEST,
         })
     }
-};
+}
