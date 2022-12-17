@@ -331,13 +331,23 @@ module.exports.createListOfClasses = async (req, res) => {
                             message: INVALID_ASSESSMENT_PROVIDED,
                         })
                 }
+                let protocolIdentifier = 0
+                if(evaluatedClass[0].dataValues.course_code.toLowerCase().endsWith('w')){
+                    protocolIdentifier = 6
+                }
+                else if (evaluatedClass[0].dataValues.course_code.toLowerCase().endsWith('l')){
+                    protocolIdentifier = 5
+                }
+                else {
+                    protocolIdentifier = 3
+                }
                 await Evaluation.create({
                     details: properties.details,
                     course_code: evaluatedClass[0].dataValues.course_code,
                     assessmentId: foundAssessment.dataValues.id,
                     evaluateeId: foundEvaluatee.getDataValue('id'),
                     enrolled_students: properties.enrolled_students,
-                    protocolId: 3,
+                    protocolId: protocolIdentifier,
                 })
             }
         }
