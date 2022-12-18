@@ -145,10 +145,6 @@ module.exports.reviewAssessment = async (req, res) => {
                             as: 'evaluation_team_of_evaluation',
                             required: true,
                         },
-                        {
-                            model: Course,
-                            required: true,
-                        },
                     ],
                 }
         )
