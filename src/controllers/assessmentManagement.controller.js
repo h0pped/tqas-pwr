@@ -49,6 +49,7 @@ const { sendMail } = require('../mailer')
 const generateNewOutlinedScheduleEmail = require('../utils/generateNewOutlinedScheduleEmail')
 const generateAssessmentApprovalEmail = require('../utils/generateAssessmentApprovalEmail')
 const generateAssessmentRejectionEmail = require('../utils/generateAssessmentRejectionEmail')
+const generateInviteForEvaluationTeamEmail = require('../utils/generateInviteForEvaluationTeamEmail')
 
 module.exports.reviewAssessment = async (req, res) => {
     try {
@@ -107,6 +108,13 @@ module.exports.reviewAssessment = async (req, res) => {
         const emails = admins.map(({ email }) => email)
 
         if (req.body.status.toLowerCase() === 'ongoing') {
+            await Evaluation.update(
+                { status: 'Ongoing' },
+                { where: { assessmentId: req.body.assessment_id } }
+            )
+        }
+
+        if (req.body.status.toLowerCase() === 'ongoing') {
             await sendMail(
                 emails,
                 'TQAS - Assessment Status - Approved',
@@ -126,12 +134,36 @@ module.exports.reviewAssessment = async (req, res) => {
                 )
             )
         }
-        if (req.body.status.toLowerCase() === 'ongoing') {
-            await Evaluation.update(
-                { status: 'Ongoing' },
-                { where: { assessmentId: req.body.assessment_id } }
-            )
-        }
+
+        const allEvaluationTeamsInAssessment = await Evaluation.findAll(
+                {
+                    where: { assessmentId: req.body.assessment_id },
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['id', 'first_name', 'last_name', 'email'],
+                            as: 'evaluation_team_of_evaluation',
+                            required: true,
+                        },
+                        {
+                            model: Course,
+                            required: true,
+                        },
+                    ],
+                }
+        )
+
+        allEvaluationTeamsInAssessment.forEach(({ evaluation_team_of_evaluation }) => {
+            evaluation_team_of_evaluation.forEach(async ({ first_name, last_name, email }) => {
+                await sendMail(
+                            email,
+                            'TQAS - You have been assigned to evaluation team',
+                            generateInviteForEvaluationTeamEmail(
+                                `${first_name} ${last_name}`,
+                            )
+                        )
+            })
+        })
 
         return res
             .status(StatusCodes[ASSESSMENT_REVIEW_SUCCESSFUL])
