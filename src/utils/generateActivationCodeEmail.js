@@ -1,5 +1,5 @@
 module.exports = (name, code) =>
-`
+    `
 <body style="
   box-sizing: border-box;
   padding: 0;
@@ -55,8 +55,8 @@ module.exports = (name, code) =>
             <p style="line-height: 2rem; font-size: 1rem; color: black">
                 If you have any issues with account activation, please contact
                 administrator using following email address:
-                <a href="mailto:sekretariat.wit@pwr.edu.pl ">
-                    sekretariat.wit@pwr.edu.pl
+                <a href="mailto:jakosc.wit@pwr.edu.pl ">
+                    jakosc.wit@pwr.edu.pl
                 </a>
             </p>
             <br />
@@ -91,8 +91,8 @@ module.exports = (name, code) =>
             <p style="line-height: 2rem; font-size: 1rem; color: black">
                 Jeśli masz jakiekolwiek problemy z aktywacją konta, skontaktuj się z administratorem za pomocą
                 następującego adresu e-mail:
-                <a href="mailto:sekretariat.wit@pwr.edu.pl ">
-                    sekretariat.wit@pwr.edu.pl
+                <a href="mailto:jakosc.wit@pwr.edu.pl ">
+                    jakosc.wit@pwr.edu.pl
                 </a>
             </p>
         </section>
