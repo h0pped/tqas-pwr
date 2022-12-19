@@ -1,5 +1,5 @@
-module.exports = (name, evaluatee) => 
-`
+module.exports = (name, evaluatee) =>
+  `
 <body
 style="
   box-sizing: border-box;
@@ -55,8 +55,8 @@ style="
       <p style="line-height: 2rem; font-size: 1rem; color: black">
         If you have any issues, please contact
         administrator using following email address:
-        <a href="mailto:sekretariat.wit@pwr.edu.pl ">
-          sekretariat.wit@pwr.edu.pl</a
+        <a href="mailto:jakosc.wit@pwr.edu.pl ">
+          jakosc.wit@pwr.edu.pl</a
         >
       </p>
       <br />
@@ -88,8 +88,8 @@ style="
         <p style="line-height: 2rem; font-size: 1rem; color: black">
             Jeśli masz jakiekolwiek problemy, skontaktuj się z administratorem za pomocą
             następującego adresu e-mail:
-            <a href="mailto:sekretariat.wit@pwr.edu.pl ">
-                sekretariat.wit@pwr.edu.pl
+            <a href="mailto:jakosc.wit@pwr.edu.pl ">
+                jakosc.wit@pwr.edu.pl
             </a>
         </p>
   </section>
