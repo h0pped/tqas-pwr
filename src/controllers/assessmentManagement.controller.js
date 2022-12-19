@@ -363,7 +363,7 @@ module.exports.createListOfClasses = async (req, res) => {
                 if(evaluatedClass[0].dataValues.course_code.toLowerCase().endsWith('w')){
                     protocolIdentifier = 6
                 }
-                else if (evaluatedClass[0].dataValues.course_code.toLowerCase().endsWith('l')){
+                else if (['l', 'p', 's'].includes(evaluatedClass[0].dataValues.course_code.toLowerCase().slice(-1))){
                     protocolIdentifier = 5
                 }
                 else {
