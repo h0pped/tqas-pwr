@@ -34,7 +34,7 @@
         "nodemon": "^2.0.20",
         "office-to-pdf": "^4.0.0",
         "pg": "^8.8.0",
-        "sequelize": "^6.25.2",
+        "sequelize": "^6.28.0",
         "xlsx-to-json": "^0.3.0"
     },
     "devDependencies": {
