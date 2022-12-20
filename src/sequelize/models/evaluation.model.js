@@ -15,6 +15,12 @@ module.exports = (sequelize) => {
         },
         rejection_reason: {
             type: DataTypes.STRING,
+        },
+        review_date: {
+            type: DataTypes.DATEONLY,
+        },
+        protocol_completion_date: {
+            type: DataTypes.DATEONLY,     
         }
     },
     { paranoid: true }

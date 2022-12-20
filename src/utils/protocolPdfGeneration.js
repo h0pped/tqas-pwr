@@ -2,7 +2,7 @@ const docx = require('docx')
 const libre = require('libreoffice-convert');
 libre.convertAsync = require('util').promisify(libre.convert);
 
-module.exports = (filledProtocol, evaluationTeamMemberNames, evaluateeName) => {
+module.exports = (filledProtocol, evaluationTeamMemberNames, evaluateeName, evaluation_date, review_date, evaluatee_review) => {
     const documentJson = JSON.parse(filledProtocol)
     const preparedDocumentStructure = []
     let sectionNumber = 1
@@ -157,6 +157,17 @@ module.exports = (filledProtocol, evaluationTeamMemberNames, evaluateeName) => {
         preparedDocumentStructure.push(new docx.Paragraph(""))
         sectionNumber += 1
         subsectionNumber = 1
+    }
+    if(evaluation_date){
+        preparedDocumentStructure.push(new docx.Paragraph("Data hospitacji: " + evaluation_date))
+    }
+    if(review_date){
+        preparedDocumentStructure.push(new docx.Paragraph("Data sprawdzenia przez hospitowanego: " + review_date))
+        preparedDocumentStructure.push(new docx.Paragraph("Decyzja hospitowanego: " + evaluatee_review))
+
+    }
+    else {
+        preparedDocumentStructure.push(new docx.Paragraph("Jeszcze nie sprawdzone przez hospitowanego"))
     }
     const doc = new docx.Document({
         sections: [

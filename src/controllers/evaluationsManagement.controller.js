@@ -107,6 +107,7 @@ module.exports.evaluateeReviewEvaluation = async (req, res) => {
                 req.body.status.toLowerCase() === 'accepted'
                     ? null
                     : req.body.rejection_reason,
+            review_date: new Date().toISOString()
         })
         
         await evaluation.save()
