@@ -161,9 +161,10 @@ module.exports = (filledProtocol, evaluationTeamMemberNames, evaluateeName, eval
     if(evaluation_date){
         preparedDocumentStructure.push(new docx.Paragraph("Data hospitacji: " + evaluation_date))
     }
+    const statusTranlation = {'Accepted' : 'Zaakceptowano', 'Rejected' : 'Odrzucono'}
     if(review_date){
         preparedDocumentStructure.push(new docx.Paragraph("Data sprawdzenia przez hospitowanego: " + review_date))
-        preparedDocumentStructure.push(new docx.Paragraph("Decyzja hospitowanego: " + evaluatee_review))
+        preparedDocumentStructure.push(new docx.Paragraph("Decyzja hospitowanego: " + statusTranlation[evaluatee_review]))
 
     }
     else {

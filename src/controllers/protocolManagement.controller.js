@@ -198,9 +198,9 @@ module.exports.getProtocolPDF = async (req, res) => {
             filledProtocol.getDataValue('protocol_json'),
             evaluationTeamMemberNames,
             evaluateeName,
-            evaluateeUserDate.getDataValue('protocol_completion_date') ? evaluateeUserDate.getDataValue('protocol_completion_date').toLocaleString() : null,
-            evaluateeUserDate.getDataValue('review_date') ? evaluateeUserDate.getDataValue('review_date').toLocaleString() : null,
-            evaluateeUserDate.getDataValue('status')
+            evaluation.getDataValue('protocol_completion_date') ? evaluation.getDataValue('protocol_completion_date') : null,
+            evaluation.getDataValue('review_date') ? evaluation.getDataValue('review_date') : null,
+            evaluation.getDataValue('status')
         )
         res.contentType('application/pdf')
         res.setHeader('Content-Disposition', 'attachment; filename=' + 'hospitacja.pdf')
@@ -305,7 +305,7 @@ module.exports.fillProtocol = async (req, res) => {
         })
 
         allEvaluationsOfEvaluateeInAssessment.forEach((evaluation) => {
-            evaluation.set({ status: 'Inactive', proocol_completion_date: new Date().toISOString() })
+            evaluation.set({ status: 'Inactive', protocol_completion_date: new Date().toISOString() })
             evaluation.save()
         })
 
